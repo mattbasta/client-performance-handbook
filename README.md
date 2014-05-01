@@ -24,17 +24,27 @@ better quality products to their clients and employers.
     2. How to measure performance (tools)
     3. Categorizing users
     3. Prioritizing performance improvements
-2. Overview of a page’s lifecycle
+2. Identifying performance issues
+    1. Browser timing api
+    2. Timing data inside compiled files
+    3. Storing timestamps at important page events
+    4. Make more graphs than you care about
+    5. Simplify
+        - Tech debt
+        - Refactoring
+        - Premature optimization
+        - Screw it, just make things better
+3. Overview of a page’s lifecycle
     1. Connection and SSL
     2. Assets and Payload
     3. JavaScript
-3. Connection and SSL
+4. Connection and SSL
     1. Overview of TCP
     2. DNS Lookups
     3. Combining and eliminating requests
     4. CDNs
     5. SPDY
-4. Assets and Payload
+5. Assets and Payload
     1. HTTP
     2. Gzip and Compression
     3. Images
@@ -52,7 +62,7 @@ better quality products to their clients and employers.
         - Number of assets
         - Combining assets
         - Weighing the benefits of multiple files
-5. JavaScript
+6. JavaScript
     1. Head or Body? Where the hell do I put my code
     2. defer, async, both, neither
     3. Browser events
@@ -81,16 +91,6 @@ better quality products to their clients and employers.
         - How it works
         - Is it better?
         - Costs
-6. Identifying performance issues
-    1. Browser timing api
-    2. Timing data inside compiled files
-    3. Storing timestamps at important page events
-    4. Make more graphs than you care about
-    5. Simplify
-        - Tech debt
-        - Refactoring
-        - Premature optimization
-        - Screw it, just make things better
 7. Conclusion
     1. Proverbs
     2. Thanks, credits
