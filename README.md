@@ -7,11 +7,11 @@ by [Matt Basta](http://mattbasta.com)
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png"></a>
 
-Performance is one of the most wide-reaching and hard-to-address topics in web
-development. Because there are so many aspects to the discipline, it's nearly
-impossible for any one person to address them all. In addition, performance
-myths and misinformation oftentimes lead well-intentioned engineers to make
-poor choices.
+Performance is one of the most wide-reaching yet difficult-to-address topics in
+web development. Because there are so many aspects to the discipline, it's
+nearly impossible to consider each one in a serial way. In addition,
+performance myths and misinformation often lead well-intentioned engineers to
+make poor choices.
 
 The Client-Side Performance Almanac is a guide to help web developers deliver
 better quality products to their clients and employers.
@@ -85,7 +85,6 @@ better quality products to their clients and employers.
         - jQuery
         - Underscore
         - Alternatives
-        - Proverbs
     6. Client-side Templating
         - What it is
         - How it works
