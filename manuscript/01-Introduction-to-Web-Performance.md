@@ -55,15 +55,21 @@ So what is the justification for improving performance?
 
 ## Categorizing Users
 
-An often-overlooked aspect to web development is that not all users are created equal. Many variables play a role in performance, including bandwidth, latency, processing power, browser, payload (if different content is served to different users), whether the user has visited a page before, and much more. Analytics tools like Google Analytics can give a detailed picture, but pulling in more than two facets of data (or grouping data together) can be a challenge. Here's an example from Poor Michael's
+An often-overlooked aspect to web development is that not all users are created equal. Many variables play a role in performance, including bandwidth, latency, processing power, browser, payload (if different content is served to different users), whether the user has visited a page before, and much more. The sheer number of variables that can affect a page's performance makes grouping users by each of them independently intractable.
 
-- A user on Safari 5 from Australia visits Michael's homepage
-- A user on Chrome for Android from Phoenix, AZ visits Michael's product list page
-- A user on Internet Explorer 11 from Nashville, TN visits a product page on Michael's site
+Instead, the performance data that you gather and aggregate needs to be considered carefully to properly cluster data into manageable chunks. By identifying performance shortcomings in your site (or potential performance shortcomings), the data that you have can help you get a better picture of the different scenarios that users are encountering that's compromising performance.
 
-These kinds of analytics tools tend to have little value for gathering performance-related data if you don't know what to look for or how to segment your data. This is understandable, as tools like this are not designed to be used for performance analysis.
+Analytics tools like Google Analytics can give a detailed picture, but pulling in more than two facets of data (or grouping data together) can be a challenge. Here's an example of three visits to Poor Michael's website as seen by Google Analytics:
 
-    Information overload is more expensive than ignorance if the information isn't free.
+- A user on Safari 5 from Australia visits Michael's homepage and three other pages
+- A user on Chrome for Android from Phoenix, AZ visits Michael's product list page and one other page
+- A user on Internet Explorer 11 from Nashville, TN visits a product page on Michael's site and leaves immediately
+
+Singling out individual visitors isn't something that's possible most of the time, and this data--while somewhat useful--doesn't give a great picture of the experience that each user had.
+
+These kinds of analytics tools tend to have little value for gathering performance-related data if you don't know what to look for or how to segment what you find. It can also be a challenge to automate these tools to provide scheduled reports or dashboards. This is understandable, as tools like GA are not designed to be used for performance analysis.
+
+    Information overload can be more expensive than ignorance if the information isn't free.
 
 For a performance engineer, the following would have been more useful:
 
@@ -73,7 +79,7 @@ For a performance engineer, the following would have been more useful:
 
 This information can be collected partially though Google Analytics, but libraries like Boomerang by Yahoo!, custom reporting tools, or even WebPageTest provide much more complete and actionable data.
 
-In a perfect world, this information would distill down into the following form:
+Another ideal form for this data would look something like the following:
 
 | Percentile | Ready Time (s) | Load Time (s) |
 |------------|----------------|---------------|
@@ -105,4 +111,3 @@ Depending on where a site is hosted, it may also be useful to split these number
 
 
 # Prioritizing Performance Improvements
-
