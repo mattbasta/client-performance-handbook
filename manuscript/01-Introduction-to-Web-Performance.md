@@ -11,7 +11,7 @@ Many of the problems, though, are still unsolved. Many have no universal best so
 If you are reading this book with the intention of identifying solutions to problems that you are already experiencing with a product, I'd suggest flipping ahead to the chapter "Identifying Performance Issues".
 
 
-    There is no place like home. Unless you don't like your home, in which case there is no place like your neighbor's home.
+> There is no place like home. Unless you don't like your home, in which case there is no place like your neighbor's home.
 
 
 ## Performance is about compromises
@@ -27,14 +27,14 @@ Building performant applications is not hard, but making them work the way you'd
 The key to making a successful effort in improving web performance is understanding the constraints of the problems that need to be solved and ensuring that the downsides of the changes that you choose to make are acceptable trade-offs.
 
 
-    A man that expects no trade-offs will quickly misplace his car's stereo.
+> A man that expects no trade-offs will quickly misplace his car's stereo.
 
 
 ## The Value of Performance
 
 As an engineer, it's often easy to forget that despite one's best efforts, humans can't work on multiple things simultaneously. Managers, however, find it quite easy to remember that on the engineer's behalf. When a performance issue is identified, it's simply too easy for many folks--especially in corporate culture--to write off performance as a secondary or low-priority goal.
 
-    If it ain't broke, don't fix it.
+> If it ain't broke, don't fix it.
 
 Some performance issues are easy to justify fixing: as the amount of data in the system increases, the system gets slower. This is a scale issue: something that gets worse with no upper ceiling. The justification for issues like this usually sound like, "If we don't fix this slowdown, you won't be able to log in by this time next week."
 
@@ -42,7 +42,7 @@ Other performance issues are more nuanced, and usually more abundant. A page's l
 
 For the average developer, divine intervention is in short supply and it would take nothing less to convince a manager that a couple hundred milliseconds are worth more than a few hours of time.
 
-    It takes time to save time.
+> It takes time to save time.
 
 So what is the justification for improving performance?
 
@@ -55,11 +55,11 @@ So what is the justification for improving performance?
 On a more tangible level, improved performance is often a sign of better resource utilization. The more efficiently an application can produce a response, the better the underlying resources are being used. For example:
 
 - Decreased payload in a web application means smaller load times, but it also means decreased bandwidth usage. Depending on hosting costs, saving bytes can save quite a bit of money.
-- Increased server efficiency means fewer servers are needed. When Facebook switched from Zend PHP to HipHop (a tool built to compile PHP to native code), they were able to decrease the number of web servers they used by a factor of five[^hiphop_decreased_servers].
-    [^hiphop_decreased_servers]See *The HipHop compiler for PHP*, presented at OOPSLA 2012
+- Increased server efficiency means fewer servers are needed. When Facebook switched from Zend PHP to HipHop (a tool built to compile PHP to native code), they were able to decrease the number of web servers they used by a factor of five[^hiphopdecreasedservers].
 - Decreasing the number of requests that a client is required to make in order to load a page proportionally decreases the number of requests that the back-end server needs to handle. Decreased load on the server results in greater capacity.
 - Simplifying and refactoring code has many benefits, including decreased size and increased performance. Clean and well-structured code also requires less engineering attention than gnarly spaghetti code, and increases an engineer's ability to diagnose and fix problems more quickly in the future.
 
+[^hiphopdecreasedservers]: See *The HipHop compiler for PHP*, presented at OOPSLA 2012
 
 ## Categorizing Users
 
@@ -77,7 +77,7 @@ Singling out individual visitors isn't something that's possible most of the tim
 
 These kinds of analytics tools tend to have little value for gathering performance-related data if you don't know what to look for or how to segment what you find. It can also be a challenge to automate these tools to provide scheduled reports or dashboards. This is understandable, as tools like GA are not designed to be used for performance analysis.
 
-    Information overload can be more expensive than ignorance if the information isn't free.
+> Information overload can be more expensive than ignorance if the information isn't free.
 
 For a performance engineer, the following would have been more useful:
 
@@ -95,8 +95,6 @@ Another ideal form for this data would look something like the following:
 | 50th       | 2.2            | 6.4           |
 | 90th       | 5.5            | 14.8          |
 
-
-Terms:
 
 Percentile
 : If you were to create a histogram of the load time for all of a page's visitors, each percentile represents a single point along that histogram. I.e.: the 50th percentile would represent the median value, the 10th percentile would represent the value 10% of the way across the histogram, etc.
@@ -118,4 +116,4 @@ Some things to notice:
 Depending on where a site is hosted, it may also be useful to split these numbers by region. For example, you may wish to have a separate query for users in the United States, UK, and southeast Asia. The network properties--and in some cases, browser trends--in a particular region can have significant effects on the performance data that you collect.
 
 
-# Prioritizing Performance Improvements
+## Prioritizing Performance Improvements
