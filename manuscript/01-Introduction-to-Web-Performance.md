@@ -52,6 +52,14 @@ So what is the justification for improving performance?
 4. **Poor performance is an indicator of tech debt.** Pages don't get slow on their own, and poor performance usually indicates that something is broken, poorly architected, or stretched beyond its original design. Ignoring tech debt is allowing your product to rot from the inside out.
 5. **Each of your users has to load your site.** Your site's initial load is the first experience any user has with your website. If that experience is poor, your users already have a bad first impression before they even get to the rest of the content.
 
+On a more tangible level, improved performance is often a sign of better resource utilization. The more efficiently an application can produce a response, the better the underlying resources are being used. For example:
+
+- Decreased payload in a web application means smaller load times, but it also means decreased bandwidth usage. Depending on hosting costs, saving bytes can save quite a bit of money.
+- Increased server efficiency means fewer servers are needed. When Facebook switched from Zend PHP to HipHop (a tool built to compile PHP to native code), they were able to decrease the number of web servers they used by a factor of five[^hiphop_decreased_servers].
+    [^hiphop_decreased_servers]See *The HipHop compiler for PHP*, presented at OOPSLA 2012
+- Decreasing the number of requests that a client is required to make in order to load a page proportionally decreases the number of requests that the back-end server needs to handle. Decreased load on the server results in greater capacity.
+- Simplifying and refactoring code has many benefits, including decreased size and increased performance. Clean and well-structured code also requires less engineering attention than gnarly spaghetti code, and increases an engineer's ability to diagnose and fix problems more quickly in the future.
+
 
 ## Categorizing Users
 
