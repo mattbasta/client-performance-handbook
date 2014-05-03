@@ -21,7 +21,6 @@ better quality products to their clients and employers.
 
 1. Introduction to web performance
     1. Why perf is important
-    2. How to measure performance (tools)
     3. Categorizing users
     3. Prioritizing performance improvements
 2. Identifying performance issues
@@ -35,7 +34,7 @@ better quality products to their clients and employers.
         - Premature optimization
         - Screw it, just make things better
 3. Overview of a page’s lifecycle
-    1. Connection and SSL
+    1. Connection and SSL: A metaphor for life
     2. Assets and Payload
     3. JavaScript
 4. Connection and SSL
