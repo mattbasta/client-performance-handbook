@@ -56,6 +56,43 @@ At more than 100ms each, the volume of DNS lookups can quickly dominate a large 
 
 ## TCP Connection
 
+Like DNS, the actual TCP connections involved in each request are an often-overlooked component in web performance and a piece which has few remedies. TCP connections are inherently expensive: connecting and disconnecting each involve one and a half round trips. Most browsers limit the number of connections that can be made to any given host. There are a number of signals that you can look for, though, that can indicate a potential performance bottleneck.
+
+
+### Too many connections
+
+Until recently, browsers limited the number of HTTP connections to any single host to 2. Most modern browsers have increased that limit to at least 6[^ie_connection_limit]. This number is usually sufficient for relatively small pages with only a small number of assets, but it can be disastrous for content-heavy pages that make dozens of requests.
+
+[^ie_connection_limit]: Internet Explorer 10 and up and Opera 10 (though not Opera 11 or 12) have a limit of eight concurrent connections.
+
+![TCP connections made to a single host](images/tcp_limit_waterfall.png)
+
+The above is a screenshot from the Chrome developer tools showing a series of requests for images. I've drawn in red lines to show that the end of one request triggers the start of another. Also notice that no more than six requests are triggered concurrently at any given time.
+
+The first way to remedy this is to make sure that if you can, SPDY is implemented on the server. SPDY allows an unlimited number of concurrent connections, and the server can decide how it wants to respond to them depending on load.
+
+The second solution to this is to simply decrease the number of requests. Even with SPDY, the more requests that are made, the longer it takes to load the page for the simple reason that there's more things to do. If multiple files can be combined with no impact on the user, that is a worthwhile change to make. Later chapters discuss in more detail how to effectively combine assets.
+
+
+### High latency
+
+For users on high-latency connections, creating many TCP connections may be impractical. Other users may have artificially restrictive limits on TCP connections (such as users communicating through an HTTP proxy). In this case, the best solution is to simply decrease the amount of time it takes to establish a connection.
+
+To do this, collect some data. Measure the amount of time it takes to establish a connection to the web server from a point very near to the server (i.e.: from another server in the same data center). If that number is high, you should investigate the stack that you're using on the server. If you don't have a load balancer, or are using a single-threaded server, simply installing a reverse proxy like Nginx may solve much of the problem.
+
+For users that are located internationally, long connection times may simply be a result of distance. Consider using a CDN to serve assets: a CDN can be globally distributed to decrease the physical distance that must be traversed and number of digital bottlenecks that a connection must overcome in order to reach the server.
+
+
 ## SSL
 
 SSL is a misused term: the actual SSL protocol was deprecated many years ago and was replaced with a protocol named TLS, or Transport Layer Security. Few internet users, however, have ever heard the term TLS, and certificates are still sold to site owners as "SSL certificates" in many cases.
+
+One of the biggest web performance myths in existence is that HTTPS is slow because all of the information transferred must be encrypted. This is false. The overhead of secure connections is so incredibly low that most site owners will never notice it.
+
+The primary bottleneck involving secure connections is the number of round trips that are necessary to establish a connection. Two full round trips are necessary as part of a "handshake" to exchange cryptographic key information before the client can even begin to make a request.
+
+One half of the solution to the number of SSL handshakes that need to be performed is to simply decrease the number of requests. This follows the same advice as handling large number of TCP connections (discussed in the previous section). The fewer connections that need to be made, the fewer times you need to pay the penalty of the handshake.
+
+Having a CDN can also help immensely. A CDN with a local point of presence (PoP) near to the user decreases the amount of time it takes to actually perform the handshake. Additionally, some CDNs or network service providers will offer SSL termination services that allow you to terminate the SSL connection to the user in a local PoP rather than in a data center far away. This means that you can take advantage of the speed gains that your assets would otherwise receive on your server.
+
+It is possible to create your own SSL termination proxy using open source software like Nginx in combination with a geographic DNS service, though the effort involved in very high. Maintenance and operation costs of such a solution are likely higher than outsourcing the effort to a third party.

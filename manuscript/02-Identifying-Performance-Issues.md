@@ -4,7 +4,7 @@ The first step to solving any web performance issue is to identify it. In many c
 
 To begin, as mentioned in the previous chapter, you must start collecting performance data about your site. If you're using Google Analytics already, this is a great first step, but you should plan to collect additional, more granular information to help find out what may need tuning.
 
-The following sections outline resources that are at your disposal that can be used in both a development and production environment identify and diagnose performance issues in the browser.
+The following sections outline resources that are at your disposal that can be used in both a development and production environment from a defensive standpoint.
 
 
 ## The Navigation Timing API
@@ -350,6 +350,15 @@ Refactoring comes in many shapes and sizes. In some cases, it is the means by wh
 Refactoring can, however, have both positive and negative performance consequences. On one hand, a refactor could improve the efficiency of a component for common cases. On the other hand, a refactor could also introduce edge cases that perform much worse than the original code.
 
 Before any refactoring work takes place anywhere in a codebase (front-end or back-end), you should ensure that there's an appropriate amount of instrumentation and reporting around those components so that issues can be identified and addressed as they arise.
+
+Regular refactoring--regardless of how minor--is another technique to increase visibility of infrequently-looked-at pieces of code. It's easy to ignore pieces of an application that are known to work, but in doing so, you lose the ability to identify potential performance issues.
+
+In my own work, I try to revisit every file I've worked on every four to six months or so. When I make my rounds, I look for the following:
+
+- Has someone else changed my code? Does the code still work as I expect it to?
+- Is the code I've written still effective?
+- Has another part of the application changed in a way that would make my code be more effective if written differently?
+- Have I learned anything since I last visited this code that could be applied to make it more effective?
 
 
 ### Premature Optimization
