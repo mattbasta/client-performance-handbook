@@ -32,7 +32,7 @@ if (perfData.secureConnectionStart) {
     sslHandshakeTime = perfData.connectEnd - perfData.secureConnectionStart;
 }
 
-alert('It took ' + ((perfData.loadEventEnd - perfData.navigationStart) / 1000) + ' seconds to load.');
+alert('Page loaded in ' + (totalLoadTime / 1000) + 's');
 ```
 
 During development, it's handy to keep a series of small scripts in bookmarklets or GitHub gists that can be pasted into the developer tools console. I keep one, for example, to output time to `DOMContentLoaded` and time to the window `load` event and refresh the page (very useful for collecting information for a benchmark).
@@ -285,4 +285,101 @@ Having this information is helpful because it allows you to identify when parts 
 
 ## Make More Graphs
 
+One of the most key aspects of identifying problems is being able to passively identify performance problems. Nobody has time to read through dozens--if not hundreds--of tables of numbers every day. Building software that can sniff out problems is equally hard. Instead, technology can be harnessed to help facilitate your understanding of your site's performance.
+
+My personal recommendation is to set up monitors where you work that cycle through a series of charts. Graph everything: load times, ready times, times required to execute JavaScript...all of it. You don't need to be watching it constantly, but keep an eye on how the lines in the graphs move. If something looks interesting, it's worthwhile to run some queries and investigate.
+
+Having charts and graphs of performance information also helps to outsource the work of identifying problems. If you work in an office with other engineers, it's not unlikely that you'll get lots of questions about what the graphs represent, or questions about why they changed in ways that they did. With more sets of eyes, it's easier to identify regressions. Not to mention, it helps draw attention to performance wins.
+
+
 ## Simplify
+
+As mentioned in the introduction, simplifying code is a very important aspects of performance improvements. Besides the technical debt that complex or poorly written code bears, complex code tends to hide performance issues and can cloud the data that you collect about your application.
+
+Consider the following snippet:
+
+```js
+var containsTruthyValue = !!(Object.keys(mapping)
+    .filter(mapping.hasOwnProperty.bind(mapping))
+    .map(function(key) {
+        return mapping[value];
+    })
+    .filter(function(x) {return !!x;})
+    .length);
+```
+
+The above piece of code is an actual snippet that I reviewed (and rejected). To someone familiar with functional programming, the concept is simple:
+
+- Find all of the members of the `mapping` object
+- Remove any element in the list of members that aren't truthy
+- Test whether the result has anything left
+
+On paper, the steps sound straightforward. What's actually going on, however, is chaotic. Four arrays are allocated and destroyed. Dozens, if not hundreds of function calls are made.
+
+An equivalent snippet of code simply would have been:
+
+```js
+var containsTruthyValue = false;
+for (var key in mapping) {
+    if (mapping.hasOwnProperty(key) && mapping[key]) {
+        containsTruthyValue = true;
+        break;
+    }
+}
+```
+Not only is this code smaller (40 bytes minified with uglify.js) and more straightforward, it's also faster. Keeping code simple and obvious is infinitely more valuable, even if it means the final product is less elegant.
+
+    Say what you mean and mean what you say
+
+Furthermore, it's the case that if code is written in a way that's non-standard or confusing, it's more difficult for a compiler (or minifier) to safely optimize it. The wins that compilers could provide that are lost to codebases that have been prematurely optimized are so great that we cannot begin to imagine them.
+
+
+### Tech Debt
+
+When I talk about tech debt, I am referring to problems with a codebase that decrease its overall quality. These are things like temporary hacks that never got removed, `TODO` comments that are months or even years old, pieces of code that should have been replaced or refactored but still serve some minor purpose.
+
+Being able to identify and track tech debt can help to track performance. In almost all cases, tech debt results in sub-optimal behavior by the application. When you find tech debt, log it. File a ticket in your bug tracking software, write it down in a wiki, mark it with an easily `grep`-able comment, etc.
+
+Over time, as you identify and log tech debt, it will become clear which components in your application need attention. Rather than individual functions and lines, you may find entire files or systems that--while perfectly functional--could be doing a better job (or can be replaced by something far simpler).
+
+
+### Refactoring
+
+Refactoring comes in many shapes and sizes. In some cases, it is the means by which tech debt is addressed. In other cases, it involves fixing the formatting of the code.
+
+Refactoring can, however, have both positive and negative performance consequences. On one hand, a refactor could improve the efficiency of a component for common cases. On the other hand, a refactor could also introduce edge cases that perform much worse than the original code.
+
+Before any refactoring work takes place anywhere in a codebase (front-end or back-end), you should ensure that there's an appropriate amount of instrumentation and reporting around those components so that issues can be identified and addressed as they arise.
+
+
+### Premature Optimization
+
+While simplifying code and eliminating tech debt is very important, it often coincides with premature optimization. Too often, engineers write "optimized" code with the intention of preventing a component from being slow without understanding the benefits that their efforts are yielding.
+
+One of my biggest pet peeves is when I see code like the following:
+
+```js
+var sum = 0;
+for (var i = 0, len = arr.length; i < len; ++i) {
+    sum += arr[i];
+}
+```
+
+Somewhere along the way, someone realized that caching the value of an array's `length` property saves some time. And in fact, caching `length` provides a 20% speedup (at the time of writing) in Google Chrome[^array_len_cached].
+
+[^array_len_cached]: Results taken from http://jsperf.com/array-length-vs-cached, tested in Chrome 35.
+
+Nobody cares. 20% of a fraction of a millisecond is still a fraction of a millisecond. The overhead from the loop will amount to--if you add all of the invocations of that code up from all of time--probably only a few seconds. Total.
+
+The following code is identical in every way, except it's smaller and easier to read:
+
+```js
+var sum = 0;
+for (var i = 0; i < arr.length; ++i) {
+    sum += arr[i];
+}
+```
+
+Given the number of `for` loops in a piece of code, it might even be the case that the amount of time saved by caching `length` is far outweighed by the amount of time spent downloading the extra code to cache the value of `length`.
+
+The lesson to be learned here is that spending time optimizing code would be better spent analyzing the application as a whole and addressing lower-hanging fruit.

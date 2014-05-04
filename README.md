@@ -32,7 +32,6 @@ better quality products to their clients and employers.
         - Tech debt
         - Refactoring
         - Premature optimization
-        - Screw it, just make things better
 3. Overview of a page’s lifecycle
     1. Connection and SSL: A metaphor for life
     2. Assets and Payload
