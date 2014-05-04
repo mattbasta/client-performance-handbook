@@ -1,1 +1,3 @@
 01-Introduction-to-Web-Performance.md
+02-Indentifying-Performance-Issues.md
+03-Overview-of-a-Pages-Lifecycle.md

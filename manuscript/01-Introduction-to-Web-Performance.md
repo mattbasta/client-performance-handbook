@@ -61,6 +61,7 @@ On a more tangible level, improved performance is often a sign of better resourc
 
 [^hiphopdecreasedservers]: See *The HipHop compiler for PHP*, presented at OOPSLA 2012
 
+
 ## Categorizing Users
 
 An often-overlooked aspect to web development is that not all users are created equal. Many variables play a role in performance, including bandwidth, latency, processing power, browser, payload (if different content is served to different users), whether the user has visited a page before, and much more. The sheer number of variables that can affect a page's performance makes grouping users by each of them independently intractable.
@@ -146,5 +147,7 @@ D
 C
 : The (fiscal) cost of the change
 
+
+Obviously, the units of each variable are subjective. Measuring difficulty, for example, might be better done in man hours for one team and sprints for another. Expected wins might be measured in dollars, engagement, or milliseconds. The dimensional analysis required to make this approach useful may not be simple and will vary greatly between organizations.
 
 A good project manager should use a similar approach to determine what areas of performance deserve the most attention. It is very hard to say no to a change that provides a seemingly substantial benefit, but prioritizing the most valuable changes over less valuable changes will ultimately provide the most effective means of addressing a broad range of performance challenges.

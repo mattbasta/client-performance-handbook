@@ -24,10 +24,10 @@ better quality products to their clients and employers.
     3. Categorizing users
     3. Prioritizing performance improvements
 2. Identifying performance issues
-    1. Browser timing api
+    1. Browser timing API
     2. Timing data inside compiled files
     3. Storing timestamps at important page events
-    4. Make more graphs than you care about
+    4. Make more graphs
     5. Simplify
         - Tech debt
         - Refactoring
