@@ -202,6 +202,7 @@ All users are going to benefit from SPDY, but different users will benefit in di
 
 SPDY is actually slower than plain-old HTTP
 : False. There is virtually no real-world evidence suggesting that SPDY is ineffective. A number of benchmarks have appeared that show SPDY to be slower across the board, though this can be attributed to a number of flaws in the benchmarks:
+
   - Testing in low-latency, high-bandwidth local connections rather than over the internet
   - Sharding SPDY connections across domains (as mentioned previously, domain sharding hurts SPDY performance)
   - Using a SPDY proxy rather than running a server that delivers content directly
