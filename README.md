@@ -39,7 +39,7 @@ better quality products to their clients and employers.
 4. Connection and SSL
     1. Overview of TCP
     2. DNS Lookups
-    3. Combining and eliminating requests
+    3. TCP Connections
     4. CDNs
     5. SPDY
 5. Assets and Payload

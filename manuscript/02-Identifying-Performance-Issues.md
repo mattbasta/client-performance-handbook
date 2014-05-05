@@ -160,8 +160,16 @@ fs.writeFile(
     'Timing.files["output.js"] = Date.now();' +
     'Timing.markers["output.js"] = [];' +
     filesToMinify.map(function(filePath) {
-        var marker = 'Timing.markers["output.js"].push({name: ' + JSON.stringify(filePath) + ', start: Date.now()});';
+        // Create a marker to be inserted into the
+        // compiled file before the included script
+        var marker = 'Timing.markers["output.js"].push({' +
+            // Save the name of the included file
+            'name: ' + JSON.stringify(filePath) + ',' +
+            // Save the time that the file started executing
+            'start: Date.now()});';
+
         var source = fs.readFileSync(filePath).toString();
+        // Return the market plus the file's source
         return marker + source;
     }).join('\n')
 );
@@ -172,23 +180,39 @@ When `output.js` (or any other JS file built in this manner) is included on the 
 
 ```js
 Timing = {
-    files: {
-        // All of your JS files will appear here
-        "output.js": 1399228214354,
-        "languages.js": 1399228215002
-    },
-    markers: {
-        // Each of the JS files compiled into the minified JS files will appear here
-        "output.js": [
-            {name: "assets/js/utils.js", start: 1399228214354},
-            {name: "assets/js/dom.js", start: 1399228214354},
-            {name: "assets/js/ajax.js", start: 1399228214355},
-            {name: "assets/js/events.js", start: 1399228214355}
-        ],
-        "languages.js": [
-            {name: "assets/lang/en-US.js", start: 1399228215002}
-        ]
-    }
+  files: {
+    // All of your JS files will appear here
+    "output.js": 1399228214354,
+    "languages.js": 1399228215002
+  },
+  markers: {
+    // Each of the included JS files will appear
+    // here with a corresponding time entry
+    "output.js": [
+      {
+        name: "assets/js/utils.js",
+        start: 1399228214354
+      },
+      {
+        name: "assets/js/dom.js",
+        start: 1399228214354
+      },
+      {
+        name: "assets/js/ajax.js",
+        start: 1399228214355
+      },
+      {
+        name: "assets/js/events.js",
+        start: 1399228214355
+      }
+    ],
+    "languages.js": [
+      {
+        name: "assets/lang/en-US.js",
+        start: 1399228215002
+      }
+    ]
+  }
 };
 ```
 
@@ -196,16 +220,20 @@ From this data, you can do some interesting things. For instance, the following 
 
 ```js
 
+// Available at http://git.io/Tyb6tw
+
 Object.keys(Timing.files).forEach(function(file) {
-    console.log(file + Array(100 - file.length).join('-'));
-    var markers = Timing.markers[file];
-    markers.forEach(function(marker, i) {
-        console.log(
-            marker.name +
-            Array(100 - marker.name.length).join(' ') +
-            (i !== markers.length - 1 ? markers[i + 1].start - marker.start : 0)
-        );
-    });
+  console.log(file + Array(100 - file.length).join('-'));
+  var markers = Timing.markers[file];
+  markers.forEach(function(marker, i) {
+    console.log(
+      marker.name +
+      Array(100 - marker.name.length).join(' ') +
+      (i !== markers.length - 1 ?
+       markers[i + 1].start - marker.start :
+       0)
+    );
+  });
 });
 
 ```
@@ -240,19 +268,24 @@ The following example shows how you might log this information. It uses PHP, tho
 <body>
 
 <script>
-// Always make sure the Timing object exists before writing to it.
+// Always make sure the Timing object exists before
+// writing to it.
 Timing = window.Timing || {};
 Timing.events = Timing.events || {};
-// Save a timestamp for the the "headFlush" event.
+// Save a timestamp for the the "headFlush"
+// event.
 Timing.events.headFlush = Date.now();
 </script>
 
 <?php
 
-// Flush the content of the page so far to allow the browser to start loading
-// the JavaScript and CSS.
+// Flush the content of the page so far to allow
+// the browser to start loading the JavaScript
+// and CSS.
 flush();
 
+// Perform some operations that are going to take
+// a while.
 require('database.php');
 DB::init();
 
@@ -268,8 +301,8 @@ Templates::render('homepage.tmpl', [
 // Save a timestamp for the "bodyFlush" event.
 Timing.events.bodyFlush = Date.now();
 </script>
-
 <?php
+
 // Flush again for the body
 flush();
 
@@ -299,11 +332,10 @@ As mentioned in the introduction, simplifying code is a very important aspects o
 Consider the following snippet:
 
 ```js
+// Please don't ever do this.
 var containsTruthyValue = !!(Object.keys(mapping)
     .filter(mapping.hasOwnProperty.bind(mapping))
-    .map(function(key) {
-        return mapping[value];
-    })
+    .map(function(key) {return mapping[value];})
     .filter(function(x) {return !!x;})
     .length);
 ```
@@ -314,24 +346,29 @@ The above piece of code is an actual snippet that I reviewed (and rejected). To 
 - Remove any element in the list of members that aren't truthy
 - Test whether the result has anything left
 
-On paper, the steps sound straightforward. What's actually going on, however, is chaotic. Four arrays are allocated and destroyed. Dozens, if not hundreds of function calls are made.
+On paper, the steps sound straightforward, and in a lazy language this would probably be a satisfactory solution. What's actually going on, however, is chaotic. Four arrays are allocated and destroyed. Dozens, if not hundreds of function calls are made. Rather than finding one positive result and short circuiting, the code performs its manipulations on every single member of the original object and then throws all that data away. What an unholy waste.
 
 An equivalent snippet of code simply would have been:
 
 ```js
 var containsTruthyValue = false;
 for (var key in mapping) {
+    // Wow, for loops aren't so bad.
     if (mapping.hasOwnProperty(key) && mapping[key]) {
         containsTruthyValue = true;
+        // I may be homely, but I'm fast as heck
         break;
     }
 }
 ```
-Not only is this code smaller (40 bytes minified with uglify.js) and more straightforward, it's also faster. Keeping code simple and obvious is infinitely more valuable, even if it means the final product is less elegant.
 
-    Say what you mean and mean what you say
+Not only is this code smaller (40 bytes less when minified with uglify.js) and more straightforward, it's also faster. Keeping code simple and obvious is infinitely more valuable, even if it means the final product is less sleek or pretty.
+
+> Say what you mean and mean what you say
 
 Furthermore, it's the case that if code is written in a way that's non-standard or confusing, it's more difficult for a compiler (or minifier) to safely optimize it. The wins that compilers could provide that are lost to codebases that have been prematurely optimized are so great that we cannot begin to imagine them.
+
+> A man in the drive-through that orders something off-menu doesn't get any extra fries.
 
 
 ### Tech Debt

@@ -31,7 +31,7 @@ There's very little you can do to make DNS lookups faster, but you can do a numb
 
 The first solution is to use a single domain name. If you don't need separate subdomains, don't use them. The more domains in your application, the more DNS lookups that will need to be performed, and removing all but one ensures that your page load time is not impacted more than once.
 
-Unfortunately, using a single domain is rarely an option for many websites. To use CDNs or take advantage of domain sharding (discussed later), it's often necessary to have--at minimum--a second subdomain.
+Unfortunately, using a single domain is rarely an option for many websites. To use CDNs or take advantage of domain sharding (both discussed later), it's often necessary to have--at minimum--a second subdomain.
 
 In this case, the second best option is to give the browser a hint about where your content is hosted before you request it. This is very easy: simply drop the following `<link>` tag on your page for each domain your site accesses:
 
@@ -54,7 +54,7 @@ static3.mysite.com
 
 At more than 100ms each, the volume of DNS lookups can quickly dominate a large part of your page's lifecycle. You can mitigate this issue by implementing SPDY on your server. Domain sharding is used to circumvent caps specified by the browser to limit the number of connections to any one host. SPDY combines an unlimited number of concurrent requests into a single connection, meaning users with modern browsers accessing sites that support SPDY will only perform a single DNS lookup. This solution obviously has all of the downsides of implementing SPDY, which are outlined in the section dedicated to SPDY.
 
-## TCP Connection
+## TCP Connections
 
 Like DNS, the actual TCP connections involved in each request are an often-overlooked component in web performance and a piece which has few remedies. TCP connections are inherently expensive: connecting and disconnecting each involve one and a half round trips. Most browsers limit the number of connections that can be made to any given host. There are a number of signals that you can look for, though, that can indicate a potential performance bottleneck.
 
@@ -100,3 +100,132 @@ One half of the solution to the number of SSL handshakes that need to be perform
 Having a CDN can also help immensely. A CDN with a local point of presence (PoP) near to the user decreases the amount of time it takes to actually perform the handshake. Additionally, some CDNs or network service providers will offer SSL termination services that allow you to terminate the SSL connection to the user in a local PoP rather than in a data center far away. This means that you can take advantage of the speed gains that your assets would otherwise receive on your server.
 
 It is possible to create your own SSL termination proxy using open source software like Nginx in combination with a geographic DNS service, though the effort involved in very high. Maintenance and operation costs of such a solution are likely higher than outsourcing the effort to a third party.
+
+
+## CDNs
+
+A CDN, or Content Delivery Networks, can do a lot to help speed up a website. Most CDNs offer a plethora of services:
+
+Local Points of Presence (PoPs)
+: Servers that are geographically close to users in a particular region. These servers allow users to connect with much lower latency than if they had been connecting over a much larger distance. Strategic positioning of PoPs allows a CDN to minimize the number of network "hops" a client needs to make to interact with the server.
+
+SSL Termination
+: By terminating SSL (or performing the SSL handshake) closer to the user, connections can be established much more quickly, allowing the client to make requests faster than they otherwise could.
+
+DoS Protection
+: Many CDNs market DoS (denial of service) attack prevention. By sitting between users and web servers, the CDN can be better prepared to accept a flood of requests from an attacker, or to block the flow of traffic from compromised users.
+
+Full-Blown Features
+: It's usually the case that CDNs are quick to implement performance-improving features and cutting-edge technology for content delivery. This includes technology like SPDY, IPV6, and low-level connection tuning.
+
+
+### How does a CDN work?
+
+Setting up a CDN is usually very simple to do. Virtually all CDNs operate as proxies that mirror the content from another site. For instance, you might set up `cdn1.example.com` to point at a CDN mirroring `www.example.com`. When `https://cdn1.example.com/asset/include.js` is requested, the CDN would fetch `https://www.example.com/asset/include.js` and cache it. All users requesting that URL from that point on would fetch the cached version of `include.js`.
+
+>A Note that changing content once it has been cached by a CDN is not always possible. To modify the content, you must access it with a different name.
+>A
+>A For example, you might reference `https://cdn1.example.com/asset/include.js?20140101` to refer to a version of the file that was updated on January 1, 2014. Every time the file changes, you would update the query string to refer to a URL for the updated version. Using hashes instead of dates or times is also common.
+
+Most CDNs accomplish this mirroring via DNS. Some CDNs, such as CloudFlare, will ask you to change the nameservers for your domain to point at their own nameservers. In doing this, they are able to automatically set the addresses for each of your hostnames to the addresses of their own PoP servers. Other CDNs, like EdgeCast, will give you hostnames to add as CNAME records in your own DNS manager.
+
+Another type of CDN, like Amazon CloudFront, allows you to upload files to some sort of storage. You are then provided with a hostname that you can point users at directly, or point a CNAME record at. Depending on your use case, this may be more or less convenient.
+
+
+### Pitfalls
+
+One of the most perplexing issues than many people encounter when evaluating a CDN is that they see *slower* responses than accessing their content directly. This is usually the case when only a small number of users are accessing a site with a CDN, especially if the users are distributed around the world.
+
+The cause is that the CDN simply hasn't seen the files that the user is requesting yet. If you request a file from a CDN and the CDN doesn't have a copy of the file, it needs to pause the request, visit your server, wait for a response, then forward it on to the user. Until all of the servers in all of the applicable data centers at your CDN have seen all of your files, you'll notice some poor response times.
+
+Another common pitfall is a CDN over-selling its service. When you use a CDN, your content is hosted on the same servers that host content for thousands of the CDN's other customers. If one of the CDN's other customers is experiencing a DoS attack, the speed of your website could be negatively impacted. Be sure to thoroughly research all of your options before you commit to any CDN.
+
+> Snake oil makes you feel great until you need to hit the commode
+
+Cost can be another pitfall with a CDN. Before choosing a CDN, model your expected costs based on your own data. Consider how much it will cost to be a customer with historical data, and also project figures accounting for future growth. Also be sure to compare this with the cost of bandwidth on your current host (if any) to account for potential savings. On some platforms, like Linode or Microsoft Azure, large amounts of bandwidth can be far more expensive than using a CDN to transfer the same content.
+
+
+### The myth of the P2P CDN
+
+A technology that took the internet by storm in recent years has been the (alleged) peer-to-peer CDN. The concept uses WebRTC: a very new web technology that allows browsers to communicate with each other directly. Content is (allegedly) transmitted from the original host or a traditional CDN to one or more clients, and those clients then distribute the content to other clients that visit the page.
+
+On paper, this idea is phenomenal. In practice, this is almost entirely useless for serving anything other than very large files, like videos or music.
+
+- You need to have multiple concurrent users visiting the same site with the same set of assets.
+- You need to deliver a rather large script to each user to allow the clients to be able to establish the P2P connection and communicate effectively. By the time such a script was sent, your page could have been mostly loaded.
+- Connecting the users to each other isn't instantaneous (or guaranteed to work 100% of the time), and that doesn't account for the time required for peers to advertise which pieces of the content they have or can provide.
+- An attacker could pretend to be another client visiting your site and simply send garbage to legitimate visitors. Even if the clients perform checksums on the data and throw out the garbage, an attacker could potentially lay waste to the performance of a site, or bring it down entirely.
+
+It's unlikely that P2P CDNs are going to become a viable technology for most websites to take advantage of for quite a long time. In testing out various P2P CDNs for myself, I discovered that most can't even make their own demos function properly due to a lack of users accessing their website.
+
+
+## SPDY
+
+SPDY is a very new and very powerful tool developed by Google for improving web performance. It functions as a substitute for HTTP at the protocol level: requests are sent in a way that's very similar to traditional HTTP, and applications running on the web server are generally not even aware that the requests they are receiving were made over SPDY. In fact, neither the Chrome nor the Firefox developer tools distinguish requests made by SPDY from requests made over normal HTTP.
+
+In general, there are virtually no downsides to using SPDY over HTTP.
+
+
+### How does it work?
+
+When a browser connects to a server and establishes a secure connection, the remote server uses a TLS extension known as *Next Protocol Negotiation* to signal to the client that it will use SPDY if the client is okay to use it. If the client can accept SPDY, the SPDY connection is established.
+
+Once the connection has been established, the client will make as many requests as it needs over the same connection. The server will then respond with each of the files multiplexed over the same connection. Each of the requests and responses compresses the headers using Gzip or DEFLATE. If the server can predict what the client is going to do next, it can preemptively send assets to the client before they have been requested.
+
+- Single connection means one SSL handshake
+- Compressed headers means far less information is sent over the wire (in both directions)
+- Low overhead for requests means minified files don't need to be concatenated: they can be requested individually, improving caching and decreasing waste from downloading unnecessary files
+- No need for domain sharding (in fact, domain sharding hurts SPDY)
+- SPDY connections stay open, preventing future requests from needing to open a new socket
+
+Results posted in Google's SPDY whitepaper[^spdy_whitepaper] show speedups of 25% to 60%, though in practice improvements of 5% to 15% can be expected[^spdy_improvement].
+
+[^spdy_whitepaper]: http://www.chromium.org/spdy/spdy-whitepaper
+[^spdy_improvement]: From *A comparison of SPDY and HTTP performance* by Microsoft Research, and my own experience
+
+
+### Good god that's fast
+
+You're not kidding.
+
+
+### Which users benefit
+
+All users are going to benefit from SPDY, but different users will benefit in different ways.
+
+- **10th percentile users:** Users that already have very fast connections will see minor improvements in areas where large numbers of requests are being made. Improvements will also be seen when making subsequent requests, as a new connection and handshake don't need to be made.
+- **50th percentile users:** These users will see a substantial benefit from the decreased need to make many connections to request many assets. As soon as the SPDY connection opens, the browser can make unlimited requests, not just one.
+- **90th percentile users:** These users will see all of the benefits seen by the other users. Additionally, the 90th percentile will benefit from header compression. Headers are largely redundant between requests, and eliminating duplicate information shaves off a non-trivial number of TCP round trips.
+
+
+### Downsides and Myths
+
+SPDY is actually slower than plain-old HTTP
+: False. There is virtually no real-world evidence suggesting that SPDY is ineffective. A number of benchmarks have appeared that show SPDY to be slower across the board, though this can be attributed to a number of flaws in the benchmarks:
+  - Testing in low-latency, high-bandwidth local connections rather than over the internet
+  - Sharding SPDY connections across domains (as mentioned previously, domain sharding hurts SPDY performance)
+  - Using a SPDY proxy rather than running a server that delivers content directly
+  - Comparing benchmark data from a SPDY mirror of a website to the website itself rather than a HTTP(S) mirror of the website
+
+  It *is* possible for non-SPDY requests to load faster when executed in parallel than the same requests made over a SPDY connection, but this is only possible on very fast network connections with low latency.
+
+SPDY doesn't work on sites that pull in third-party content
+: Partly false. SPDY doesn't work across domains unless the domains share the same IP address. Third party content doesn't (usually) live on the same address as first party content, meaning that SPDY connections are simply not used for third party content (unless of course the third party host uses SPDY).
+
+SPDY is hard to configure
+: This is indeed something of a downside. For many developers, even setting up HTTPS properly and making sure it stays properly configured and up-to-date can be a real challenge. Implementing SPDY alongside that configuration doesn't make the challenge any easier.
+
+SPDY isn't supported in IE
+: This is essentially true. Only version 3 of SPDY is supported by Internet Explorer, and even then only when running on Windows 8. This is because only Windows 8 supports the TLS extension (NPN) needed to signal that the client can use SPDY.
+
+
+### How to set it up
+
+TODO
+
+
+### QUIC
+
+QUIC is another project by Google to eventually become the successor to SPDY. It is currently in a highly experimental state. Unlike SPDY, QUIC uses UDP rather than TCP, enabling content to be received in a truly asynchronous manner and eliminating blockages caused by a single slow packet. QUIC also seeks to decrease the number of round trips made to and from the server, and eliminate most--if not all--of the time required to establish a connection.
+
+QUIC is currently implemented in Chrome and Opera and can be enabled by visiting `chrome://flags` and `opera://flags` respectively. Most Google properties support QUIC, and a reference implementation has been published in the Chromium source code repository.
