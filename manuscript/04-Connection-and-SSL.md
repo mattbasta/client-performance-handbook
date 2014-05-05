@@ -63,7 +63,7 @@ Like DNS, the actual TCP connections involved in each request are an often-overl
 
 Until recently, browsers limited the number of HTTP connections to any single host to 2. Most modern browsers have increased that limit to at least 6[^ie_connection_limit]. This number is usually sufficient for relatively small pages with only a small number of assets, but it can be disastrous for content-heavy pages that make dozens of requests.
 
-[^ie_connection_limit]: Internet Explorer 10 and up and Opera 10 (though not Opera 11 or 12) have a limit of eight concurrent connections.
+[^ie_connection_limit]: Internet Explorer 10 and up and Opera 10 have a limit of eight concurrent connections rather than six.
 
 ![TCP connections made to a single host](images/tcp_limit_waterfall.png)
 
@@ -72,6 +72,10 @@ The above is a screenshot from the Chrome developer tools showing a series of re
 The first way to remedy this is to make sure that if you can, SPDY is implemented on the server. SPDY allows an unlimited number of concurrent connections, and the server can decide how it wants to respond to them depending on load.
 
 The second solution to this is to simply decrease the number of requests. Even with SPDY, the more requests that are made, the longer it takes to load the page for the simple reason that there's more things to do. If multiple files can be combined with no impact on the user, that is a worthwhile change to make. Later chapters discuss in more detail how to effectively combine assets.
+
+Lastly, you can use a technique known as domain sharding. Domain sharding (as described previously with regard to DNS lookups) involves creating several DNS records for the same host. For instance, `static1.example.com`, `static2.example.com`, etc. might all point at the same IP address. In the document, the URLs for each asset are changed to point at a different subdomain. In doing this, the browser recognizes each hostname as its own server and applies the six connection cap to each hostname. If you use `static1` through `static4`, you would expect to be able to six connections to each host concurrently, allowing up to 24 simultaneous connections.
+
+As mentioned previously, domain sharding comes at a cost: DNS lookups. Despite each hostname pointing at the same IP address, the browser does not know that until after it has performed a DNS lookup.
 
 
 ### High latency
