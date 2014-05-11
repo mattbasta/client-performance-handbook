@@ -10,6 +10,7 @@ There are also techniques that can be used to minimize the amount of content sen
 ## HTTP
 
 C> HTTP: You're Stuck With It
+C>
 C> Welcome to the web!
 
 HTTP is a blessing and a curse: it's the protocol that makes the web possible. A client makes a request for a piece of content with a given identifier and a set of information describing the client, and a server responds with some metadata about the resource and the content of the resource. On paper, it sounds great. In practice, HTTP is naïve and inefficient, and does little to help out with improving performance.
@@ -25,7 +26,7 @@ To alleviate this, take great care to minimize the number of custom headers sent
 
 Consider the following HTTP headers from Wikipedia, when retrieved using Google Chrome:
 
-```
+```raw
 HTTP/1.1 200 OK
 Server: Apache
 X-Content-Type-Options: nosniff
@@ -50,10 +51,10 @@ Set-Cookie: GeoIP=::::v6; Path=/; Domain=.wikipedia.org
 All of this data is sent to the client on every request. Let's take a look at each individual header:
 
 Server
-: This header is entirely unnecessary. It simply contains the name of the back-end server software.
+: This header is entirely unnecessary.
 
 X-Content-Type-Options
-: This header is only useful for sites hosting user-uploaded content, and is only used by Internet Explorer (and potentially Chrome, though this is unclear).
+: This header is used in IE and Chrome as a security feature.
 
 Content-language
 : This could instead be specified in the HTML using a `lang="en"` attribute.
@@ -62,25 +63,25 @@ X-UA-Compatible
 : Only Internet Explorer uses this header, and the value can be set in the HTML via a `<meta>` tag.
 
 Vary
-: This header is used for caching, though the configuration used here is curious at best.
+: This header is used for caching, though the example here is likely to prevent caching proxies from serving Gzipped content to clients that don't support it and to allow separate caches per user. Virtually all clients support Gzip, so that part is probably unnecessary.
 
 Last-Modified
 : This header is also used for caching.
 
 Content-Encoding
-: Setting this header tells the client that the content is Gzip-encoded. It is highly beneficial.
+: This header turns on Gzip. It is very beneficial.
 
 Content-Type
 : The content type is a normal header to send, though the encoding does not need to be sent as part of the header. It can instead be sent as part of a `<meta>` tag, or detected by the client (a process that is surprisingly accurate).
 
 X-Varnish
-: The data here is internal only and is not used by the client. This could be sent conditionally, or removed entirely.
+: This is internal data that is not used by the client. It can be eliminated.
 
 Via
-: This header is largely obsolete, and in this instance, entirely unnecessary.
+: This header is largely unneeded, and is unnecessary in the absence of proxy servers.
 
 Content-Length
-: The length is a very common and benign header. Including it is not a problem.
+: This header defines how much content was returned, and is not harmful.
 
 Accept-Ranges
 : This broadcasts the server's ability to return partial content. This is useful for video files, where the client may seek to a particular timestamp in the video.
@@ -107,7 +108,7 @@ Set-Cookie
 
 If the unnecessary headers were removed (or moved into the body) where possible, the response would look like this:
 
-```
+```raw
 HTTP/1.1 200 OK
 X-Content-Type-Options: nosniff
 Vary: Accept-Encoding,Cookie
@@ -122,8 +123,117 @@ Cache-Control: private, s-maxage=0, max-age=0, must-revalidate
 
 The result is less than half the size, and means the client can begin receiving actual page content sooner.
 
+Regarding cookie data, this information should be minimized as much as possible. Cookie information is sent on every single request to the host that it is defined for, meaning that a bloated cookie can cause a very significant amount of overhead if the request (or response) headers get split into multiple TCP packets.
+
+On the client side, if there is more than a few dozen bytes worth of information that needs to be persisted, use a JavaScript interface like `localStorage` to store the information. If the information needs to be passed to the server, send it as the body of a POST request.
+
+
+### Unneeded Response Headers
+
+The following headers are obsolete and should no longer be used:
+
+- **Pragma**: This header was made obsolete by HTTP/1.1. Use `Cache-Control: no-cache` instead.
+- **Connection: keep-alive**: HTTP/1.1 connections are persistent by default. The `Connection` header should only be used to send `Connection: close`, though it's unclear why that behavior would be desirable.
+- **Status**: This header is redundant and should not be used.
+
+The following headers provide information which is not used by the client and should be removed:
+
+- **Server**: While this header can be used for statistical purposes by researchers, it is unused in virtually all other circumstances.
+- **X-Cache**: Set by some caching proxies.
+- **X-Backend-Server**: Used as debuging information for some load balancers.
+
+The following headers can be placed within HTML instead:
+
+- Content-Language
+- Content-Type (charset information)
+- X-UA-Compatible
+
 
 ### Caching Correctly
+
+Most site owners have a very hard time getting caching to work properly. If you've ever used YSlow or the Audit tab of the Chrome developer tools, you'll find that it often complains about poor `Cache-Control` headers. This is easy to remedy, however, if you know how your content is going to be accessed.
+
+There are some common terms that you should know about:
+
+Last Modified Date
+: This is a HTTP date indicating the timestamp that the resource was last modified. If this value is available, it should be specified wherever possible. At worst, it goes unused. At best, the value allows the server to respond to a client with a `304 Not Modified` when it otherwise would have responded with a `200 OK`.
+
+ETag
+: This is a unique identifier representing a particular version of the resource. It can be, for instance, the MD5 hash of the content. When the content changes, the ETag should update.
+
+Expires
+: An HTTP date indicating the timestamp upon which the client should not keep a cached copy beyond.
+
+Age
+: This is the equivalent of the "created by" time for a piece of content. It is not useful for anything other than caching proxies, since an origin server can always calculate when a piece of content is good until (or it just created the content and the "age" is zero).
+
+Date
+: The `Date` header is simply the HTTP date of the current timestamp.
+
+max-age
+: This is a flag that can be set for `Cache-Control`. A `max-age=0` will require the client to check with the server each time the content is requested to see if it changed (the same behavior as `must-revalidate`). For content that should be cached for a long time, use `max-age=86400` to cache it for one day. If you change your content's URL every time you create a new version, you can specify up to `max-age=31536000` (one year).
+
+
+All HTTP dates are formatted per RFC 1123.
+
+
+#### I want my content to never be cached.
+
+If you want you content to never be stored by the browser, simply send `Cache-Control: no-cache`. This disables caching in all browsers[^ie6_nocache].
+
+[^ie6_nocache]: IE6 will sometimes ignore this and cache anyway. If you care about IE6, use `Cache-Control: no-cache, no-store`.
+
+
+#### I want my content to be cached, but for the client to check back.
+
+In this case, the client will cache the content, but will check to see if it changed every time the content is requested. If the content hasn't changed, the server will respond with a `304 Not Modified` and an empty body, saving time.
+
+The `must-revalidate` directive does the trick here. It tells the client that every time, it must check back to see if the resource has changed.
+
+```raw
+Cache-Control: max-age=0, must-revalidate
+ETag: <etag>
+Last-Modified: <last-modified-date>
+```
+
+
+#### I want my content to be cached until a certain date.
+
+In this case, you have a piece of content with a known expiration date sometime in the future. You don't want the client to check if the content is valid until that expiration date has passed.
+
+```raw
+Cache-Control: public
+Date: <now>
+Expires: <expiration-date>
+```
+
+
+#### I want my content to expire exactly N seconds after it is requested.
+
+This can obviously be accomplished with the `Expires` header, but that means that you need to compute the `Expires` header on the fly. If you're hard-coding the value, it's simpler to say:
+
+```raw
+Cache-Control: max-age=300
+Date: <now>
+```
+
+The client will never keep the content for longer than 300 seconds from the start of the response.
+
+
+#### My content will change when the cookie changes.
+
+For this, we want to use the `Vary` header. This tells the client that if a request is made where one of the specified request headers is different, don't use the cached copy. So for instance, let's assume the client makes a request with `Cookie: mycookie` and gets a response containing:
+
+```raw
+Cache-Control: public
+Vary: Cookie
+```
+
+The client will keep the response in the cache. If the client were to immediately request the content again, it would hit the cache.
+
+Now let's say another response contains the header `Set-Cookie: anothercookie`, and the client then tries to make the original request again. Now, the `Cookie` header does not match, and the cache is not hit.
+
+
 ### CORS
 ### Gzip and Compression
 ## Images
