@@ -213,11 +213,11 @@ Expires: <expiration-date>
 This can obviously be accomplished with the `Expires` header, but that means that you need to compute the `Expires` header on the fly. If you're hard-coding the value, it's simpler to say:
 
 ```raw
-Cache-Control: max-age=300
+Cache-Control: public, max-age=N
 Date: <now>
 ```
 
-The client will never keep the content for longer than 300 seconds from the start of the response.
+If you wanted the content to expire after 300 seconds, you would replace `N` with `300`.
 
 
 #### My content will change when the cookie changes.
@@ -235,7 +235,106 @@ Now let's say another response contains the header `Set-Cookie: anothercookie`, 
 
 
 ### CORS
-### Gzip and Compression
+
+Some sites take advantage of a technology known as CORS to make cross-domain requests. For instance, a page on `x.example.com` might want to make an AJAX request to `y.example.com`. Normally, this is not allowed and the `XMLHttpRequest` object would fire an `error` event. CORS allows the remote hostname to specify a set of HTTP headers that instruct the browser to allow the request to take place.
+
+The downside to CORS is that for any non-idempotent request (i.e.: any HTTP method other than HEAD, GET, or OPTIONS), the browser makes a second request known as a "CORS pre-flight". The pre-flight request is an OPTIONS request to the URL that was requested. The browser expects to receive a response containing headers that look like this:
+
+```raw
+Access-Control-Allow-Methods: GET,POST,OPTIONS
+Access-Control-Allow-Origin: x.example.com
+```
+
+When the browser sees this response, it knows that it is allowed to perform the request and submits the what the `XMLHttpRequest` object would otherwise have submitted had it not been pointed at a remote domain.
+
+This pre-flight procedure blocks the "actual" HTTP request from taking place, meaning that for every one AJAX request made, two network requests are made. On high-latency connections, this can cause a significant amount of sluggishness for sensitive network requests.
+
+There are a number of solutions: the first is to simply not make the request from a remote domain. If possible, put the endpoint that you are accessing on the same hostname. This cannot always be done, such as when the remote hostname is managed by a third party.
+
+The second solution is to use an iframe proxy. In this approach, requests are routed through an iframe using `postMessage` (checking origins, of course) so that the HTTP request is made from the destination origin. This, of course, requires that the remote host can host such an HTML file and that it does not specify an `X-Frame-Options` header that blocks framing.
+
+![Routing the request through an iframe](images/cors_iframe_proxy.png)
+
+A third approach is to use the the `Access-Control-Max-Age` header, which specifies how long the browser should cache the result of the pre-flight request for. The header should look something like this:
+
+```raw
+Access-Control-Max-Age: 86400
+```
+
+Unfortunately, `Access-Control-Max-Age` is not supported in Firefox at the time of writing, and support in Chrome seems to set a maximum value of 600 (ten minutes)[^chrome_cors_bug]. Internet Explorer support is unknown.
+
+[^chrome_cors_bug]: http://crbug.com/131368
+
+A fourth option is to use JSON-P. This involves injecting a `<script>` tag into the page, which--when loaded--makes a function call to a callback method to pass results. This approach works well, though JSON-P is not always available. Additionally, making JSON-P requests to a third party introduces security issues.
+
+If a pre-flight request must take place, SPDY can be implemented on the remote host to help minimize the overhead of creating a separate connection for the pre-flight.
+
+
+## Gzip and Compression
+
+When making a HTTP request, the client will send an `Accept-Encoding` header containing a list of compression formats that it supports. In virtually all browsers, this looks something like `Accept-Encoding: gzip,deflate`.
+
+All browsers released after 2000 support Gzip. Gzip is based on DEFLATE, and support for it goes back all the way to Internet Explorer 5.5. Partly out of lack of usage and partly out of a lack of standardized implementation, browsers are beginning to drop DEFLATE support. It is not advisable to use DEFLATE for any reason, as it will almost certainly cause issues.
+
+The strength of Gzip is its ability to combine repeated strings. For content like HTML or CSS, this is very good because there is usually a lot of repetition. Other content may not compress quite as well. A file containing uniformly random noise, for instance, might even get larger.
+
+Some file formats are already compressed. PNGs, WebP, video and audio, ZIP archives, and Office files are just some of the formats that will not benefit at all from additional compression. In fact, the CPU resources required to re-compress the content will likely outweigh potential benefits, if any.
+
+The "gzippability" of a file can be improved slightly by making its contents more repetitive. For instance, consider the following CSS:
+
+```css
+.button.ready, button.ready {
+    color: red;
+    border-radius: 5px;
+    height: 10px;
+}
+button.disabled, .button.disabled {
+    border-radius: 15px;
+    height: 15px;
+    color: red;
+}
+```
+
+In this sample, there's two innocuous-looking declarations. Both are simple enough, but only very small strings are repeated. This snippet, if rewritten could provide a bit of extra benefit:
+
+```css
+.button.ready, button.ready {
+    border-radius: 5px;
+    color: red;
+    height: 10px;
+}
+.button.disabled, button.disabled {
+    border-radius: 15px;
+    color: red;
+    height: 15px;
+}
+```
+
+By alphabetizing declarations and ordering selectors, the Gzipped size of the snippet drops from 128 bytes to 123. Five bytes of savings isn't much, but this number increases with the size of the file as there are more opportunities for repetition to be decreased. For sizable files, simply performing safe sort operations can decrease file size by up to 5%.
+
+Gzip significantly decreases in efficiency for files under 1KB. Many files at this size will fit into a single TCP packet anyway, or are even outweighed by their response headers. Compressing them can end up being a waste of CPU resources on the server. As with the example above, a savings of only four bytes may not be worth the trouble.
+
+
+### Alternative Compression
+
+While Gzip may be available as a powerful tool that works good in general, better compression can be achieved with purpose-built compression algorithms that are decompressed in JavaScript. For example, consider smaz[^smaz], an algorithm for compressing small strings. Such an algorithm can have a huge impact on files containing lots of small strings, like localization packages. If all of the strings only contain small amounts of repetition, Gzip will compress the file quite poorly, while an algorithm like smaz will provide very impressive compression (up to 50% in some cases). At least two JS ports of smaz currently exist.
+
+[^smaz]: https://github.com/antirez/smaz
+
+In other circumstances, a different approach may be taken. For large 3D games compiled with Emscripten, there may be hundreds of megabytes, if not gigabytes of assets that need to be downloaded. These assets are usually bundled into a single resource pack to save bandwidth and processed and stored into something like IndexedDB. Gzip may provide very good compression in this case, but it may also have a very high CPU cost. Having the resources decoded sooner may be more valuable than decreasing the load time of the large resource bundle, making an algorithm like lz4[^lz4] or Snappy[^snappy] more desirable.
+
+[^lz4]: https://code.google.com/p/lz4/
+
+[^snappy]: https://code.google.com/p/snappy/
+
+
+### SDCH
+
+Chrome recently added SDCH to its `Accept-Encoding` list. SDCH--short for Shared Dictionary Compression over HTTP--is a mechanism for compression across multiple files. This is accomplished using a "shared dictionary"--sort of like a big listing of all commonly repeated strings of text across all files. Instead of each file containing a mapping of repeated strings like in Gzip, the central dictionary is used.
+
+SDCH is currently only supported in Chrome, though Firefox support may be forthcoming once some kinks are worked out. Very few websites actually use SDCH compression, unfortunately, and it appears Google has put the project on ice, perhaps because of lack of browser buy-in.
+
+
 ## Images
 ### Use the right encoding for the job
 ### Responsive images and performance
