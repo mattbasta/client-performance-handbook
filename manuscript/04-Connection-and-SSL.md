@@ -460,7 +460,7 @@ apt-get install build-essential libssl-dev libpcre3 libpcre3-dev
 
 Next, download and install Nginx. At the time of writing, the latest stable version of Nginx is 1.6.0. You may wish to visit http://nginx.org to find the most current stable version.
 
-W> Warning!
+W> #### Warning!
 W>
 W> If you have Nginx already installed on your server, following these instructions will remove it and may not preserve your configuration. This is because (at the time of writing) no popular software repositories have versions of Nginx configured to run SPDY. If you follow these instructions, be sure to back up your `nginx.conf` and any other custom configuration files you might have.
 

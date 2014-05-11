@@ -45,7 +45,7 @@ better quality products to their clients and employers.
     3. Images
     4. Prefetching and Prerendering
     5. Minification
-        1. HTML/XML
+        1. Markup
             - SVG
         2. CSS
         3. JS
