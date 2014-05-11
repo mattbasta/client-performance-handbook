@@ -77,6 +77,8 @@ Lastly, you can use a technique known as domain sharding. Domain sharding (as de
 
 As mentioned previously, domain sharding comes at a cost: DNS lookups. Despite each hostname pointing at the same IP address, the browser does not know that until after it has performed a DNS lookup.
 
+Previously, a `Connection: Keep-Alive` header could be sent to any client that sent the header as part of the HTTP request headers, allowing the client to re-use connections. Virtually every browser in existence today supports HTTP 1.1, though, where `Keep-Alive` is the default behavior.
+
 
 ### High latency
 
@@ -168,7 +170,7 @@ If you're using Apache, first make sure that mod_ssl is installed. You can do th
 sudo a2enmod ssl
 ```
 
-Next, update your site's VirtualHost to look something like the following:
+Next, update your site's `VirtualHost` to look something like the following:
 
 ```apache
 # This loads the mod_ssl module
@@ -378,6 +380,8 @@ On paper, this idea is phenomenal. In practice, this is almost entirely useless 
 - You need to deliver a rather large script to each user to allow the clients to be able to establish the P2P connection and communicate effectively. By the time such a script was sent, your page could have been mostly loaded.
 - Connecting the users to each other isn't instantaneous (or guaranteed to work 100% of the time), and that doesn't account for the time required for peers to advertise which pieces of the content they have or can provide.
 - An attacker could pretend to be another client visiting your site and simply send garbage to legitimate visitors. Even if the clients perform checksums on the data and throw out the garbage, an attacker could potentially lay waste to the performance of a site, or bring it down entirely.
+- Users often have slow upload speeds.
+- Users on mobile connections suffer significantly: downloads become fragmented over multiple connections which has a significant penalty, and mobile users that are tasked--perhaps erroneously--with uploading waste significant bandwidth.
 
 It's unlikely that P2P CDNs are going to become a viable technology for most websites to take advantage of for quite a long time. In testing out various P2P CDNs for myself, I discovered that most can't even make their own demos function properly due to a lack of users accessing their website.
 
@@ -456,9 +460,9 @@ apt-get install build-essential libssl-dev libpcre3 libpcre3-dev
 
 Next, download and install Nginx. At the time of writing, the latest stable version of Nginx is 1.6.0. You may wish to visit http://nginx.org to find the most current stable version.
 
->W Warning!
->W
->W If you have Nginx already installed on your server, following these instructions will remove it and may not preserve your configuration. This is because (at the time of writing) no popular software repositories have versions of Nginx configured to run SPDY. If you follow these instructions, be sure to back up your `nginx.conf` and any other custom configuration files you might have.
+W> Warning!
+W>
+W> If you have Nginx already installed on your server, following these instructions will remove it and may not preserve your configuration. This is because (at the time of writing) no popular software repositories have versions of Nginx configured to run SPDY. If you follow these instructions, be sure to back up your `nginx.conf` and any other custom configuration files you might have.
 
 
 ```bash
@@ -495,6 +499,12 @@ with the following:
 listen          443 ssl spdy;  # Add SPDY
 server_name     example.com;
 spdy_headers_comp   5;  # Turn on SPDY header compression
+```
+
+Finally, restart Nginx with
+
+```bash
+/usr/local/nginx/sbin/nginx -s reload
 ```
 
 That's it!

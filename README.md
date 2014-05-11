@@ -33,9 +33,6 @@ better quality products to their clients and employers.
         - Refactoring
         - Premature optimization
 3. Overview of a page’s lifecycle
-    1. Connection and SSL: A metaphor for life
-    2. Assets and Payload
-    3. JavaScript
 4. Connection and SSL
     1. Overview of TCP
     2. DNS Lookups
