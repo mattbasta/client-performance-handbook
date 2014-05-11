@@ -373,6 +373,12 @@ WebP
 
 [^firefox_webp]: Though WebP is only officially supported in Chrome, Firefox does include a WebP decoder, as it is built into the libwebm library that Firefox uses to decode WebM files. A lack of support is purely political. See https://bugzil.la/856375
 
+Choosing the appropriate image format can sometimes be tricky. The flow chart below should make it easier to choose which format to use.
+
+![Image formats and their properties](images/image_format_choices.png)
+
+Note that the rules above are not hard and fast. Sometimes, it may be more efficient to encode an image as PNG instead of JPEG if the image is sufficiently small, or if the number of colors in the image is lower than 256. Experiment to see which format provides the best file size for your needs.
+
 
 ### Use the right encoding for the job
 ### Responsive images and performance
