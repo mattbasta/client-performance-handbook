@@ -169,7 +169,7 @@ fs.writeFile(
             'start: Date.now()});';
 
         var source = fs.readFileSync(filePath).toString();
-        // Return the market plus the file's source
+        // Return the marker plus the file's source
         return marker + source;
     }).join('\n')
 );
