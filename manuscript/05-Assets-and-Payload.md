@@ -140,7 +140,7 @@ The following headers provide information which is not used by the client and sh
 
 - **Server**: While this header can be used for statistical purposes by researchers, it is unused in virtually all other circumstances.
 - **X-Cache**: Set by some caching proxies.
-- **X-Backend-Server**: Used as debuging information for some load balancers.
+- **X-Backend-Server**: Used as debugging information for some load balancers.
 
 The following headers can be placed within HTML instead:
 
