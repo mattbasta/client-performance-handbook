@@ -87,7 +87,8 @@ better quality products to their clients and employers.
         - Costs
 7. Conclusion
     1. Proverbs
-    2. Thanks, credits
+    2. Notable tickets
+    3. Thanks, credits
 
 
 ## Contributing
