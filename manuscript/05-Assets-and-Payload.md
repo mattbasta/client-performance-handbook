@@ -517,12 +517,63 @@ Keeping the render performance of your SVGs within an acceptable range unfortuna
 
 Most SVG features should be avoided for accessory features of pages. For instance, avoid using gradients, animations, filter effects, and masking in SVG images that are used as part of the UI for a site rather than the content. This helps to avoid introducing computationally expensive render operations to each of your the pages on your site.
 
+It is also worth noting that SVG has only been supported by Internet Explorer since version 9, and even then only minimally. Critical page elements should not be represented as SVGs if you require IE8 support. You can, however, add SVG support on the fly very simply:
+
+```css
+.ui-element {
+  background-image: url(/images/raster-version.png);
+}
+
+@supports (clip-path: url(#1)) {
+  .ui-element {
+    background-image: url(/images/vector-version.svg);
+  }
+}
+```
+
+Only browsers that support the `clip-path`[^clip_path_note] CSS declaration (and the CSS `@supports` block) will use the SVG version of the image. At the time of writing, this is Firefox and Chrome, but IE12 will almost surely support this.
+
+[^clip_path_note]: `clip-path` is supported by all browsers that have basic SVG support.
+
 
 ### Spriting
 
 
 
 ### Post-loading Images
+
+In many cases, images on a page are not necessary to make the page interactive to the user. In these cases, blocking page load may be harmful: loading indicators may be displayed to the user, JavaScript may be blocked, or other assets may be delayed while the images download (possibly due to the number of concurrent HTTP connections).
+
+This is a simple technique for requesting images only after a page has loaded:
+
+```html
+<div class="postload-image" data-src="/images/my-great-image.jpg" title="My great image">
+  <noscript>
+    <img src="/images/my-great-image.jpg" alt="My great image">
+  </noscript>
+</div>
+```
+
+```js
+window.addEventListener('load', function() {
+    // This `setTimeout` prevents us from blocking the end of the load event
+    // in some browsers.
+    setTimeout(function() {
+        // Get a list of all of the postloaded images on the page
+        var postloadedImages = document.querySelectorAll('.postload-image');
+        var img;
+        for (var i = 0; i < postloadedImages.length; i++) {
+            img = postloadedImages[i];
+            // Set the background of each image to its URL
+            img.style.backgroundImage = 'url(' + img.getAttribute('data-src') + ')';
+        }
+    }, 0);
+});
+```
+
+Adding support for pre-defined height and width of the images is left as an exercise to the reader.
+
+
 ### Spacer GIFs: Not even once
 ### You don't need that image
 
