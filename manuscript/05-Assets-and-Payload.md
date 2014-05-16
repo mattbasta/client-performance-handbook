@@ -492,13 +492,24 @@ As far as quality is concerned, a quality setting of "High" (or about 60% on a 0
 The only vector graphics format that works natively in all browsers is SVG. SVGs are generally relatively small, and can be very compressed well in some cases. Unfortunately, visually complex images that include irregular shapes can bloat the size of the SVG. For instance, consider the following path:
 
 ```xml
-<path d="M5.9482467,13.4977018 L-2.59854728,6.47190027 C-3.38658022,5.83462046 -4.65285911,5.84398612 -5.42686033,6.49281906 C-6.20086155,7.141652 -6.1894866,8.18425239 -5.40145365,8.8215322 L4.55314211,16.8717831 L5.94824679,18 L7.34955712,16.8770089 L17.3949616,8.82675797 C18.1864999,8.19242996 18.2036227,7.14988283 17.4332066,6.49816377 C16.6627904,5.84644472 15.3965762,5.83234649 14.605038,6.4666745 L5.9482467,13.4977018 Z M5.9482467,13.4977018" id="Path 5" fill="#C7C7C7" transform="translate(6.000000, 12.000000) rotate(-270.000000) translate(-6.000000, -12.000000)"></path>
+<path d="M5.9482467,13.4977018 L-2.59854728,6.47190027 C-3.38658022,5.83462046
+-4.65285911,5.84398612 -5.42686033,6.49281906 C-6.20086155,7.141652
+-6.1894866,8.18425239 -5.40145365,8.8215322 L4.55314211,16.8717831
+L5.94824679,18 L7.34955712,16.8770089 L17.3949616,8.82675797
+C18.1864999,8.19242996 18.2036227,7.14988283 17.4332066,6.49816377
+C16.6627904,5.84644472 15.3965762,5.83234649 14.605038,6.4666745
+L5.9482467,13.4977018 Z M5.9482467,13.4977018" id="Path 5" fill="#C7C7C7"
+transform="translate(6.000000, 12.000000) rotate(-270.000000) translate(-6.000000, -12.000000)"></path>
 ```
 
 Though this is a simple shape, it can't be described using nice, round numbers. Shaving decimal places from the numbers in an SVG can help to decrease its size significantly:
 
 ```xml
-<path d="M5.948,13.497 L-2.598,6.471 C-3.386,5.834 -4.652,5.843 -5.426,6.492 C-6.200,7.141 -6.189,8.184 -5.401,8.821 L4.553,16.871 L5.948,18 L7.349,16.877 L17.394,8.826 C18.186,8.192 18.203,7.149 17.433,6.498 C16.662,5.846 15.396,5.832 14.605,6.466 L5.948,13.497 Z M5.948,13.497" fill="#C7C7C7" transform="translate(6, 12) rotate(-270) translate(-6, -12)"></path>
+<path d="M5.948,13.497 L-2.598,6.471 C-3.386,5.834 -4.652,5.843 -5.426,6.492
+C-6.200,7.141 -6.189,8.184 -5.401,8.821 L4.553,16.871 L5.948,18 L7.349,16.877
+L17.394,8.826 C18.186,8.192 18.203,7.149 17.433,6.498 C16.662,5.846 15.396,5.832
+14.605,6.466 L5.948,13.497 Z M5.948,13.497" fill="#C7C7C7"
+transform="translate(6, 12) rotate(-270) translate(-6, -12)"></path>
 ```
 
 When gzipped, the second version is over 100 bytes smaller.
@@ -531,7 +542,7 @@ It is also worth noting that SVG has only been supported by Internet Explorer si
 }
 ```
 
-Only browsers that support the `clip-path`[^clip_path_note] CSS declaration (and the CSS `@supports` block) will use the SVG version of the image. At the time of writing, this is Firefox and Chrome, but IE12 will almost surely support this.
+Only browsers that support the `clip-path`[^clip_path_note] CSS declaration (and the CSS `@supports` block) will use the SVG version of the image. At the time of writing, this is Firefox and Chrome, but IE12 will almost surely support this. Unfortunately, Safari does not--perhaps ironically--support `@supports`, meaning desktop Safari and iOS users will not receive SVG images, either.
 
 [^clip_path_note]: `clip-path` is supported by all browsers that have basic SVG support.
 
@@ -554,6 +565,8 @@ This is a simple technique for requesting images only after a page has loaded:
 </div>
 ```
 
+The following JavaScript should be included:
+
 ```js
 window.addEventListener('load', function() {
     // This `setTimeout` prevents us from blocking the end of the load event
@@ -562,10 +575,12 @@ window.addEventListener('load', function() {
         // Get a list of all of the postloaded images on the page
         var postloadedImages = document.querySelectorAll('.postload-image');
         var img;
+        var imgSrc;
         for (var i = 0; i < postloadedImages.length; i++) {
             img = postloadedImages[i];
+            imgSrc = img.getAttribute('data-src');
             // Set the background of each image to its URL
-            img.style.backgroundImage = 'url(' + img.getAttribute('data-src') + ')';
+            img.style.backgroundImage = 'url(' + imgSrc + ')';
         }
     }, 0);
 });
@@ -575,6 +590,14 @@ Adding support for pre-defined height and width of the images is left as an exer
 
 
 ### Spacer GIFs: Not even once
+
+Many years ago, when CSS was young and tables were an accepted way of laying out pages, it was common practice to use spacer GIFs to add vertical space between elements and horizontal space between text.
+
+Today, spacer GIFs are completely and utterly unnecessary. CSS--even in its most basic form--makes the original usefulness of spacer GIFs redundant at best. These GIFs require time to decode and position, as well as the time required to make the connection to download them.
+
+I've seen some folks attempt to use transparent spacer GIFs as data URIs in stylesheets as a way of placating the rendering bugs of old versions of IE. This is shameful and should never be done.
+
+
 ### You don't need that image
 
 ## Prefetching and Prerendering
