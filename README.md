@@ -44,20 +44,20 @@ better quality products to their clients and employers.
     2. Gzip and Compression
     3. Images
     4. Fetching Resources In Advance
-    5. Minification
-        1. Markup
-            - SVG
-        2. CSS
-        3. JS
-            - Overview of JS magnification
-            - Best minifiers and how to use them
-            - Worst minifiers and how not to use them
-            - Tips for writing optimizable JavaScript
-    6. One asset to rule them all?
+    5. One asset to rule them all?
         - Number of assets
         - Combining assets
         - Weighing the benefits of multiple files
-6. JavaScript
+6. Minification
+    1. Markup
+        - SVG
+    2. CSS
+    3. JS
+        - Overview of JS magnification
+        - Best minifiers and how to use them
+        - Worst minifiers and how not to use them
+        - Tips for writing optimizable JavaScript
+7. JavaScript
     1. Head or Body? Where the hell do I put my code
     2. defer, async, both, neither
     3. Browser events

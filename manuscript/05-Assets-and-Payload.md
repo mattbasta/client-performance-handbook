@@ -745,12 +745,6 @@ At the time of writing, a bug exists in the Chromium network stack that prevents
 [^chrome_subresources]: See http://crbug.com/312327
 
 
-## Minification
-### Markup
-#### SVG
-### CSS
-### JS
-
 ## One Asset to Rule Them All?
 ### Number of assets
 ### Combining assets
