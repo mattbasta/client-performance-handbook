@@ -549,6 +549,53 @@ Only browsers that support the `clip-path`[^clip_path_note] CSS declaration (and
 
 ### Spriting
 
+Spriting is a common practice that involves combining multiple small images into a single larger image. The image is then clipped and positioned using CSS to show only the individual components in the areas that they're needed.
+
+On many websites, there are many tiny icons, graphics, and other visual components that simply require
+
+It's often the case that sprites are PNG files, since PNGs are generally quite small and benefit from being combined into larger files. Some pages that contain small photographs or textured elements that benefit from JPEG compression can in fact use sprites, though quality will be decreased. This can be mitigated by ensuring that each image within a JPEG sprite has a height and width that is a multiple of 8 pixels. This prevents the images from bleeding into one another.
+
+Sprites should always be created from the highest quality source files. Never use previously-encoded images as the source for sprites, as the spriting process will re-encode the image (like taking a photocopy of a photocopy).
+
+There are many spriting tools available, though a couple are available directly in your browser. The first is Spritegen, which contains many features: http://spritegen.website-performance.org/. Spritegen allows you to specify encoding settings, dimensions, and provide formatting for the resulting CSS.
+
+Another great, dead-simple tool is Spritificator by Matt Claypotch: http://potch.me/projects/spritificator/. Spritificator simply combines images into a sprite and provides the CSS necessary to access the images from your page. For most use cases, this is usually all that's needed.
+
+
+#### Spriting and SVG
+
+SVG has a feature that allows spriting by using a hash at the end of the SVG's URL to select an element from within the image. For instance:
+
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <style>
+    :target ~ .sprite { display: none; }
+    .sprite:target { display: inline; }
+    </style>
+  </defs>
+  <path class="sprite" id="border" d="M30,1h40l29,29v40l-29,29h-40l-29-29v-40z" stroke="#000" fill="none" />
+  <path class="sprite" id="fill" d="M31,3h38l28,28v38l-28,28h-38l-28-28v-38z" fill="#a23" />
+  <text class="sprite" id="text" x="50" y="68" font-size="48" fill="#FFF" text-anchor="middle"><![CDATA[410]]></text>
+</svg>
+
+```
+
+![The rendered version of the above SVG](images/svg_sample.png)
+
+The `<style>` tag at the top of the markup was added, along with the `class=""` and `id=""` attributes. By referencing the SVG in a document with a hash, you can render only certain parts of the image:
+
+```html
+<object type="image/svg+xml" data="test.svg#border" height="400" width="400"></object>
+```
+
+![The result of the above HTML](images/svg_sample_border.png)
+
+In doing this, you can combine multiple SVG images into one single SVG image and reference the individual components as they're needed. A trivial script could be built that parses multiple SVG files, combines their nodes into `<g>` elements, applies the appropriate attributes and CSS, and outputs the necessary markup, though such a script is left as an exercise to the reader.
+
+Note that WebKit and Blink-based browsers do not allow you to use this technique using CSS properties (like `background-image` or `border-image`: `backgorund-image: url(test.svg#border);`)[^chrome_svg_stacks]. You can use an `<object>` tag like in the example above, though.
+
+[^chrome_svg_stacks]: See http://crbug.com/128055 for more information.
 
 
 ### Post-loading Images
@@ -599,6 +646,41 @@ I've seen some folks attempt to use transparent spacer GIFs as data URIs in styl
 
 
 ### You don't need that image
+
+One of the best ways to decrease the number of images used on a page is to replace the images with graphics generated using CSS and inline SVG. For instance, small linear gradients were often represented using some code like this:
+
+```css
+.element-with-a-horiz-gradient {
+    background: url(/images/grad-horiz.png) repeat-x;
+}
+```
+
+While effective, this technique creates an extra request for every unique gradient used on the page. Additionally, gradient images like this (that are repeated horizontally) are usually difficult or even impossible in some cases to sprite.
+
+A better approach would have been to use CSS gradients instead:
+
+```css
+.element-with-a-horiz-gradient {
+    /* A fallback for old browsers that don't support gradients. */
+    background: #eaeaea;
+    /* The gradient */
+    background: linear-gradient(to bottom, #ddd 0%, #fff 100%);
+}
+```
+
+Note that all modern browsers support CSS gradients.
+
+Some other images can be replaced with generated code:
+
+- Small triangles can be replaced with elements (or pseudoelements) with borders set up to form a triangle.
+- Certain effects that would have been stored as expensive animated GIFs can be implemented using CSS transformations and CSS animations.
+- CSS declarations like `border-radius` and `box-shadow` can be used to create complex and intricate graphics.
+- Inline SVG can be used to create very basic shapes. It is wise to only use inline SVG for graphics that are not repeated or reused.
+
+The biggest and perhaps only downside to using generated graphics rather than external images is the rendering performance cost. Radial gradients, for instance, are extremely expensive to render. Large numbers of small linear gradients, multiple layered linear gradients, multiple `box-shadow`s, and others can add sizable rendering pauses to your site, and make scroll performance slow to a crawl.
+
+Always test your site before and after adding these kinds of graphics to ensure performance is within an acceptable range. Also consider the trade-off of eliminating an HTTP request versus the cost of rendering an additional gradient or shadow.
+
 
 ## Prefetching and Prerendering
 

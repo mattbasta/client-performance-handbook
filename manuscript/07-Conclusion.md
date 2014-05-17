@@ -10,6 +10,16 @@ Throughout this book, I've made note of many tickets in bug trackers for differe
 ### Firefox
 ### Chromium
 
+- **Issue 128055:** This issue prevents CSS properties from using hashes to reference individual components of an SVG image. This functionality is available in IE9 and up as well as Firefox. http://crbug.com/128055
+
+
+## Mentioned Tools
+
+### CSS Spriting
+
+- Spritegen: http://spritegen.website-performance.org/
+- Spritificator: http://potch.me/projects/spritificator/
+
 
 ## Thanks
 
