@@ -43,7 +43,7 @@ better quality products to their clients and employers.
     1. HTTP
     2. Gzip and Compression
     3. Images
-    4. Prefetching and Prerendering
+    4. Fetching Resources In Advance
     5. Minification
         1. Markup
             - SVG
