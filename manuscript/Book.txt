@@ -3,3 +3,4 @@
 03-Overview-of-a-Pages-Lifecycle.md
 04-Connection-and-SSL.md
 05-Assets-and-Payload.md
+06-Minification.md

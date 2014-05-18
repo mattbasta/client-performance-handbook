@@ -810,23 +810,23 @@ Across a site, however, it may be smarter to combine assets differently to promo
 | Page      | Depends On    |
 |-----------|---------------|
 | Homepage  | jquery.js     |
+| Homepage  | forms.js      |
 | Homepage  | scroll.js     |
 | Login     | jquery.js     |
+| Login     | ajax.js       |
 | Login     | forms.js      |
 | Dashboard | jquery.js     |
 | Dashboard | ajax.js       |
 | Dashboard | charts.js     |
 | Dashboard | fonts.js      |
-| Dashboard | forms.js      |
 | Dashboard | scroll.js     |
 | Dashboard | urls.js       |
 
-In this scenario, it might make more sense to create three bundles:
+In this scenario, it might make more sense to create two bundles:
 
 | jquery.js | ajax.js   |
 | scroll.js | charts.js |
-|           | fonts.js  |
-|           | forms.js  |
+| forms.js  | fonts.js  |
 |           | urls.js   |
 
 used in the following way:
@@ -834,10 +834,10 @@ used in the following way:
 | Page      | Bundles    |
 |-----------|------------|
 | Homepage  | #1         |
-| Login     | #1, #3     |
-| Dashboard | #1, #3     |
+| Login     | #1, #2     |
+| Dashboard | #1, #2     |
 
-In this case, the login page shares the same JS as the dashboard, even though most of the third bundle is unused. This doesn't matter, though, since virtually all users visiting the login page will eventually visit the dashboard (and their cache will be warm).
+In this case, the login page shares the same JS as the dashboard, even though most of the second bundle is unused. This doesn't matter, though, since virtually all users visiting the login page will eventually visit the dashboard (and their cache will be warm).
 
 Figuring out how to perfectly distribute files and how many bundles of files to create isn't always an exact science. Getting the split "close enough" will go a long way. After a certain amount of effort, the diminishing returns will yield little (if any) benefit.
 
