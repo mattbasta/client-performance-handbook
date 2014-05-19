@@ -1,6 +1,8 @@
 # Minification
 
-In the book *High Performance Web Sites* (Chapter 10), Steve Souders differentiates between minification and obfuscation. Today, the two concepts have largely merged into one: all proper minification tools perform many complex optimizations, all of which will be discussed in this chapter.
+In the book *High Performance Web Sites* (Chapter 10), Steve Souders differentiates between minification and obfuscation. Today, the two concepts have largely merged into one: all proper minification tools tend to perform many complex optimizations.
+
+Ten years ago, tools like JSMin and YUI's CSS compressor were state-of-the-art. Today, the tools that have replaced them are more akin to compilers. UglifyJS and Google Closure Compiler have taken JavaScript optimization to a whole new level and made deep, complex minification techniques both safe and reliable as well as easy-to-use for the average web developer.
 
 
 ## Markup
@@ -29,9 +31,6 @@ Note that whitespace in client-side templates does not suffer from this downside
 
 SVG is an XML-based format, so most of the normal markup optimizations apply to it. However, many further optimizations are possible that are specific to the way SVGs are implemented.
 
-
-#### Remove unnecessary data
-
 SVGs tend to include lots of extra data. This includes information like the name of the program that generated the file, settings used when creating the image, the title of the image, etc. The following nodes are safe to remove from most SVGs:
 
 - **`DOCTYPE`s**: The `DOCTYPE` node can take up a significant amount of space and is rarely (if ever) used by clients. Simply remove it.
@@ -41,11 +40,24 @@ SVGs tend to include lots of extra data. This includes information like the name
 - **RDF**: Some `<svg>` elements will an `xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"` attribute. This signals that RDF is used in the file. RDF is not used to render the SVG, and the `xmlns` and `<rdf:foo>` nodes can be removed.
 - **Unused `id=""` Attributes**: Most IDs that are embedded in SVGs are not used for anything. If you aren't referencing an ID from CSS or using it for spriting purposes, the IDs are safe to remove.
 - **`xlink` Attributes**: For simple images that are not used outside of the page they're embedded on, all traces of `xlink` can be removed.
+- **Unnecessary `<g>` elements**: Many vector graphics applications will include `<g>` elements to group nodes as they're grouped within the application. While these can be (and often are) used to apply layout and visual transformations and effects, they are often generated regardless of whether or not they do anything to the image.
 
 As mentioned in the section on SVGs, the precision of floating point numbers used in SVGs can be reduced to save space. In general, three digits of precision is usually sufficient for most purposes. Some applications will include up to eight digits: reducing this will significantly decrease the post-compression size of the file.
 
+Another minor optimization for SVGs is to eliminate unnecessary whitespace within paths. For example, the following two SVG paths are identical:
+
+```xml
+<path d="M10 10 H 90 V 90 H 10 L 10 10" />
+<path d="M10 10H90V90H10L10 10" />
+```
+
+Notice how whitespace around letters is not necessary. Each command is only one character, but numbers can be multiple characters. Whitespace is only necessary to eliminate ambiguity.
+
+Certain commands within a path can also be eliminated. For instance, a `c` command followed by another `c` command could be combined into a single "polybezier."
+
 
 ## CSS
+
 
 
 

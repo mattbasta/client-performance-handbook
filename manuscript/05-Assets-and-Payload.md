@@ -499,7 +499,8 @@ L5.94824679,18 L7.34955712,16.8770089 L17.3949616,8.82675797
 C18.1864999,8.19242996 18.2036227,7.14988283 17.4332066,6.49816377
 C16.6627904,5.84644472 15.3965762,5.83234649 14.605038,6.4666745
 L5.9482467,13.4977018 Z M5.9482467,13.4977018" id="Path 5" fill="#C7C7C7"
-transform="translate(6.000000, 12.000000) rotate(-270.000000) translate(-6.000000, -12.000000)"></path>
+transform="translate(6.000000, 12.000000) rotate(-270.000000)
+translate(-6.000000, -12.000000)"></path>
 ```
 
 Though this is a simple shape, it can't be described using nice, round numbers. Shaving decimal places from the numbers in an SVG can help to decrease its size significantly:
@@ -507,8 +508,8 @@ Though this is a simple shape, it can't be described using nice, round numbers. 
 ```xml
 <path d="M5.948,13.497 L-2.598,6.471 C-3.386,5.834 -4.652,5.843 -5.426,6.492
 C-6.200,7.141 -6.189,8.184 -5.401,8.821 L4.553,16.871 L5.948,18 L7.349,16.877
-L17.394,8.826 C18.186,8.192 18.203,7.149 17.433,6.498 C16.662,5.846 15.396,5.832
-14.605,6.466 L5.948,13.497 Z M5.948,13.497" fill="#C7C7C7"
+L17.394,8.826 C18.186,8.192 18.203,7.149 17.433,6.498 C16.662,5.846
+15.396,5.832 14.605,6.466 L5.948,13.497 Z M5.948,13.497" fill="#C7C7C7"
 transform="translate(6, 12) rotate(-270) translate(-6, -12)"></path>
 ```
 
@@ -609,7 +610,8 @@ In many cases, images on a page are not necessary to make the page interactive t
 This is a simple technique for requesting images only after a page has loaded:
 
 ```html
-<div class="postload-image" data-src="/images/my-great-image.jpg" title="My great image">
+<div class="postload-image" data-src="/images/my-great-image.jpg"
+     title="My great image">
   <noscript>
     <img src="/images/my-great-image.jpg" alt="My great image">
   </noscript>
