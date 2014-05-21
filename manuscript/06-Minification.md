@@ -27,6 +27,13 @@ Stripping whitespace is something of a micro-optimization, though. After Gzip, t
 Note that whitespace in client-side templates does not suffer from this downside. When compiled to JavaScript, whitespace can account for a significant amount of space thanks to template features that split strings up in unique ways. Removing whitespace from client-side templates is definitely recommended.
 
 
+### Keeping Markup Minimal
+
+When adding new features, it tends to be easy to add more and more markup to an interface. Markup bloat, however, does more than just increase the size of the HTML. The size of the DOM in memory can also play a role in speed. Parsing the markup, allocating the nodes for it, and calculating the layout for the document will all affect performance for very heavy pages.
+
+The amount of markup that you need is fairly subjective, however. Use extra tags sparingly in page elements that repeat. Always attempt to use the fewest elements possible for any particular feature.
+
+
 ### SVG
 
 SVG is an XML-based format, so most of the normal markup optimizations apply to it. However, many further optimizations are possible that are specific to the way SVGs are implemented.
@@ -57,6 +64,24 @@ Certain commands within a path can also be eliminated. For instance, a `c` comma
 
 
 ## CSS
+
+There are two types of optimizations for CSS: the first makes the stylesheet smaller by removing code that is not useful (or rewriting it to be smaller). The second type of optimization rewrites other rules to be more consistent to make Gzip more effective.
+
+These optimizations can be made in one of two ways:
+
+1. They can be made using a simple set of regular expressions to isolate, change, and remove parts of a stylesheet. This approach does only a fair job, but tends to be more resilient to malformed code and old "CSS hacks."
+2. They can also be made by using a proper lexer and parser that deconstructs the stylesheet into an object, performs optimizations just as a compiler would optimize an AST tree, and reconstructs the CSS in its smallest possible representation. While this approach can perform much more complex optimizations, it tends to fail when the tool encounters CSS that it does not recognize or does not know how to parse.
+
+Virtually all CSS minification tools take the first approach. Some notable ones include YUI Compressor, clean-css, slimmer, and minify. For most sites, anything more than this is excessive, though sites with problematically large CSS files can opt for the second approach to produce even more compact stylesheets.
+
+With regard to minifiers that properly parse the CSS, there are only a handful that exist: CSSO, crass[^crass_disclaimer], CSSTidy, and closure-stylesheets. These tend to produce much smaller output, but can fail quite spectacularly if presented with unrecognized input.
+
+[^crass_disclaimer]: Full disclosure: crass is a project developed by the author
+
+
+### Smaller Code
+
+There are a number of basic optimizations that you can perform for CSS without very much effort. The one that provides the most gains is whitespace removal. CSS contains a great deal of whitespace and very little of it affects the document. Any good minifier will remove all unnecessary whitespace.
 
 
 
