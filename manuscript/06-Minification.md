@@ -83,7 +83,38 @@ With regard to minifiers that properly parse the CSS, there are only a handful t
 
 There are a number of basic optimizations that you can perform for CSS without very much effort. The one that provides the most gains is whitespace removal. CSS contains a great deal of whitespace and very little of it affects the document. Any good minifier will remove all unnecessary whitespace.
 
+Other basic code removal optimizations include the following:
 
+- Remove the semicolon after the last declaration in a rule set: `div {color:red;}` to `div {color:red}`
+- Converting colors to their shortest possible forms (`#XXYYZZ` to `#XYZ`, `rgb(0,0,0)` to `#000`, `blanchedalmond` to `#ffebcd`, `rgba(255,255,255,.1)` to `hsla(0,0,100%,.1)`, etc.).
+- Remove duplicate declarations (`{color:red;color:red;}` to `{color:red}`). This seems like an unnecessary optimization, but it removes a surprising amount of code. Note that in some contrived cases, this optimization can actually *increase* the final gzipped size.
+- Remove duplicate selectors in a selector list (`.foo, .bar, .foo` to `.foo`). Duplicate selectors usually appear as a result of the use of CSS preprocessors.
+- Remove duplicate classes in a selector (`.bar.bar` to `.bar`, or `.bar:first-child:first-child` to `.bar:first-child`).
+- Remove empty rule sets (e.g.: `.foo {}`).
+- Collapse lists of values (`margin: 0 0 0 0` to `margin: 0`). Note that this only applies to certain declarations, like `margin`, `border-width`, `padding`, etc.
+- Delete mismatched vendor prefixes. In some cases, preprocessors can generate code like the following: `@-webkit-keyframes{from,to{-moz-transform:rotate(0)}}` (usually with a corresponding normal `@keyframes` and `-webkit-transform`, as well). Because these vendor prefixes do not match, they will never be applied.
+- Delete invalid vendor prefixes. Oftentimes, CSS generators and preprocessors will add all possible vendor prefixes to CSS3 features (`@keyframes`, `border-radius`, `linear-gradient`, etc.). It is usually the case, though, that some of those vendor prefixes were never in use by browsers to begin with. E.g.: `@-ms-keyframes` is often generated, but CSS animations were never prefixed in Internet Explorer.
+- In some cases, `none` can be replaced with `0`.
+- Font weights can be replaced with their numeric equivalents to save a few bytes.
+- The universal selector (`*`) can be removed from larger selectors. E.g.: `*.foo` to `.foo`
+- In cases where specificity does not matter, selector lists containing the universal selector can be reduced to just the universal selector. E.g.: `*, .foo, .bar` to `*`
+- Combine identical media queries: `@media screen and (min-width:1px),screen and (min-width:1px)` to `@media screen and (min-width:1px)`
+- Convert `from` keyframes to `0%` and `100%` keyframes to `to`.
+- Combine adjacent rule sets with identical selectors: `.foo {color:red} .foo{border:0}` to `.foo{color:red;border:0}`
+- Combine adjacent rule sets with identical bodies: `.foo {color:red} .bar {color:red}` to `.foo,.bar {color:red}`
+- Remove declarations from overridden rules sets: `div{color:red;border:0} a{color:blue} div{color:green}` to `div{border:0}a{color:blue}div{color:green}`. Note that this optimization must always merge into the "right" rule set, as the middle rule set may apply to the same element. Note also that if the right rule set's selector is a selector list, the optimization can still be performed. Additionally, if the rule set(s) in the middle have a lower specificity than the selector for the left and right rule sets and the left and right rule sets have identical selectors, the two can be merged into the right rule set (rather than just removing the overridden rules).
+- Remove old declarations and old vendor prefixes. `-moz-border-radius` has been unprefixed since Firefox 4, which was released in 2011. Similarly, `-webkit-border-radius` was unprefixed in Chrome 5, which was released in 2010. `-webkit-gradient` was replaced in Chrome 10 (2011). All modern browsers support unprefixed gradients.
+
+
+### Improving Compression
+
+Compression of CSS can be improved by increasing Gzip's ability to remove duplicate strings from the CSS. By making your CSS more consistent, the final compressed size of the code can be reduced without decreasing the size of the code.
+
+- Make declaration names, element names, colors, pseudo elements and classes, attribute names, and other identifiers lowercase. Consistent capitalization ensures that repeated versions of the same string use the same representation.
+- Sort selector lists (`.a, .c, .b` to `.a, .b, .c`)
+- Sort declarations `{a:1; c:3; b:2}` to `{a:1; b:2; c:3}`).
+
+When sorting, the sort order (alphabetically, dashes first or at the end, using a custom comparison function, etc.) doesn't matter, so long as the sort is deterministic. For instance, if you prefer to group `position`, `left`, `right`, `top`, and `bottom`, that's fine, so long as--when sorted--those declarations always appear in the same location relative to their neighbors and the same order.
 
 
 ## JS
