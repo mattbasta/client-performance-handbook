@@ -102,8 +102,9 @@ Other basic code removal optimizations include the following:
 - Convert `from` keyframes to `0%` and `100%` keyframes to `to`.
 - Combine adjacent rule sets with identical selectors: `.foo {color:red} .foo{border:0}` to `.foo{color:red;border:0}`
 - Combine adjacent rule sets with identical bodies: `.foo {color:red} .bar {color:red}` to `.foo,.bar {color:red}`
-- Remove declarations from overridden rules sets: `div{color:red;border:0} a{color:blue} div{color:green}` to `div{border:0}a{color:blue}div{color:green}`. Note that this optimization must always merge into the "right" rule set, as the middle rule set may apply to the same element. Note also that if the right rule set's selector is a selector list, the optimization can still be performed. Additionally, if the rule set(s) in the middle have a lower specificity than the selector for the left and right rule sets and the left and right rule sets have identical selectors, the two can be merged into the right rule set (rather than just removing the overridden rules).
+- Remove declarations from overridden rules sets: `div{color:red;border:0} a{color:blue} div{color:green}` to `div{border:0}a{color:blue}div{color:green}`. Note that this optimization must always merge into the "right" rule set, as the middle rule set may apply to the same element. Note also that if the right rule set's selector is a selector list, the optimization can still be performed. The optimization can even be performed if (only) the left rule set is inside an `@` block.
 - Remove old declarations and old vendor prefixes. `-moz-border-radius` has been unprefixed since Firefox 4, which was released in 2011. Similarly, `-webkit-border-radius` was unprefixed in Chrome 5, which was released in 2010. `-webkit-gradient` was replaced in Chrome 10 (2011). All modern browsers support unprefixed gradients.
+- Two rule sets with identical selectors that are not adjacent may be combined into the right rule set if and only if all rule sets in between have a lower specificity than the rule sets being combined and the left rule set does not have any `!important` flags that are also set in the middle rule sets. This can also be done if none of the declarations in the left rule set are found in any of the middle rule sets.
 
 
 ### Improving Compression
@@ -115,6 +116,56 @@ Compression of CSS can be improved by increasing Gzip's ability to remove duplic
 - Sort declarations `{a:1; c:3; b:2}` to `{a:1; b:2; c:3}`).
 
 When sorting, the sort order (alphabetically, dashes first or at the end, using a custom comparison function, etc.) doesn't matter, so long as the sort is deterministic. For instance, if you prefer to group `position`, `left`, `right`, `top`, and `bottom`, that's fine, so long as--when sorted--those declarations always appear in the same location relative to their neighbors and the same order.
+
+
+### CSS Minification Myths
+
+When I'm asked about CSS minification, I oftentimes hear questions like "Can't you just combine all of the similar rule sets?" or "Isn't it safe to simply combine all of the rule sets in the stylesheet with identical selectors?"
+
+Usually, the answer is "No." Most CSS optimizations are simply too unsafe to use in practice. Consider the following:
+
+```html
+<div class="class anotherClass">How is this text styled?</div>
+```
+
+```css
+.class {
+    color: red;
+}
+.anotherClass {
+    color: green;
+    font-weight: normal;
+}
+.class {
+    font-weight: bold;
+}
+```
+
+The `.class` rule sets--despite appearing to be safe to combine--will have a different behavior after the combination. As the code above is written, the text in the `<div>` will be green and bold. If the `.class` rule sets are combined into the first of the two, the text will no longer be bold. If they are combined into the second of the two, the text will be red and bold.
+
+Because there are multiple ways to reference the same element, it's possible that any two non-adjacent pieces of CSS will be overridden by any of the code in-between. The only exception to this rule is--as stated in the previous sections--100% of the code between the two rule sets has a lower specificity (in which case it will never override either of the pieces of code).
+
+There are some basic guidelines that can help you to identify unsafe optimizations:
+
+- If the optimization reorders rule sets that do not have identical or similar selectors.
+- If the optimization removes declarations that can apply under even obscure circumstances.
+- It is unsafe to combine any two rule sets that do not have identical selectors or identical bodies.
+- Optimizations involving changing the contents of rule sets that have a selector list are usually unsafe, unless all other rule sets involved have identical selector lists.
+- Optimizations that move rule sets containing declarations with the `!important` flag above or below other rule sets with the flag on the same declaration are unsafe.
+- Removing any `@` block is generally unsafe unless it can be proven that it will never apply or that its contents cannot change any styles (e.g.: mismatched vendor prefixes).
+- Moving or combining `@` blocks above or below other `@` blocks is usually unsafe.
+
+Another common idea is to test which CSS rules are applied to a particular page any only output the rules which match the page's content (i.e.: never serving CSS which is overridden or unused). There are a number of projects which can perform this type of optimization, such as mincss by Peter Bengtsson[^mincss]. You feed HTML and CSS into the tool and you're given a "cleaned" version of your stylesheet.
+
+[^mincss]: https://mincss.readthedocs.org/
+
+This approach can save a lot of bandwidth, especially for sites with highly customizable designs. Unfortunately, it usually means all of the CSS on the page must be included inline in `<style>` tags (and consequently, all of the CSS is never cached and must be downloaded on every page load), or the server needs to keep track of what HTML was sent to the browser so that it can serve a customized stylesheet. Note that this has additional drawbacks:
+
+- Content that is dynamically generated on the client will not receive styles, since the server did not see the dynamic content and filtered out the styles for it.
+- The server must parse each HTML response (consuming memory to store the DOM), plus parse and process the stylesheet(s) on every request (assuming the response is not static). The resources required to perform these operations is non-trivial at best. For common web platforms like PHP and Python, the memory required to store the HTML and CSS representations is far larger and the CPU costs far higher than that of a compiled language--like C or C++--that's used in the client.
+- Content inserted with SSI (Server Side Includes), ESI (Edge Side Includes), application middleware, Nginx plugins, and other post-processing code will not be seen by the script and will consequently not be styled.
+
+Some of this can be avoided with caching, but ultimately the benefits of applying this technique will provide limited and diminishing returns. For average web applications, the decrease in CSS payload is not substantial enough to significantly improve performance (though of course there are exceptions).
 
 
 ## JS

@@ -20,10 +20,23 @@ Throughout this book, I've made note of many tickets in bug trackers for differe
 
 ## Mentioned Tools
 
-### CSS Spriting
+- CSS sprite tool: Spritegen - http://spritegen.website-performance.org/
+- CSS sprite tool: Spritificator - http://potch.me/projects/spritificator/
+- CSS minification tool: mincss - https://mincss.readthedocs.org/
 
-- Spritegen: http://spritegen.website-performance.org/
-- Spritificator: http://potch.me/projects/spritificator/
+
+## Glossary
+
+### CSS
+
+Declaration
+: A declaration is an item within a rule set that applies a given property to the set of matched elements. E.g.: `color: red;`
+
+Rule Set
+: A rule set is a selector and zero or more declarations wrapped in curly braces. E.g.: `.myElement {font-weight: bold;}`
+
+Selector
+: A selector is the string which describes which elements a rule set applies to. E.g.: `#myElement .withAClass p`
 
 
 ## Thanks
