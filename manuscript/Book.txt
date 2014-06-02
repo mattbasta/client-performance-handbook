@@ -4,3 +4,5 @@
 04-Connection-and-SSL.md
 05-Assets-and-Payload.md
 06-Minification.md
+07-JavaScript.md
+08-Conclusion.md

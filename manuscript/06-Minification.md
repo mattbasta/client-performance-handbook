@@ -1,8 +1,19 @@
 # Minification
 
-In the book *High Performance Web Sites* (Chapter 10), Steve Souders differentiates between minification and obfuscation. Today, the two concepts have largely merged into one: all proper minification tools tend to perform many complex optimizations.
+In the book *High Performance Web Sites* (Chapter 10), Steve Souders differentiates between minification and obfuscation. Today, the two concepts have largely merged into one: all proper minification tools tend to perform many complex optimizations, not just basic whitespace removal.
 
 Ten years ago, tools like JSMin and YUI's CSS compressor were state-of-the-art. Today, the tools that have replaced them are more akin to compilers. UglifyJS and Google Closure Compiler have taken JavaScript optimization to a whole new level and made deep, complex minification techniques both safe and reliable as well as easy-to-use for the average web developer.
+
+There are two techniques used in minification:
+
+- Manipulations that reduce the size of the file being minified
+- Manipulations that improve the file's ability to be compressed
+
+When most people think of minification, they think of the first technique: reducing the overall size of the file. This may mean removing unused code, removing whitespace, replacing one string with a shorter version, etc. The second technique is equally important. Many optimizations that fall into that category do not decrease the size of the file at all (and in some cases, may even make it bigger). Instead, the optimizations improve the final compressed size of the file.
+
+Gzip can consequently mask the gains that minification provides, and what is best is sometimes difficult to identify. For example, a file containing random noise will Gzip very poorly, but a significantly larger file containing human-readable text will Gzip very well (and can certainly become even smaller than the compressed noise). As such, some removal or replacement operations may be skipped in favor of operations intended to improve compression.
+
+For example, UglifyJS2 has a `sort` option that uses smaller variable names for more commonly used variables. While this decreases overall file size, it tends to *increase* the compressed size.
 
 
 ## Markup
@@ -293,3 +304,44 @@ Constant folding can be performed for strings, as well: `"first" + "second"` cou
 
 ### Recommended Tools
 
+The simplest minification tool to use (at present) is UglifyJS2[^uglifyjs2]. Uglify is a JavaScript-based tool (running in Node.js) that supports almost all of the optimizations discussed in this chapter and provides "good enough" results in cases where other tools do a better job.
+
+[^uglifyjs2]: https://github.com/mishoo/UglifyJS2
+
+Here's a simple example of using UglifyJS2 to minify a file called `include.js`:
+
+```bash
+# Install UglifyJS2
+npm install uglify-js
+
+# Perform minification:
+#  -m enables name mangling
+#  -c enables other optimizations
+uglifyjs js/include.js -m -c > js/include.min.js
+```
+
+Depending on the input, UglifyJS2 can be quite resource intensive. Minifying very large amounts of JavaScript can take upwards of a few minutes to complete.
+
+Another powerful tool is Google Closure Compiler[^closure_compiler]. Closure Compiler is written in Java and supports the most optimizations of any minification tool.
+
+[^closure_compiler]: https://developers.google.com/closure/compiler/
+
+Once downloaded, it can be run using the following command:
+
+```bash
+java -jar compiler.jar --js_output_file=js/include.min.js js/include.js
+```
+
+To turn on advanced optimizations, simply pass the `--compilation_level ADVANCED_OPTIMIZATIONS` flag. Note that for some JavaScript, this may cause problems. Advanced optimizations are not recommended for legacy or otherwise unusual code.
+
+Without advanced optimizations, Closure Compiler is usually equivalent to UglifyJS2 in terms of speed. With advanced optimizations enabled, Closure Compiler can take significantly longer. For many megabytes of JavaScript, Closure Compiler can take a very long time.
+
+Of course, as mentioned at the beginning of the chapter, JSMin is one of the first minification tools for JavaScript. While it does not do very much, it is quite fast. In some cases, it may be more desirable to create only slightly-minified files in a short amount of time. For example, if you need to minify hundreds of megabytes of JavaScript, it may be appropriate to minify the code with JSMin first (to provide a smaller version of the code), then run the code through UglifyJS later when more resources are available.
+
+JSMin, once installed, can be run with the following command:
+
+```bash
+jsmin <js/include.js >js/include.min.js
+```
+
+Note that the angle brackets are not wrapping `js/include.js` like an HTML tag. Instead, the `<` is signaling the shell to read `js/include.js` into STDIN and `>` signals the shell to pipe the output to `js/include.min.js`.
