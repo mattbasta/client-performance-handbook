@@ -23,6 +23,10 @@ Throughout this book, I've made note of many tickets in bug trackers for differe
 - CSS sprite tool: Spritegen - http://spritegen.website-performance.org/
 - CSS sprite tool: Spritificator - http://potch.me/projects/spritificator/
 - CSS minification tool: mincss - https://mincss.readthedocs.org/
+- JavaScript minifier: JSMin - http://www.crockford.com/javascript/jsmin.html
+- JavaScript parser: esprima - https://github.com/ariya/esprima
+- JavaScript parser: acorn - https://github.com/marijnh/acorn
+- JavaScript code generator: escodegen - https://github.com/Constellation/escodegen
 
 
 ## Glossary
