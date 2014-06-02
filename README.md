@@ -53,10 +53,6 @@ better quality products to their clients and employers.
         - SVG
     2. CSS
     3. JS
-        - Overview of JS magnification
-        - Best minifiers and how to use them
-        - Worst minifiers and how not to use them
-        - Tips for writing optimizable JavaScript
 7. JavaScript
     1. Head or Body? Where the hell do I put my code
     2. defer, async, both, neither
