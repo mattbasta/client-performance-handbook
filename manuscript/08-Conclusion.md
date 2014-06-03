@@ -48,6 +48,12 @@ Selector
 : A selector is the string which describes which elements a rule set applies to. E.g.: `#myElement .withAClass p`
 
 
+### JavaScript
+
+Run To Completion
+: The process of triggering a JavaScript function, then waiting for all subsequent synchronous processing to complete.
+
+
 ## Thanks
 
 I'd like to use this space to thank my friends, family, and past and present coworkers for helping me to make this book possible. So many people have been supportive, offered advice or consultation, helped with fact-checking, proofreading, and more, and made contributions to improve this work.
