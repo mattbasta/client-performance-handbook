@@ -21,6 +21,13 @@ Throughout this book, I've made note of many tickets in bug trackers for differe
 - **Issue 312327:** This issue causes subresource requests not to be used when an asset is requested in a document. This prevents subresource requests from being useful. http://crbug.com/312327
 
 
+### Internet Explorer
+
+Note that IE does not have a public issue tracker. The following are tickets that have been filed against third party issue trackers documenting bugs in Internet Explorer.
+
+- `readystatechange` exhibits incorrect behavior surrounding `document.readyState === 'interactive'` http://bugs.jquery.com/ticket/12282
+
+
 ## Mentioned Tools
 
 - CSS sprite tool: Spritegen - http://spritegen.website-performance.org/

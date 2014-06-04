@@ -29,8 +29,24 @@ More interestingly to the performance of the application is the purpose of the e
 `readystatechange`
 : Prior to Internet Explorer 9, there was no support for `DOMContentLoaded`. Instead, `readystatechange` could be used in conjunction with `document.readyState`. Similar results could be achieved on very basic pages, but various browser bugs ultimately made the results behave more like `load`. Unless you require old IE support, it is recommended that you do not use `readystatechange`.
 
-
 [^firefox_dcl_bug]: Firefox has a very nasty bug which causes `DOMContentLoaded` to fire before certain scripts have finished executing. It has been fixed, but it will not become generally available until Firefox 31. A workaround does exist, which will be presented in upcoming sections. http://bugzil.la/688580
+
+Now you might ask yourself, "which event should my application listen for to start page execution?" That's a great question and unfortunately, the answer is not simple.
+
+- Use `load` if your code relies on everything on the page being loaded, including images and `iframe`s.
+- Use `DOMContentLoaded` if your code relies on all other scripts on the page having been executed.
+- If your scripts are located at the end of the `<body>` and each script file does not depend on any resource on the page being loaded or any script that comes after it (and the scripts are not given an `async` attribute), you do not need to use *any* event. Simply execute your code immediately.
+- If your scripts are marked with `defer` and they do not rely on any script that comes after themselves, you probably do not need to use `DOMContentLoaded`. `defer`'d scripts will always run after the DOM has completed loading. This allows your code to execute sooner.
+
+Some interesting notes:
+
+- jQuery's `ready` event (and closures passed to `$()`) are fired on `DOMContentLoaded` or on `readystatechange` when `document.readyState === 'complete'`.
+- In the vast majority of circumstances, code can run on `DOMContentLoaded`. `load` is a poor option because it will wait for images and stylesheets to load, which will cause the page to appear and behave as if it is broken for a short time until absolutely everything has finished loading.
+
+
+## Head or Body: Where to put your code
+
+## Defer, Async, Both, Neither
 
 
 ## Memory
@@ -38,10 +54,6 @@ More interestingly to the performance of the application is the purpose of the e
 ## Improving CPU-Heavy Code
 
 ## API Performance
-
-## Head or Body: Where to put your code
-
-## Defer, Async, Both, Neither
 
 ## Asm.js
 
