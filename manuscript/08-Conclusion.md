@@ -9,6 +9,7 @@ Throughout this book, I've made note of many tickets in bug trackers for differe
 
 ### Firefox
 
+- **Bug 688580:** Deferred scripts run at the wrong time http://bugzil.la/688580
 - **Bug 730101:** Implement prerendering support http://bugzil.la/730101
 - **Bug 856375:** Implement WebP support http://bugzil.la/856375
 
@@ -49,6 +50,9 @@ Selector
 
 
 ### JavaScript
+
+Event
+: An object representing something that happened in the browser and the triggering of JavaScript code that has been put in place to accept it.
 
 Run To Completion
 : The process of triggering a JavaScript function, then waiting for all subsequent synchronous processing to complete.
