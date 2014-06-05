@@ -25,7 +25,8 @@ Throughout this book, I've made note of many tickets in bug trackers for differe
 
 Note that IE does not have a public issue tracker. The following are tickets that have been filed against third party issue trackers documenting bugs in Internet Explorer.
 
-- `readystatechange` exhibits incorrect behavior surrounding `document.readyState === 'interactive'` http://bugs.jquery.com/ticket/12282
+- `readystatechange` exhibits incorrect behavior surrounding `document.readyState === 'interactive'`. http://bugs.jquery.com/ticket/12282
+- IE9 and below do not support `defer` correctly. https://github.com/h5bp/lazyweb-requests/issues/42
 
 
 ## Mentioned Tools
