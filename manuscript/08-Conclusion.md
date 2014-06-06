@@ -92,8 +92,3 @@ Chris Van (@cvanw)
 > Snake oil makes you feel great until you need to hit the commode
 
 > A man that carries nothing through life finds his grave the fastest
-
-
-
-
-

@@ -206,7 +206,7 @@ console.log('external');
 
 The above code will always output the following:
 
-```
+```text
 inline
 external
 ```
@@ -226,7 +226,7 @@ How, then, do you execute an inline script after an deferred external script? Th
 
 The above will always output the following:
 
-```
+```text
 external
 inline
 ```
@@ -241,7 +241,7 @@ There are few cases where neither of the attributes are appropriate for a piece 
 Additionally, `defer` should NOT be used when versions of Internet Explorer prior to IE10 must be supported. As mentioned previously, there is a bug that can cause old IE to execute deferred scripts in the wrong order.
 
 
-## Head or Body: Where to put your code
+## Head or Body: Where the hell do I put my code?
 
 It has long been a point of contention surrounding where to put script tags. Long ago, the de facto recommendation was to put the tags in the `<head>`. Today, the common recommendation is to put script tags at the end of the `<body>`. With the advent of HTML5 and modern JavaScript patterns, however, the "best" option is more complex.
 

@@ -54,9 +54,9 @@ better quality products to their clients and employers.
     2. CSS
     3. JS
 7. JavaScript
-    1. Head or Body? Where the hell do I put my code
-    2. defer, async, both, neither
     3. Browser events
+    2. defer, async, both, neither
+    1. Head or Body? Where the hell do I put my code
     3. Memory
         - Memory management
         - Garbage collection
