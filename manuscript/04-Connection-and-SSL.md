@@ -25,6 +25,7 @@ This benchmark was run from my apartment in Mountain View, California over wifi.
 
 My internet connection is average, or perhaps slightly above average compared to the rest of the continental US. Based on this benchmark, however, you can see that DNS lookups took--regardless of the DNS server--a minimum of about 15ms for the absolute fastest responses. The 80th percentile (one out of every five), though, took longer than 60ms. At the 90th percentile, lookup times nearly triple to well over 150ms.
 
+
 ### Remedying slow DNS lookups
 
 There's very little you can do to make DNS lookups faster, but you can do a number of things to decrease their impact.
@@ -53,6 +54,7 @@ static3.mysite.com
 ```
 
 At more than 100ms each, the volume of DNS lookups can quickly dominate a large part of your page's lifecycle. You can mitigate this issue by implementing SPDY on your server. Domain sharding is used to circumvent caps specified by the browser to limit the number of connections to any one host. SPDY combines an unlimited number of concurrent requests into a single connection, meaning users with modern browsers accessing sites that support SPDY will only perform a single DNS lookup. This solution obviously has all of the downsides of implementing SPDY, which are outlined in the section dedicated to SPDY.
+
 
 ## TCP Connections
 
@@ -364,8 +366,6 @@ One of the most perplexing issues than many people encounter when evaluating a C
 The cause is that the CDN simply hasn't seen the files that the user is requesting yet. If you request a file from a CDN and the CDN doesn't have a copy of the file, it needs to pause the request, visit your server, wait for a response, then forward it on to the user. Until all of the servers in all of the applicable data centers at your CDN have seen all of your files, you'll notice some poor response times.
 
 Another common pitfall is a CDN over-selling its service. When you use a CDN, your content is hosted on the same servers that host content for thousands of the CDN's other customers. If one of the CDN's other customers is experiencing a DoS attack, the speed of your website could be negatively impacted. Be sure to thoroughly research all of your options before you commit to any CDN.
-
-> Snake oil makes you feel great until you need to hit the commode
 
 Cost can be another pitfall with a CDN. Before choosing a CDN, model your expected costs based on your own data. Consider how much it will cost to be a customer with historical data, and also project figures accounting for future growth. Also be sure to compare this with the cost of bandwidth on your current host (if any) to account for potential savings. On some platforms, like Linode or Microsoft Azure, large amounts of bandwidth can be far more expensive than using a CDN to transfer the same content.
 

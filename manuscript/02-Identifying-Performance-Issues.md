@@ -364,11 +364,7 @@ for (var key in mapping) {
 
 Not only is this code smaller (40 bytes less when minified with uglify.js) and more straightforward, it's also faster. Keeping code simple and obvious is infinitely more valuable, even if it means the final product is less sleek or pretty.
 
-> Say what you mean and mean what you say
-
 Furthermore, it's the case that if code is written in a way that's non-standard or confusing, it's more difficult for a compiler (or minifier) to safely optimize it. The wins that compilers could provide that are lost to codebases that have been prematurely optimized are so great that we cannot begin to imagine them.
-
-> A man in the drive-through that orders something off-menu doesn't get any extra fries.
 
 
 ### Tech Debt

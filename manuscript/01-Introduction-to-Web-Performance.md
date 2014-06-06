@@ -11,9 +11,6 @@ Many of the problems, though, are still unsolved. Many have no universal best so
 If you are reading this book with the intention of identifying solutions to problems that you are already experiencing with a product, I'd suggest flipping ahead to the chapter "Identifying Performance Issues".
 
 
-> There is no place like home. Unless you don't like your home, in which case there is no place like your neighbor's home.
-
-
 ## Performance is about compromises
 
 Performance is a subset of the larger concept of Quality. A product that is high-quality delights its users. A product that is fast also delights its users. Oftentimes, improving the quality of a product has a positive impact on performance, and vise versa. I find it interesting that many software companies have teams dedicated to improving performance of their product, but few have teams dedicated to improving overall quality of the product.
@@ -27,22 +24,15 @@ Building performant applications is not hard, but making them work the way you'd
 The key to making a successful effort in improving web performance is understanding the constraints of the problems that need to be solved and ensuring that the downsides of the changes that you choose to make are acceptable trade-offs.
 
 
-> A man that expects no trade-offs will quickly misplace his car's stereo.
-
-
 ## The Value of Performance
 
 As an engineer, it's often easy to forget that despite one's best efforts, humans can't work on multiple things simultaneously. Managers, however, find it quite easy to remember that on the engineer's behalf. When a performance issue is identified, it's simply too easy for many folks--especially in corporate culture--to write off performance as a secondary or low-priority goal.
-
-> If it ain't broke, don't fix it.
 
 Some performance issues are easy to justify fixing: as the amount of data in the system increases, the system gets slower. This is a scale issue: something that gets worse with no upper ceiling. The justification for issues like this usually sound like, "If we don't fix this slowdown, you won't be able to log in by this time next week."
 
 Other performance issues are more nuanced, and usually more abundant. A page's load might only take 2s, but only 0.8s are spent loading the assets used on the page. What's happening for the remainder of the page load? The browser might be executing very slow JavaScript, layout thrashing, performing garbage collection, or more. Fixing any single one of those problems could--depending on the complexity of the problem and the code involved--take an expert a day or more to fix, and the performance gains would likely be measurable in hundreds of milliseconds.
 
 For the average developer, divine intervention is in short supply and it would take nothing less to convince a manager that a couple hundred milliseconds are worth more than a few hours of time.
-
-> It takes time to save time.
 
 So what is the justification for improving performance?
 
@@ -77,8 +67,6 @@ Analytics tools like Google Analytics can give a detailed picture, but pulling i
 Singling out individual visitors isn't something that's possible most of the time, and this data--while somewhat useful--doesn't give a great picture of the experience that each user had.
 
 These kinds of analytics tools tend to have little value for gathering performance-related data if you don't know what to look for or how to segment what you find. It can also be a challenge to automate these tools to provide scheduled reports or dashboards. This is understandable, as tools like GA are not designed to be used for performance analysis.
-
-> Information overload can be more expensive than ignorance if the information isn't free.
 
 For a performance engineer, the following would have been more useful:
 

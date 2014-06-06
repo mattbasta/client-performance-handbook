@@ -1,8 +1,5 @@
 # Conclusion
 
-## Proverbs
-
-
 ## Notable Tickets
 
 Throughout this book, I've made note of many tickets in bug trackers for different browser vendors. This section is simply a collection of those tickets, along with a summary of each of the issues.
@@ -74,3 +71,29 @@ In particular, I'd like to thank:
 
 Chris Van (@cvanw)
 : Many thanks to Chris for his incessant focus on performance and attention to detail. Your pull requests and comments, as well as your ever-inquisitive nature have driven me to make this book as thorough and exhaustively accurate as I could possibly make it.
+
+
+## Proverbs
+
+> There is no place like home. Unless you don't like your home, in which case there is no place like your neighbor's home.
+
+> A man that expects no trade-offs will quickly misplace his car's stereo.
+
+> If it ain't broke, don't fix it.
+
+> It takes time to save time.
+
+> Information overload can be more expensive than ignorance if the information isn't free.
+
+> Say what you mean and mean what you say
+
+> A man in the drive-through that orders something off-menu doesn't get any extra fries.
+
+> Snake oil makes you feel great until you need to hit the commode
+
+> A man that carries nothing through life finds his grave the fastest
+
+
+
+
+
