@@ -240,10 +240,55 @@ There are few cases where neither of the attributes are appropriate for a piece 
 
 Additionally, `defer` should NOT be used when versions of Internet Explorer prior to IE10 must be supported. As mentioned previously, there is a bug that can cause old IE to execute deferred scripts in the wrong order.
 
+Note that scripts without `defer` and `async` block the browser from parsing and rendering the remainder of the page. Even if the browser's preloader is able to begin to download download the page's CSS as referenced in a `<link>` tag, the "critical path" is blocked until the script has downloaded *and* executed. Consequently, it is a bad practice to place any sort of non-deferred script tag before a `<link>` or `<style>` tag on a page.
+
 
 ## Head or Body: Where the hell do I put my code?
 
 It has long been a point of contention surrounding where to put script tags. Long ago, the de facto recommendation was to put the tags in the `<head>`. Today, the common recommendation is to put script tags at the end of the `<body>`. With the advent of HTML5 and modern JavaScript patterns, however, the "best" option is more complex.
+
+The first thing to consider is how your pages are being sent to the browser. If it takes quite a long time for your pages to load, it is imperative that you instruct the browser to start downloading the scripts as early in the page load process as possible. If you are performing a header flush to output the `<head>` and start of the `<body>`, you should opt to place your scripts in the head so that the browser can download the files in parallel with the rest of your page. If you have a relatively small amount of HTML and cannot flush (e.g.: when using Flask without streaming responses), the benefit of having the scripts in the head is minimal and placing the scripts at the end of the body may simply be less work.
+
+The next thing to consider is the requirements of your scripts. If your scripts require that the DOM is present and you cannot use the `defer` attribute, the scripts simply must be placed at the end of the `<body>`. If you only have a single script and do not rely on the DOM being ready, the script can be marked with `async` and placed in the `<head>`. If you have multiple scripts and can use the `defer` attribute, it is generally safe to place them in the `<head>`[^beware_firefox].
+
+[^beware_firefox]: Beware the aforementioned Firefox bug that causes `DOMContentLoaded` to fire at an inappropriate time when multiple deferred scripts are used on a page. A workaround is discussed in the previous section.
+
+The last thing to consider is the relative ordering of elements in the destination that you choose for your scripts. What you place the scripts before or after can have a significant impact on the performance of the page as a whole.
+
+```html
+<html>
+  <head>
+    <title>Demo</title>
+    <script src="external1.js"></script>  <!-- Script 1 -->
+    <script src="deferred.js" defer></script>  <!-- Script 2 -->
+    <link rel="stylesheet" href="styles.css">
+    <script src="external2.js"></script>  <!-- Script 3 -->
+  </head>
+  <body></body>
+</html>
+```
+
+Consider the example above. Because Script 1 does not have a `defer` or `async` attribute, it blocks the browser from beginning to process `styles.css`. Script 2, on the other hand, does not block `styles.css` because it is deferred. Script 3 is the ideal location for any JavaScript: after all `<style>` and `<link>` tags.
+
+When placing scripts at the end of the `<body>`, it is best to ensure the script tags are the very last elements on the page. No other tags should be placed after them, unless there is a very specific purpose.
+
+
+### To inline or not to inline
+
+A common question is whether scripts should be placed inline or not. In general, inline scripts should be avoided
+
+- Inline scripts decrease code quality by decentralizing JavaScript
+- They decrease your ability to use `defer` and `async` effectively
+- Confusing and troublesome issues related to execution order often appear, especially for deferred code
+- Inline scripts must execute before the remainder of the page can be parsed and rendered, which could significantly increase perceived load time
+
+There are a few use cases, however, that benefit significantly from using inline scripts. In all of the below cases, it is very important to test the effectiveness of inline scripts using the tools discussed earlier in the book to analyze whether they have a positive or negative performance impact.
+
+1. **Embedded pages:** Some pages will sometimes always have visitors that have cold caches. For instance, embeddable widgets or pages which will be iframed on third party websites will usually have an overwhelming majoity of visitors with cold caches. Additionally, many of these users will only request the page a single time. In this circumstance, it may be more effective inline the scripts. The caching benefit of external scripts is eliminated, and minimizing the number of connections that the user makes to your servers is often beneficial.
+2. **Very small JavaScript files:** Some pages only require a very small amount of JavaScript. In this case, the overhead of making the request may be greater than the overhead of transferring extra data as part of the original markup. Be careful that the code being used is not very complex, as it will block the remainder of the page from rendering and being displayed.
+3. **Bootstrapping scripts:** Some JavaScript loaders may require scripts on the page in order to load the remainder of the JavaScript on the site. In this case, inline scripts may be necessary in order to avoid a very large performance hit before the application can become even remotely interactive.
+
+In general--especially when other performance best practices (like SPDY) are being used--external scripts are not the bottleneck for page load performance. In fact, the ability to load multiple JavaScript files in parallel oftentimes significantly increases the page load performance that users with poor connection speeds will experience.
 
 
 ## Memory
