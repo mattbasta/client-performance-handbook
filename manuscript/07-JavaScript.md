@@ -293,6 +293,31 @@ In general--especially when other performance best practices (like SPDY) are bei
 
 ## Memory
 
+With a built-in garbage collector, simple object literal syntax, and automatic "passing-by-reference"[^pass_by_reference] for objects, it's easy to forget the impact of memory allocation on application performance. For every object created, space must be allocated on the heap. When the object is dereferenced, it must be cleaned up to make room for other objects. Depending on the browser, this may have varying performance impacts.
+
+[^pass_by_reference]: JavaScript isn't truly pass-by-reference. Rather, it's what you might call "pass-by-copy-of-a-reference." Unlike C++, you cannot point a reference to an entirely new object by reassigning the value of a passed argument.
+
+
+### Garbage Collection
+
+Garbage collection is the process of cleaning up objects on the heap that are no longer being used. If there are no variables, objects, or closures that contain references to an object, it becomes eligible for cleanup by the garbage collector.
+
+At the time of writing, some browsers have better garbage collection algorithms than others. There are a few basic types of garbage collectors in use in JavaScript today:
+
+Reference Counting GC
+: A reference counting garbage collector keeps track of the number of references that exist to each object. When the reference count for an object drops to zero, it can safely be garbage collected. One of the biggest downsides to this approach is that cycles (an object referencing itself, or an object referencing another object which eventually references itself) can cause objects to improperly avoid being collected: the reference count will never reach zero. Techniques can be used to avoid cycles, though these can introduce a signficant amount of overhead.
+
+Traditional Mark-and-Sweep GC
+: A mark-and-sweep garbage collector stops all JavaScript execution when a set of conditions are met. During this "GC pause," the garbage collector inspects each object on the heap to see whether it has a reference. If an object has a reference, it is marked as "live." When all objects with references have been marked, the garbage collector revisits every allocated object. If an object is not marked as "live," it is freed. This approach has the downside of pausing JavaScript execution temporarily. In performance-critical applications, these pauses can cause frustrating delays. To help prevent issues around these pauses, some browsers perform this process incrementally: pauses are divided up and spread out over the course of an application's execution to make them less noticeable and take better advantage of browser idle time.
+
+Generational Garbage Collection
+: A generational garbage collection algorithm is a type of mark-and-sweep collection that keeps objects which live for only a short time separate from objects which live for quite a long time. If objects that become unreferenced quickly are kept separate, there is a smaller segment of memory that needs to be considered for garbage collection. Generational GC is the most efficient garbage collection algorithm used in browsers today.
+
+
+Currently, the usage of generational garbage collection is limited. See the following table for information on each browser:
+
+
+
 ## Improving CPU-Heavy Code
 
 ## API Performance
