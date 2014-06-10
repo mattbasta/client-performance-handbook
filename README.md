@@ -20,23 +20,22 @@ better quality products to their clients and employers.
 ## Chapter Outline
 
 1. Introduction to web performance
-    1. Why perf is important
-    3. Categorizing users
-    3. Prioritizing performance improvements
-2. Identifying performance issues
-    1. Browser timing API
-    2. Timing data inside compiled files
-    3. Storing timestamps at important page events
-    4. Make more graphs
+    1. Performance is about compromises
+    2. The Value of Performance
+    3. Categorizing Users
+    4. Prioritizing Performance Improvements
+2. Identifying Performance Issues
+    1. The Navigation Timing API
+    2. Timing Data Inside JavaScript
+    3. Storing Timestamps at Important Page Events
+    4. Make More Graphs
     5. Simplify
-        - Tech debt
-        - Refactoring
-        - Premature optimization
 3. Overview of a page’s lifecycle
+    1. Page Lifecycle and Performance
 4. Connection and SSL
-    1. Overview of TCP
-    2. DNS Lookups
-    3. TCP Connections
+    1. DNS Lookups
+    2. TCP Connections
+    3. SSL
     4. CDNs
     5. SPDY
 5. Assets and Payload
@@ -67,9 +66,6 @@ better quality products to their clients and employers.
         - Typed arrays
     3. Performance of APIs
     4. Asm.js
-        - Asm.js is a red herring
-        - Why you should mostly never use it
-        - ...and what are the exceptions
     5. Frameworks and Performance
         - Aren’t frameworks necessary?
         - Aren’t frameworks unnecessary?
@@ -82,10 +78,11 @@ better quality products to their clients and employers.
         - Is it better?
         - Costs
 7. Conclusion
-    1. Proverbs
-    2. Notable Tickets
-    4. Mentioned Tools
-    3. Thanks, credits
+    1. Notable Tickets
+    2. Mentioned Tools
+    3. Glossary
+    4. Thanks, credits
+    5. Proverbs
 
 
 ## Contributing
