@@ -354,11 +354,66 @@ Consider the above code snippet from a hypothetical game. This game would suffer
 
 In this example, the garbage that's created on the heap is probably not severe enough to cause any major problems. In fact, if the game is simplistic enough, it may not be noticeable at all. Any game of substantial complexity (e.g.: games that consume any notable percentage of their available rendering time), however, will quickly find that these allocations get far out of hand.
 
+
+### Addressing garbage collection pauses
+
 Let's look at addressing some of these issues:
 
 - **Don't generate new coordinates on each call to `getCoordinates()`.** The list of players is stored in the `players` array. Perhaps keep a persistent array or dictionary called `playerLocations` containing the coordinates for each player. Recycle the same array of coordinates for each invocation.
 - **Don't use an intermediate function.** Instead of calling `getCoordinates()` and passing the result through `drawPlayers()`, simply have `drawPlayers()` call `getX()` and `getY()` directly. It may not be as clean, but it prevents the need for allocation *any* arrays at all.
+- **Recycle temporary objects.** By moving `var coords = [];` outside of `draw()`, the same array can be recycled. At the beginning of `draw()`, all that is necessary is to remove each item from the array: `while (coords.length) coords.pop();`.
 
+Here are a few versions of the same code without the GC issues:
+
+```js
+var players = ['bob', 'lucky', 'tiny'];
+
+function draw() {
+    var player;
+    for (var i = 0; i < players.length; i++) {
+        player = players[i];
+        // Values are passed directly to their destination, avoiding any
+        // temporary object. At a larger scale, this may not be ideal
+        // because the code can get quite unruly.
+        drawAvatar(getX(player), getY(player));
+    }
+
+    requestAnimationFrame(draw);
+}
+
+requestAnimationFrame(draw);
+```
+
+```js
+var players = ['bob', 'lucky', 'tiny'];
+// A single object pool is used to store coordinates.
+var playerCoords = [[0, 0], [0, 0], [0, 0]];
+
+function updateCoordinates(index) {
+    // Existing arrays are updated with new values, recycling old objects
+    playerCoords[index] = getX(playeres[index]);
+    playerCoords[index] = getY(playeres[index]);
+}
+
+function drawPlayers(playersToDraw) {
+    for (var i = 0; i < playersToDraw.length; i++) {
+        drawAvatar(playersToDraw[0], playersToDraw[1]);
+    }
+}
+
+function draw() {
+    // No temporary array is created.
+    for (var i = 0; i < players.length; i++) {
+        updateCoordinates(i);
+    }
+
+    drawPlayers(playerCoords);
+
+    requestAnimationFrame(draw);
+}
+
+requestAnimationFrame(draw);
+```
 
 
 ## Improving CPU-Heavy Code
