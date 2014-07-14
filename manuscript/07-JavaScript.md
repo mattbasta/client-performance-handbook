@@ -295,26 +295,69 @@ In general--especially when other performance best practices (like SPDY) are bei
 
 With a built-in garbage collector, simple object literal syntax, and automatic "passing-by-reference"[^pass_by_reference] for objects, it's easy to forget the impact of memory allocation on application performance. For every object created, space must be allocated on the heap. When the object is dereferenced, it must be cleaned up to make room for other objects. Depending on the browser, this may have varying performance impacts.
 
-[^pass_by_reference]: JavaScript isn't truly pass-by-reference. Rather, it's what you might call "pass-by-copy-of-a-reference." Unlike C++, you cannot point a reference to an entirely new object by reassigning the value of a passed argument.
+[^pass_by_reference]: JavaScript isn't truly pass-by-reference. Rather, arguments are passed a copy of a reference.
+
+Garbage collection pauses can be difficult to identify. In most traditional web apps, a garbage collection pause may seem almost imperceptible. Longer pauses may make the interface feel unresponsive, as if the browser is stuttering before performing (or after performing) some sort of action. In other browsers, garbage collection pauses may have even more dire performance consequences: older versions of Internet Explorer perform garbage collection after every hundred allocations!
+
+Garbage collection pauses (or GC pauses, for short) are most noticeable in games, where each frame only has a limited amount of time to be rendered. If the browser performs a garbage collection pass between two frames, the second frame will probably not manage to render on time, leading to a decreased frame rate.
+
+I> Many games facing memory management problems will have a satisfactory frame rate, but will tend to stutter or pause. These pauses may appear multiple times per second or periodically over the course of a few seconds. In some modern browsers, the pauses may be less pronounced and exist as subtle jerky "twitches" in the animation.
+
+On the other hand, a game or application with a consistently low frame rate (i.e.: when measured, each frame takes approximately the same amount of time to render) may not be experiencing garbage collection pauses.
+
+Confirming whether an application suffers from GC pauses is simple. The Chrome developer tools' Timeline tab gives a convenient insight into garbage collection pauses:
+
+![Timeline view showing a minor GC pause](images/gc_pause_timeline.png)
+
+As you can see in the timeline above, `requestAnimationFrame` was fired, probably executing some sort of rendering function. Immediately afterward, a garbage collection was triggered, lasting approximately 0.2 milliseconds. This example is not so bad: the GC happens in an incredibly short amount of time, and the rendering function executes very quickly. The result is that even with a modest GC pause, the frame rate is not affected.
+
+![Timeline view showing a series of costly garbage collections](images/gc_pause_timeline_bad.png)
+
+The above timeline shows just how costly garbage collection can be. A pause of nearly 15ms causes at least one dropped frame every time it occurs.
 
 
-### Garbage Collection
+### Cause of garbage collection pauses
 
-Garbage collection is the process of cleaning up objects on the heap that are no longer being used. If there are no variables, objects, or closures that contain references to an object, it becomes eligible for cleanup by the garbage collector.
+Garbage collection pauses wouldn't need to happen if there was no garbage to collect. Preventing garbage from existing in the first place is the only proper way to avoid garbage collection.
 
-At the time of writing, some browsers have better garbage collection algorithms than others. There are a few basic types of garbage collectors in use in JavaScript today:
+```js
+var players = ['bob', 'lucky', 'tiny'];
 
-Reference Counting GC
-: A reference counting garbage collector keeps track of the number of references that exist to each object. When the reference count for an object drops to zero, it can safely be garbage collected. One of the biggest downsides to this approach is that cycles (an object referencing itself, or an object referencing another object which eventually references itself) can cause objects to improperly avoid being collected: the reference count will never reach zero. Techniques can be used to avoid cycles, though these can introduce a significant amount of overhead.
+function getCoordinates(user) {
+    return [getX(user), getY(user)];
+}
 
-Traditional Mark-and-Sweep GC
-: A mark-and-sweep garbage collector stops all JavaScript execution when a set of conditions are met. During this "GC pause," the garbage collector inspects each object on the heap to see whether it has a reference. If an object has a reference, it is marked as "live." When all objects with references have been marked, the garbage collector revisits every allocated object. If an object is not marked as "live," it is freed. This approach has the downside of pausing JavaScript execution temporarily. In performance-critical applications, these pauses can cause frustrating delays. To help prevent issues around these pauses, some browsers perform this process incrementally: pauses are divided up and spread out over the course of an application's execution to make them less noticeable and take better advantage of browser idle time.
+function drawPlayers(playersToDraw) {
+    for (var i = 0; i < playersToDraw.length; i++) {
+        drawAvatar(playersToDraw[0], playersToDraw[1]);
+    }
+}
 
-Generational Garbage Collection
-: A generational garbage collection algorithm is a type of mark-and-sweep collection that keeps objects which live for only a short time separate from objects which live for quite a long time. If objects that become unreferenced quickly are kept separate, there is a smaller segment of memory that needs to be considered for garbage collection. Generational GC is the most efficient garbage collection algorithm used in browsers today.
+function draw() {
+    var coords = [];
+    for (var i = 0; i < players.length; i++) {
+        coords.push(getCoordinates(players[i]));
+    }
 
+    drawPlayers(coords);
 
-Currently, the usage of generational garbage collection is limited. See the following table for information on each browser:
+    requestAnimationFrame(draw);
+}
+
+requestAnimationFrame(draw);
+```
+
+Consider the above code snippet from a hypothetical game. This game would suffer from at least some minor garbage collection pauses. Can you spot the two issues?
+
+1. The first issue is the array created by `getCoordinates()`. One array is allocated for every player on every frame. At sixty frames per second with three players, that's 180 arrays that will probably be discarded almost immediately.
+2. The second issue is the array created by `draw()` for `coords`. Again, this is one allocation performed on each frame, leading to up to sixty allocations per second.
+
+In this example, the garbage that's created on the heap is probably not severe enough to cause any major problems. In fact, if the game is simplistic enough, it may not be noticeable at all. Any game of substantial complexity (e.g.: games that consume any notable percentage of their available rendering time), however, will quickly find that these allocations get far out of hand.
+
+Let's look at addressing some of these issues:
+
+- **Don't generate new coordinates on each call to `getCoordinates()`.** The list of players is stored in the `players` array. Perhaps keep a persistent array or dictionary called `playerLocations` containing the coordinates for each player. Recycle the same array of coordinates for each invocation.
+- **Don't use an intermediate function.** Instead of calling `getCoordinates()` and passing the result through `drawPlayers()`, simply have `drawPlayers()` call `getX()` and `getY()` directly. It may not be as clean, but it prevents the need for allocation *any* arrays at all.
 
 
 
