@@ -363,7 +363,7 @@ Let's look at addressing some of these issues:
 - **Don't use an intermediate function.** Instead of calling `getCoordinates()` and passing the result through `drawPlayers()`, simply have `drawPlayers()` call `getX()` and `getY()` directly. It may not be as clean, but it prevents the need for allocation *any* arrays at all.
 - **Recycle temporary objects.** By moving `var coords = [];` outside of `draw()`, the same array can be recycled. At the beginning of `draw()`, all that is necessary is to remove each item from the array: `while (coords.length) coords.pop();`.
 
-Here are a few versions of the same code without the GC issues:
+The following version of the above avoids the memory management issue by passing the coordinates directly to their destination. In doing this, an array (or multiple arrays) were not needed to store the values in question.
 
 ```js
 var players = ['bob', 'lucky', 'tiny'];
@@ -383,6 +383,8 @@ function draw() {
 
 requestAnimationFrame(draw);
 ```
+
+In this next example, a series of pre-made arrays are used instead of allocating new arrays on each iteration of the game. Since setting the contents of an array or taking references to an array does not cause issues with garbage collection, this approach can also be used to safely avoid all of the aforementioned issues.
 
 ```js
 var players = ['bob', 'lucky', 'tiny'];
@@ -414,6 +416,17 @@ function draw() {
 
 requestAnimationFrame(draw);
 ```
+
+
+### Browsers and garbage collection
+
+Different browsers have different behaviors when memory-inefficient code runs. This is due to different types of garbage collector implementations across each browser.
+
+At the head of the pack is Chrome with V8's generational garbage collector. In V8, memory allocation is cheap and there is a negligible performance impact from creating new objects. V8 includes what is known as a *generational garbage collector*. This means that objects that are allocated are segregated into different groups: new objects live in one place, and objects that have been around for a while move to another. Since objects that are new tend to become garbage quite quickly and old objects tend to stay around for a long time, separating the two greatly decreases the time to detect and clean up garbage. The detection phase is known as marking: the heap is scanned for pointers, and the objects they point at are marked as "still in use." The cleanup phase is known as sweeping: each of the objects that are not marked as alive are cleaned up. In V8, some of the sweeping phase can be performed on a different thread.
+
+Perhaps surprisingly, IE11's garbage collector does not perform badly. IE11 uses a JavaScript engine known as "Chakra," which uses a proprietary garbage collector. Little is publicly known about its internals, however.
+
+Firefox implements a mark-and-sweep garbage collector similar to that of Chrome, but it is (at the time of writing) not generational. This means that Firefox must scan the whole heap for garbage every time it performs a garbage collection, rather than only parts of it. This means that garbage collection in Firefox generally takes much longer. The properties of generational garbage collection also mean that Firefox tends to store objects in a much less efficient way compared to other browsers.
 
 
 ## Improving CPU-Heavy Code
