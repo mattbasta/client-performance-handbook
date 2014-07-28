@@ -59,6 +59,9 @@ Selector
 Event
 : An object representing something that happened in the browser and the triggering of JavaScript code that has been put in place to accept it.
 
+JIT Compilation
+: JIT compilers, or Just-In-Time compilers, are a cross between interpreters and static compilers. Code running in a JIT-enabled interpreter will run slowly as the interpreter finds out how the code works. Then, the JIT compiler will replace the slow code with fast, optimized code.
+
 Run To Completion
 : The process of triggering a JavaScript function, then waiting for all subsequent synchronous processing to complete.
 

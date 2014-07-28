@@ -431,6 +431,68 @@ Firefox implements a mark-and-sweep garbage collector similar to that of Chrome,
 
 ## Improving CPU-Heavy Code
 
+Sometimes, performance issues with a particular piece of JavaScript code can simply be traced back to inefficiencies with the code that runs under the hood of the JavaScript engine. There is a lot of talk about the leaps and bounds made by JIT compilation in JavaScript, though there is little talk about what works and what doesn't with regard to this process.
+
+At a high level, JIT compilation works in the following way:
+
+1. Code runs in "interpreter mode", where each each instruction is executed manually by another application (the "interpreter").
+2. As the code runs in the interpreter, the JIT compiler takes profile information about typing and application flow.
+3. The JIT compiler uses the profile information it collects to create an optimized version of the program it is running. This optimized version is usually raw machine code.
+
+Unbeknownst to most developers, there are in fact patterns that will cause some code to run significantly faster than other pieces of code. In small, simple pieces of JavaScript it is rarely the case that such patterns will pose any significant performance issue. Large, complex, or frequently-running pieces of code will indeed surface such issues.
+
+The following are some symptoms of poorly-performing CPU-heavy code:
+
+- Significant pauses in application execution that are not associated with external operations (XHR, image or video decoding, `localStorage` access, etc.) or garbage collection.
+- Consistent, frequent stuttering, such as during drag-and-drop or when using scroll-related behavior (e.g.: parallax effects, "sticky" headers, etc.).
+- Pauses or delays that happen when pressing UI elements that trigger large amounts of JavaScript.
+
+To illustrate how two pieces of similar code can have tremendous performance differences, consider the following two snippets of JavaScript:
+
+```js
+var badInput = [
+  1, 2, 3, 4, 5, '6', '7', 8, 9, [10]
+];
+
+var dump = [];
+function process(x) {
+  dump.push(x * 10);
+}
+for (var i = 0; i < 1000; i++) {
+  process(badInput[i % badInput.length]);
+}
+```
+
+```js
+var goodInput = [
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+];
+
+var dump = [];
+function process(x) {
+  dump.push(x * 10);
+}
+for (var i = 0; i < 1000; i++) {
+  process(goodInput[i % goodInput.length]);
+}
+```
+
+![Comparison of the two pieces of code[^jsperf_jit_breakage]](images/type_perf_comparison.png)
+
+[^jsperf_jit_breakage]: http://jsperf.com/jit-breakage
+
+The only difference between the two snippets is the input used. The "bad input" test uses a mix of numbers, strings, and an object which needs to be cast to a string, then a number. The second snippet uses numbers exclusively.
+
+Obviously, the performance difference is striking, despite producing identical output. There are a few reasons for this:
+
+- Many CPU cycles are wasted converting strings and objects to numbers.
+- The `process()` function is passed data with inconsistent types. When the JIT compiler runs for the first ("bad input") test, it has to add checks to `process()` to see what type `x` is and handle that appropriately. In the second ("good input") test, the JIT compiler only needs to add code for numbers.
+
+Let's have a look at another example:
+
+
+
+
 ## API Performance
 
 ## Asm.js
