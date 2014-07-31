@@ -488,9 +488,131 @@ Obviously, the performance difference is striking, despite producing identical o
 - Many CPU cycles are wasted converting strings and objects to numbers.
 - The `process()` function is passed data with inconsistent types. When the JIT compiler runs for the first ("bad input") test, it has to add checks to `process()` to see what type `x` is and handle that appropriately. In the second ("good input") test, the JIT compiler only needs to add code for numbers.
 
+It may seem improbable that someone would write code that looks like the first snippet. However, consider a function that performs some action (say, updating the score in a game). Sometimes, the function is called by an action that the player takes, and an integer is passed. Other times, the function is called by an action that the computer player takes, and a string is passed (perhaps it comes from an `XMLHttpRequest`'s `responseText`).
+
 Let's have a look at another example:
 
+```js
+// Setup code:
+var dump = [];
+var names = ['Matt', 'Tom', 'Lucy', 'Sally'];
+function Person(name, id, age) {
+  this.name = name;
+  this.id = id;
+  this.age = age;
+  this.previous = null;
+}
 
+var i;
+var person;
+
+
+// -- Example 1 --
+
+for (i = 0; i < 100; i++) {
+  // Create a new Person object
+  person = new Person(
+    names[i % names.length],
+    i,
+    20 + i % 10
+  );
+  dump.push(person);
+  // Compute a value and set it to a member of the object just created.
+  if (i > 0) {
+    person['previous'] = dump[i - 1];
+  }
+}
+
+dump = [];
+
+// -- Example 2 --
+
+for (i = 0; i < 100; i++) {
+  // Create a new Person object, as before.
+  person = new Person(
+    names[i % names.length],
+    i,
+    20 + i % 10
+  );
+  dump.push(person);
+  // Take a fixed value and set it to a member of the object that's computed.
+  person['age' + person.age.toString()] = 'ripe old age';
+}
+
+```
+
+Which of the two versions of the code above will be more performant? The difference is very simple:
+
+- The first example computes `i - 1`, performs a lookup to `dump`, and assigns the value it fetched to `person.previous`.
+- The second example performs a lookup for `person.age`, computes `'age' + person.age.toString()`, and assigns `'ripe old age'` to the member that it computed.
+
+Had this code run strictly in an interpreter, the difference between the two is negligible. The JIT compiler, however, is capable of making the first example significantly faster:
+
+![Comparison of second two pieces of code[^jsperf_jit_breakage_objects]](images/type_change_perf_comparison.png)
+
+[^jsperf_jit_breakage_objects]: http://jsperf.com/jit-breakage-objects
+
+The first example is far faster, but why? The answer lies in how the JIT compiler is able to optimize objects. When you create any sort of object in JavaScript, it has a "shape." The shape of an object is all of the different properties and methods that the object has assigned to it. This information is used to create the equivalent of a C++ class representing the object. For instance, the `Person` object in the last example might have a shape that looks like the following:
+
+```c++
+class Person {
+    public:
+        string name;
+        int id;
+        int age;
+        Person *previous;
+};
+```
+
+This is, of course, an over-simplified explanation of what is going on, but it illustrates the concept.
+
+In the second half of the example above, a new property is being computed for the object:
+
+```js
+person['age' + person.age.toString()] = 'ripe old age';
+```
+
+When this happens, the object's shape changes. No longer can the object use the `Person` shape from the C++ example above. Instead, one of two things happens:
+
+1. A new shape needs to be created.
+2. The JIT needs to stop trying to optimize the code and fall back to the interpreter.
+
+In the first case, another representation will end up being created:
+
+```c++
+class Person__with_age7 { // New name to indicate the difference
+    public:
+        string name;
+        int id;
+        int age;
+        Person *previous;
+
+        int age7; // New!
+};
+```
+
+Creating this new shape is expensive, however. Additionally, `Person` and `Person__with_age7` may not be able to fit into the same array anymore:
+
+```c++
+// Because all of the objects are not `Person` anymore, the JIT compiler
+// may not be able to put them in an optimized array:
+Person* dump[100];
+// Instead, it may need to create a more generic, slower array:
+JSObject* dump[100];
+```
+
+The first half of the code, however, can use the optimized representations all the time, since the shape does not change. This means that it can run far faster.
+
+
+### Improving JIT performance
+
+There are a number of things you can do to improve the performance of your CPU-bound application:
+
+- Always pass the same type of value to arguments in a function. Do not pass a combination of strings and integers, for example, to the same argument.
+- Have a consistent return type for your functions. Functions should always return only one type.
+- Do not change the shape of your objects:
+  - Do not assign arbitrary members to objects.
+  - Do not assign values of different types to the same object member.
 
 
 ## API Performance
