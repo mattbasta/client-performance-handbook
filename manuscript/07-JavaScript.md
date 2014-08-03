@@ -613,9 +613,234 @@ There are a number of things you can do to improve the performance of your CPU-b
 - Do not change the shape of your objects:
   - Do not assign arbitrary members to objects.
   - Do not assign values of different types to the same object member.
+- Though it is not a problem in Firefox, Chrome is up to twice as fast if you use a constructor (`new Foo()`) instead of an object literal when following all of the above advice.
+
+
+### Web Workers
+
+On the web, JavaScript is single-threaded. This means that no two pieces of code will ever execute simultaneously (with few, obscure exceptions). Some types of computation, however, are best done on a separate thread. Long-running pieces of code, for instance, should not block the UI from being used.
+
+The solution is Web Workers. Workers create a separate JavaScript execution context that runs on its own thread. Issues with thread safety are removed, as the interface between a worker and a page exists as a single message passing callback, and all data transferred between the two contexts is serialized.
+
+Here's an example of a script that uses a Monte Carlo method to calculate pi:
+
+```js
+var startTime = Date.now();
+
+var total = 100000000;
+var numWithin = 0;
+var x;
+var y;
+for (var i = 0; i < total; i++) {
+    x = Math.random();
+    y = Math.random();
+    if (x * x + y * y < 1) {
+        numWithin++;
+    }
+}
+// <div id="result"></div>
+document.querySelector('#result').innerHTML = 4 * numWithin / total;
+
+var endTime = Date.now();
+// <div id="time"></div>
+document.querySelector('#time').innerHTML = endTime - startTime;
+```
+
+When run, the output shows the approximation of pi and the duration of the script in milliseconds:
+
+```
+3.14159844
+9817
+```
+
+Now, this is an unacceptable amount of time to make the page essentially unusable. Instead, let's create a web worker:
+
+```js
+// This is stored in worker.js
+
+var total = 100000000;
+var numWithin = 0;
+var x;
+var y;
+for (var i = 0; i < total; i++) {
+    x = Math.random();
+    y = Math.random();
+    if (x * x + y * y < 1) {
+        numWithin++;
+    }
+}
+
+postMessage(4 * numWithin / total);
+```
+
+And this is the new script for the page:
+
+```js
+var startTime = Date.now();
+var worker = new Worker('worker.js');
+worker.onmessage = function(e) {
+    var endTime = Date.now();
+
+    // <div id="result"></div>
+    document.querySelector('#result').innerHTML = e.data;
+    // <div id="time"></div>
+    document.querySelector('#time').innerHTML = endTime - startTime;
+};
+```
+
+And that's it! The worker will behave exactly as you expect it to: the call to `new Worker()` will load `worker.js` and start running the code. When `postMessage()` is called with the result, `worker.onmessage` is fired. The result is kept in `e.data`. The output of this new script is essentially identical to the output of the previous version.
+
+Using a worker doesn't necessarily decrease the amount of time for the script to run, though, it simply moves the work to another thread. This may increase perceived performance, but will not make the application work any faster. To take full advantage of web workers, you must break up your work into smaller chunks and spread the work over multiple workers. Let's modify the scripts above slightly:
+
+```js
+// This is stored in worker.js
+
+this.onmessage = function(e) {
+    work(e.data);
+};
+postMessage('ready');
+
+function work(total) {
+    var numWithin = 0;
+    var x;
+    var y;
+    for (var i = 0; i < total; i++) {
+        x = Math.random();
+        y = Math.random();
+        if (x * x + y * y < 1) {
+            numWithin++;
+        }
+    }
+
+    postMessage(numWithin);
+}
+```
+
+And this is the new script for the page:
+
+```js
+var startTime = Date.now();
+var workerPool = [];
+var numWorkers = 10;
+var numCompletedWorkers = 0;
+var numIterations = 100000000;
+var numWithin = 0;
+for (var i = 0; i < numWorkers; i++) {
+    workerPool.push(getNewWorker());
+}
+
+function getNewWorker() {
+    var worker = new Worker('worker.js');
+    var isReady = false;
+    worker.onmessage = function(e) {
+        if (!isReady && e.data === 'ready') {
+            isReady = true;
+            // Give the worker something to do.
+            worker.postMessage(numIterations / numWorkers);
+            return;
+        }
+
+        // The worker has completed.
+        numWithin += e.data;
+        numCompletedWorkers++;
+        // If all workers have completed, run the completion function.
+        if (numCompletedWorkers === numWorkers) {
+            workersCompleted();
+        }
+    };
+}
+
+function workersCompleted() {
+    var endTime = Date.now();
+
+    // <div id="result"></div>
+    document.querySelector('#result').innerHTML = 4 * numWithin / numIterations;
+    // <div id="time"></div>
+    document.querySelector('#time').innerHTML = endTime - startTime;
+}
+
+```
+
+That's a lot more code, but it allows us to break the work up into multiple, smaller chunks. Each chunk runs in parallel. In this case, the work is broken into ten chunks. Here is the updated result:
+
+```
+3.14154388
+899
+```
+
+That's much faster! Instead of taking almost ten seconds to execute, our code now executes in less than one.
+
+Keeping lots of separate files around can be problematic, though. Additionally, each worker creates its own HTTP request, which can become quite costly if you begin using many workers. The solution is to embed the worker into the same script using `Blob` objects. Here is the second example from above, combined into a single file:
+
+```js
+function worker() {
+    // Because this function will be converted to a string,
+    // it CANNOT access variables outside of itself.
+
+    var total = 100000000;
+    var numWithin = 0;
+    var x;
+    var y;
+    for (var i = 0; i < total; i++) {
+        x = Math.random();
+        y = Math.random();
+        if (x * x + y * y < 1) {
+            numWithin++;
+        }
+    }
+
+    self.postMessage(4 * numWithin / total);
+}
+
+var startTime = Date.now();
+
+var workerBlob = new Blob(
+    // Take the string representation of the function and
+    // pass it as a self-executing closure.
+    ['(' + worker.toString() + ')()'],
+    {type: 'text/javascript'}
+);
+
+// Turn the blob containing the worker's source code into a URI
+// that the Worker can access and create the Worker.
+var worker = new Worker((URL || webkitURL).createObjectURL(workerBlob));
+worker.onmessage = function(e) {
+    var endTime = Date.now();
+
+    // <div id="result"></div>
+    document.querySelector('#result').innerHTML = e.data;
+    // <div id="time"></div>
+    document.querySelector('#time').innerHTML = endTime - startTime;
+};
+```
+
+The above script works just as the second example works: `worker()` runs in a separate thread, and passes the result back to the page when it has completed. Using this approach for the pooled approach above is left as an exercise to the reader.
+
+Note that the `worker()` function does not behave as a normal JavaScript function. For instance, `worker()` does NOT have access to the `startTime` variable, despite the appearance that you could otherwise access it through lexical scope. The approach shown above works by taking `worker()` and converting it back to source code with `toString()`. This source code has no connection to the original script: it simply lifts the contents of `worker()` and `worker()` alone out into the `Blob` object that is passed into the `Worker`. If you are careful, however, parameters can be passed as static strings:
+
+```js
+function worker(startTime) {
+    // `worker` can now read `startTime`, but cannot change it.
+    // ...
+}
+
+var startTime = Date.now();
+
+var workerBlob = new Blob(
+    // Pass `startTime` as the first argument to `worker`.
+    ['(' + worker.toString() + ')(' + JSON.stringify(startTime) + ')'],
+    {type: 'text/javascript'}
+);
+
+```
+
+
+### Typed Arrays
 
 
 ## API Performance
+
+
 
 ## Asm.js
 
