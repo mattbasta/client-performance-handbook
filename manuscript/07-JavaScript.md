@@ -839,6 +839,19 @@ var workerBlob = new Blob(
 
 ### Typed Arrays
 
+In many CPU-intensive routines, one of the most common operations is the manipulation of arrays of numbers. This may be for any number of things: cryptography, 3D rendering, multimedia processing, etc. In all of the above, arrays of integers or floating point numbers must be manipulated. A relatively recent introduction to JavaScript can help optimize these cases: typed arrays.
+
+A typed array is similar to a normal JavaScript array, with a few differences:
+
+1. A typed array can only contain one variable type. For example, a typed array might only contain 32-bit floating point numbers, or 16-bit integers.
+2. There are no `null` values in a typed array. All values are initialized to the equivalent of zero by default.
+3. Typed arrays are a fixed length. Once they are instantiated, they cannot be resized.
+4. Typed arrays have no literal syntax.
+
+Let's see an example of how you might use a typed array:
+
+
+
 
 ## API Performance
 
