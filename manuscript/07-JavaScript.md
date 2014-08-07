@@ -61,12 +61,12 @@ Even with the preloader in place, you can still provide significant benefit to y
 
 ### `defer`
 
-- Inline scripts (i.e.: script without a `src=""` attribute) will ignore the `defer` attribute.
+- Inline scripts (i.e., script without a `src=""` attribute) will ignore the `defer` attribute.
 - All external `<script>` tags with the `defer` attribute will load in parallel (up to the per-domain connection limit).
 - As each deferred script finishes downloading, it will execute.
 - A deferred script will not execute until all previous deferred scripts have downloaded and executed.
 - Deferred scripts should *never* call `document.write` or any similar functions.
-- Deferred scripts will wait to execute until the full page has been downloaded and parsed. I.e.: they will wait for the DOM to be fully loaded.
+- Deferred scripts will wait to execute until the full page has been downloaded and parsed. i.e., they will wait for the DOM to be fully loaded.
 - Deferred scripts will block `DOMContentLoaded` from firing.
 
 From a high level, a script with the `defer` attribute behaves very similarly to the default behavior of external script tags. Here are two scenarios:
@@ -87,7 +87,7 @@ In the second example, the browser will begin downloading both files simultaneou
 
 Most sites that do not have any inline scripts can safely add `defer` to all of their script tags without any other changes to their code. For browsers that support `defer` but do not have a preloader, this can provide immediate and significant performance improvements.
 
-Because deferred scripts will wait until the DOM has completed before executing, it does not matter where the scripts are located on the page. This means that scripts can be placed earlier in the document (e.g.: the `<head>`) in order to start downloading sooner without needing to worry about whether problems will arise because the DOM is not available. For example, consider the following code:
+Because deferred scripts will wait until the DOM has completed before executing, it does not matter where the scripts are located on the page. This means that scripts can be placed earlier in the document (e.g., the `<head>`) in order to start downloading sooner without needing to worry about whether problems will arise because the DOM is not available. For example, consider the following code:
 
 ```js
 alert(document.body.innerHTML);
@@ -247,7 +247,7 @@ Note that scripts without `defer` and `async` block the browser from parsing and
 
 It has long been a point of contention surrounding where to put script tags. Long ago, the de facto recommendation was to put the tags in the `<head>`. Today, the common recommendation is to put script tags at the end of the `<body>`. With the advent of HTML5 and modern JavaScript patterns, however, the "best" option is more complex.
 
-The first thing to consider is how your pages are being sent to the browser. If it takes quite a long time for your pages to load, it is imperative that you instruct the browser to start downloading the scripts as early in the page load process as possible. If you are performing a header flush to output the `<head>` and start of the `<body>`, you should opt to place your scripts in the head so that the browser can download the files in parallel with the rest of your page. If you have a relatively small amount of HTML and cannot flush (e.g.: when using Flask without streaming responses), the benefit of having the scripts in the head is minimal and placing the scripts at the end of the body may simply be less work.
+The first thing to consider is how your pages are being sent to the browser. If it takes quite a long time for your pages to load, it is imperative that you instruct the browser to start downloading the scripts as early in the page load process as possible. If you are performing a header flush to output the `<head>` and start of the `<body>`, you should opt to place your scripts in the head so that the browser can download the files in parallel with the rest of your page. If you have a relatively small amount of HTML and cannot flush (e.g., when using Flask without streaming responses), the benefit of having the scripts in the head is minimal and placing the scripts at the end of the body may simply be less work.
 
 The next thing to consider is the requirements of your scripts. If your scripts require that the DOM is present and you cannot use the `defer` attribute, the scripts simply must be placed at the end of the `<body>`. If you only have a single script and do not rely on the DOM being ready, the script can be marked with `async` and placed in the `<head>`. If you have multiple scripts and can use the `defer` attribute, it is generally safe to place them in the `<head>`[^beware_firefox].
 
@@ -285,7 +285,7 @@ A common question is whether scripts should be placed inline or not. In general,
 There are a few use cases, however, that benefit significantly from using inline scripts. In all of the below cases, it is very important to test the effectiveness of inline scripts using the tools discussed earlier in the book to analyze whether they have a positive or negative performance impact.
 
 1. **Embedded pages:** Some pages will sometimes always have visitors that have cold caches. For instance, embeddable widgets or pages which will be iframed on third party websites will usually have an overwhelming majority of visitors with cold caches. Additionally, many of these users will only request the page a single time. In this circumstance, it may be more effective inline the scripts. The caching benefit of external scripts is eliminated, and minimizing the number of connections that the user makes to your servers is often beneficial.
-2. **Very small JavaScript files:** Some pages only require a very small amount of JavaScript. In this case, the overhead of making the request may be greater than the overhead of transferring extra data as part of the original markup. Be careful that the code being used is not very complex, as it will block the remainder of the page from rendering and being displayed.
+2. **Very small JavaScript fi.e.,** Some pages only require a very small amount of JavaScript. In this case, the overhead of making the request may be greater than the overhead of transferring extra data as part of the original markup. Be careful that the code being used is not very complex, as it will block the remainder of the page from rendering and being displayed.
 3. **Bootstrapping scripts:** Some JavaScript loaders may require scripts on the page in order to load the remainder of the JavaScript on the site. In this case, inline scripts may be necessary in order to avoid a very large performance hit before the application can become even remotely interactive.
 
 In general--especially when other performance best practices (like SPDY) are being used--external scripts are not the bottleneck for page load performance. In fact, the ability to load multiple JavaScript files in parallel oftentimes significantly increases the page load performance that users with poor connection speeds will experience.
@@ -295,21 +295,23 @@ In general--especially when other performance best practices (like SPDY) are bei
 
 With a built-in garbage collector, simple object literal syntax, and automatic "passing-by-reference"[^pass_by_reference] for objects, it's easy to forget the impact of memory allocation on application performance. For every object created, space must be allocated on the heap. When the object is dereferenced, it must be cleaned up to make room for other objects. Depending on the browser, this may have varying performance impacts.
 
-[^pass_by_reference]: JavaScript isn't truly pass-by-reference. Rather, arguments are passed a copy of a reference.
+[^pass_by_reference]: JavaScript isn't truly pass-by-reference. Rather, copies of references are passed to arguments.
 
-Garbage collection pauses can be difficult to identify. In most traditional web apps, a garbage collection pause may seem almost imperceptible. Longer pauses may make the interface feel unresponsive, as if the browser is stuttering before performing (or after performing) some sort of action. In other browsers, garbage collection pauses may have even more dire performance consequences: older versions of Internet Explorer perform garbage collection after every hundred allocations!
+Garbage collection pauses can be difficult to identify. In most traditional web apps, a garbage collection pause may seem almost imperceptible. Longer pauses may make the interface feel unresponsive, as if the browser is stuttering before performing (or after performing) some sort of action. In other browsers, garbage collection pauses may have even more dire performance consequences: older versions of Internet Explorer perform garbage collection after every 256 allocations![^ie6_gc]
 
-Garbage collection pauses (or GC pauses, for short) are most noticeable in games, where each frame only has a limited amount of time to be rendered. If the browser performs a garbage collection pass between two frames, the second frame will probably not manage to render on time, leading to a decreased frame rate.
+[^ies_gc]: http://pupius.co.uk/blog/2007/03/garbage-collection-in-ie6/
 
-I> Many games facing memory management problems will have a satisfactory frame rate, but will tend to stutter or pause. These pauses may appear multiple times per second or periodically over the course of a few seconds. In some modern browsers, the pauses may be less pronounced and exist as subtle jerky "twitches" in the animation.
+Garbage collection pauses (or GC pauses, for short) are most noticeable in games, where each frame has only a limited amount of time to be rendered. If the browser performs a garbage collection pass between two frames, the second frame will probably not manage to render on time, leading to a decreased frame rate.
 
-On the other hand, a game or application with a consistently low frame rate (i.e.: when measured, each frame takes approximately the same amount of time to render) may not be experiencing garbage collection pauses.
+I> Many games facing memory management problems will have a satisfactory frame rate but will tend to stutter or pause. These pauses may appear multiple times per second or periodically over the course of a few seconds. In some modern browsers, the pauses may be less pronounced and exist as subtle jerky "twitches" in the animation.
+
+On the other hand, a game or application with a consistently low frame rate (i.e., when measured, each frame takes approximately the same amount of time to render) may not be experiencing garbage collection pauses.
 
 Confirming whether an application suffers from GC pauses is simple. The Chrome developer tools' Timeline tab gives a convenient insight into garbage collection pauses:
 
 ![Timeline view showing a minor GC pause](images/gc_pause_timeline.png)
 
-As you can see in the timeline above, `requestAnimationFrame` was fired, probably executing some sort of rendering function. Immediately afterward, a garbage collection was triggered, lasting approximately 0.2 milliseconds. This example is not so bad: the GC happens in an incredibly short amount of time, and the rendering function executes very quickly. The result is that even with a modest GC pause, the frame rate is not affected.
+As you can see in the timeline above, `requestAnimationFrame` was fired, probably executing some sort of rendering function. Immediately afterward, a garbage collection was triggered, lasting approximately 0.2ms. This example is not so bad: the GC happens in an incredibly short amount of time; the rendering function executes very quickly. The result is that even with a modest GC pause, the frame rate is not affected.
 
 ![Timeline view showing a series of costly garbage collections](images/gc_pause_timeline_bad.png)
 
@@ -349,18 +351,18 @@ requestAnimationFrame(draw);
 
 Consider the above code snippet from a hypothetical game. This game would suffer from at least some minor garbage collection pauses. Can you spot the two issues?
 
-1. The first issue is the array created by `getCoordinates()`. One array is allocated for every player on every frame. At sixty frames per second with three players, that's 180 arrays that will probably be discarded almost immediately.
-2. The second issue is the array created by `draw()` for `coords`. Again, this is one allocation performed on each frame, leading to up to sixty allocations per second.
+1. **The array created by `getCoordinates()`.** One array is allocated for every player on every frame. At 60 frames per second with three players, that's 180 arrays that will probably be discarded almost immediately.
+2. **The array created by `draw()` for `coords`.** Again, this is one allocation performed on each frame, leading to up to sixty allocations per second.
 
-In this example, the garbage that's created on the heap is probably not severe enough to cause any major problems. In fact, if the game is simplistic enough, it may not be noticeable at all. Any game of substantial complexity (e.g.: games that consume any notable percentage of their available rendering time), however, will quickly find that these allocations get far out of hand.
+In this example, the garbage that's created on the heap is probably not severe enough to cause any major problems. In fact, if the game is simplistic enough, it may not be noticeable at all. Any game of substantial complexity (e.g., games that consume any notable percentage of their available rendering time), however, will quickly find that these allocations get far out of hand.
 
 
 ### Addressing garbage collection pauses
 
 Let's look at addressing some of these issues:
 
-- **Don't generate new coordinates on each call to `getCoordinates()`.** The list of players is stored in the `players` array. Perhaps keep a persistent array or dictionary called `playerLocations` containing the coordinates for each player. Recycle the same array of coordinates for each invocation.
-- **Don't use an intermediate function.** Instead of calling `getCoordinates()` and passing the result through `drawPlayers()`, simply have `drawPlayers()` call `getX()` and `getY()` directly. It may not be as clean, but it prevents the need for allocation *any* arrays at all.
+- **Don't generate new coordinates on each call to `getCoordinates()`.** The list of players is stored in the `players` array. Perhaps keep a persistent array or object called `playerLocations` containing the coordinates for each player. Recycle the same array of coordinates for each invocation.
+- **Don't use an intermediate function.** Instead of calling `getCoordinates()` and passing the result through `drawPlayers()`, simply have `drawPlayers()` call `getX()` and `getY()` directly. It may not be as clean, but it prevents the need to allocate *any* arrays at all.
 - **Recycle temporary objects.** By moving `var coords = [];` outside of `draw()`, the same array can be recycled. At the beginning of `draw()`, all that is necessary is to remove each item from the array: `while (coords.length) coords.pop();`.
 
 The following version of the above avoids the memory management issue by passing the coordinates directly to their destination. In doing this, an array (or multiple arrays) were not needed to store the values in question.
@@ -444,7 +446,7 @@ Unbeknownst to most developers, there are in fact patterns that will cause some 
 The following are some symptoms of poorly-performing CPU-heavy code:
 
 - Significant pauses in application execution that are not associated with external operations (XHR, image or video decoding, `localStorage` access, etc.) or garbage collection.
-- Consistent, frequent stuttering, such as during drag-and-drop or when using scroll-related behavior (e.g.: parallax effects, "sticky" headers, etc.).
+- Consistent, frequent stuttering, such as during drag-and-drop or when using scroll-related behavior (e.g., parallax effects, "sticky" headers, etc.).
 - Pauses or delays that happen when pressing UI elements that trigger large amounts of JavaScript.
 
 To illustrate how two pieces of similar code can have tremendous performance differences, consider the following two snippets of JavaScript:
@@ -690,7 +692,7 @@ worker.onmessage = function(e) {
 
 And that's it! The worker will behave exactly as you expect it to: the call to `new Worker()` will load `worker.js` and start running the code. When `postMessage()` is called with the result, `worker.onmessage` is fired. The result is kept in `e.data`. The output of this new script is essentially identical to the output of the previous version.
 
-Using a worker doesn't necessarily decrease the amount of time for the script to run, though, it simply moves the work to another thread. This may increase perceived performance, but will not make the application work any faster. To take full advantage of web workers, you must break up your work into smaller chunks and spread the work over multiple workers. Let's modify the scripts above slightly:
+Using a worker doesn't necessarily decrease the amount of time for the script to run, though; it simply moves the work to another thread. This may increase perceived performance, but it will not make the application work any faster. To take full advantage of web workers, you must break up your work into smaller chunks and spread the work over multiple workers. Let's modify the scripts above slightly:
 
 ```js
 // This is stored in worker.js
@@ -814,9 +816,9 @@ worker.onmessage = function(e) {
 };
 ```
 
-The above script works just as the second example works: `worker()` runs in a separate thread, and passes the result back to the page when it has completed. Using this approach for the pooled approach above is left as an exercise to the reader.
+The above script works just as the second example works: `worker()` runs in a separate thread and passes the result back to the page when it has completed. Using this approach for the pooled approach above is left as an exercise to the reader.
 
-Note that the `worker()` function does not behave as a normal JavaScript function. For instance, `worker()` does NOT have access to the `startTime` variable, despite the appearance that you could otherwise access it through lexical scope. The approach shown above works by taking `worker()` and converting it back to source code with `toString()`. This source code has no connection to the original script: it simply lifts the contents of `worker()` and `worker()` alone out into the `Blob` object that is passed into the `Worker`. If you are careful, however, parameters can be passed as static strings:
+Notice that the `worker()` function does not behave as a normal JavaScript function. For instance, `worker()` does NOT have access to the `startTime` variable, despite the appearance that you could otherwise access it via lexical scope. The approach shown above works by taking `worker()` and converting it back to source code with `toString()`. This source code has no connection to the original script; it simply lifts the contents of `worker()` out into the `Blob` object that is passed into the `Worker`. If you are careful, however, parameters can be passed as static strings:
 
 ```js
 function worker(startTime) {
