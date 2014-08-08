@@ -285,7 +285,7 @@ A common question is whether scripts should be placed inline or not. In general,
 There are a few use cases, however, that benefit significantly from using inline scripts. In all of the below cases, it is very important to test the effectiveness of inline scripts using the tools discussed earlier in the book to analyze whether they have a positive or negative performance impact.
 
 1. **Embedded pages:** Some pages will sometimes always have visitors that have cold caches. For instance, embeddable widgets or pages which will be iframed on third party websites will usually have an overwhelming majority of visitors with cold caches. Additionally, many of these users will only request the page a single time. In this circumstance, it may be more effective inline the scripts. The caching benefit of external scripts is eliminated, and minimizing the number of connections that the user makes to your servers is often beneficial.
-2. **Very small JavaScript fi.e.,** Some pages only require a very small amount of JavaScript. In this case, the overhead of making the request may be greater than the overhead of transferring extra data as part of the original markup. Be careful that the code being used is not very complex, as it will block the remainder of the page from rendering and being displayed.
+2. **Very small JavaScript files:** Some pages only require a very small amount of JavaScript. In this case, the overhead of making the request may be greater than the overhead of transferring extra data as part of the original markup. Be careful that the code being used is not very complex, as it will block the remainder of the page from rendering and being displayed.
 3. **Bootstrapping scripts:** Some JavaScript loaders may require scripts on the page in order to load the remainder of the JavaScript on the site. In this case, inline scripts may be necessary in order to avoid a very large performance hit before the application can become even remotely interactive.
 
 In general--especially when other performance best practices (like SPDY) are being used--external scripts are not the bottleneck for page load performance. In fact, the ability to load multiple JavaScript files in parallel oftentimes significantly increases the page load performance that users with poor connection speeds will experience.
@@ -418,6 +418,18 @@ function draw() {
 
 requestAnimationFrame(draw);
 ```
+
+
+#### Some allocations are OK!
+
+It should be noted that allocations are not always bad. In code that does not run frequently (such as code to handle button presses or general page interactions), allocations are common and completely harmless to application performance. Allocations become a problem only in code that runs very frequently or runs for a long time, like games or graphics-related code.
+
+Even in code sensitive to allocations, it is not universally bad to perform allocations. Small numbers of infrequent allocations are perfectly fine. Where do you draw the line delineating which allocations are good and which are bad?
+
+- **Allocations are bad if they happen on every iteration of a loop.** In a game loop that runs at 60FPS, one allocation operation per iterations would cause at least 60 allocations per second.
+- **Allocations are fine if they happen occasionally.** If one allocation occurs once every 10 to 30 iterations of a game loop, that's infrequent enough that the JS engine will have no trouble keeping up.
+- **Allocations are bad if the number of allocations in the worst case grows non-linearly.** If there are two objects in a game that cause four allocations every 100 iterations, but four objects cause 16 allocations and eight objects cause 32 allocations, the code will quickly approach a rate that exceeds allocating once per iteration.
+- **Allocations are fine if they are for non-ephemeral storage purposes.** In the examples above, some arrays were used as two-tuples to temporarily store coordinates so they could be passed between functions. This is bad: these ephemeral objects could have been avoided by passing values directly. If the objects had instead been made more permanent used to store values for many iterations of the loop, that would have made them more satisfactory, since storing structured information is difficult without using the heap.
 
 
 ### Browsers and garbage collection
@@ -845,12 +857,82 @@ A typed array is similar to a normal JavaScript array, with a few differences:
 
 1. A typed array can only contain one variable type. For example, a typed array might only contain 32-bit floating point numbers, or 16-bit integers.
 2. There are no `null` values in a typed array. All values are initialized to the equivalent of zero by default.
-3. Typed arrays are a fixed length. Once they are instantiated, they cannot be resized.
+3. Typed arrays are of a fixed length. Once they are instantiated, they cannot be resized.
 4. Typed arrays have no literal syntax.
 
 Let's see an example of how you might use a typed array:
 
+```js
+var img = new Image();
+// Add the data URI for an image here:
+img.src = 'data:image/png;base64,...';
 
+var canvas = document.createElement('canvas');
+canvas.width = 640; canvas.height = 480;
+var ctx = canvas.getContext('2d');
+ctx.drawImage(img, 0, 0);
+var imgdata = ctx.getImageData(0, 0, 640, 480);
+
+// This function returns the 0-255 hue value of an RGB color.
+function getHue(r, g, b) {
+    r /= 255, g /= 255, b /= 255;
+    var max = r > g ? (r > b ? r : b) : (g > b ? g : b);
+    var min = r < g ? (r < b ? r : b) : (g < b ? g : b);
+
+    if (r === g && g === b) return 0;
+
+    var h, d = max - min;
+    switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+    }
+    return h / 6 * 256 | 0;
+}
+
+// Count the number of pixels
+var pixels = imgdata.width * imgdata.height;
+// Create a typed array where each element represents one
+// possible hue.
+var counts = new Uint32Array(256);
+
+var hue;
+// For each pixel, get the hue and increment that hue's
+// element in the typed array.
+for (var i = 0; i < pixels; i++) {
+    hue = getHue(
+        imgdata.data[i * 4],
+        imgdata.data[i * 4 + 1],
+        imgdata.data[i * 4 + 2]
+    );
+    counts[hue] = counts[hue] + 1;
+}
+
+// Find the hue that appears most commonly.
+var maxHue = 0, maxVal = 0;
+for (var j = 0; j < 256; j++) {
+    if (counts[j] > maxVal) {
+        maxVal = counts[j];
+        maxHue = j;
+    }
+}
+
+console.log(maxHue);
+```
+
+Notice the use of the `Uint32Array` typed array. It accepts a similar set of arguments as the common `Array` constructor. In fact, we could simply replace `Uint32Array` with `Array`, and the output would be identical. This example, however, performs much better when using the typed array:
+
+![Comparison of typed arrays vs. plain arrays[^jsperf_typed_arrays]](images/typed_array_perf_comparison.png)
+
+[^jsperf_typed_arrays]: http://jsperf.com/find-common-color
+
+The performance of typed arrays is almost double that of plan arrays! This happens for a few reasons:
+
+- With plain arrays, the JavaScript engine does not know in advance what type of data will be stored in the array and cannot optimize it until the code has run many times.
+- When the plain array is created, it contains `null` for each of the elements, rather than a numeric type.
+- The typed array forces its contents to the hidden `Uint32` type, meaning it defaults to `0` for each value. The JavaScript engine and JIT compiler do not need to guess what type of data the array will hold.
+
+You should attempt to identify appropriate use cases for typed arrays throughout your applications in any place where numeric data is being heavily processed.
 
 
 ## API Performance
