@@ -491,11 +491,11 @@ for (var i = 0; i < 1000; i++) {
 }
 ```
 
-![Comparison of the two pieces of code[^jsperf_jit_breakage]](images/type_perf_comparison.png)
+![Comparison of the two pieces of code](images/type_perf_comparison.png)
+
+Notice how the version with consistent array element types is significantly faster[^jsperf_jit_breakage]. The only difference between the two snippets is the input used. The "bad input" test uses a mix of numbers, strings, and an object which needs to be cast to a string, then a number. The second snippet uses numbers exclusively.
 
 [^jsperf_jit_breakage]: http://jsperf.com/jit-breakage
-
-The only difference between the two snippets is the input used. The "bad input" test uses a mix of numbers, strings, and an object which needs to be cast to a string, then a number. The second snippet uses numbers exclusively.
 
 Obviously, the performance difference is striking, despite producing identical output. There are a few reasons for this:
 
@@ -562,11 +562,11 @@ Which of the two versions of the code above will be more performant? The differe
 
 Had this code run strictly in an interpreter, the difference between the two is negligible. The JIT compiler, however, is capable of making the first example significantly faster:
 
-![Comparison of second two pieces of code[^jsperf_jit_breakage_objects]](images/type_change_perf_comparison.png)
+![Comparison of second two pieces of code](images/type_change_perf_comparison.png)
+
+The first example is far faster[^jsperf_jit_breakage_objects], but why? The answer lies in how the JIT compiler is able to optimize objects. When you create any sort of object in JavaScript, it has a "shape." The shape of an object is all of the different properties and methods that the object has assigned to it. This information is used to create the equivalent of a C++ class representing the object. For instance, the `Person` object in the last example might have a shape that looks like the following:
 
 [^jsperf_jit_breakage_objects]: http://jsperf.com/jit-breakage-objects
-
-The first example is far faster, but why? The answer lies in how the JIT compiler is able to optimize objects. When you create any sort of object in JavaScript, it has a "shape." The shape of an object is all of the different properties and methods that the object has assigned to it. This information is used to create the equivalent of a C++ class representing the object. For instance, the `Person` object in the last example might have a shape that looks like the following:
 
 ```c++
 class Person {
@@ -922,11 +922,11 @@ console.log(maxHue);
 
 Notice the use of the `Uint32Array` typed array. It accepts a similar set of arguments as the common `Array` constructor. In fact, we could simply replace `Uint32Array` with `Array`, and the output would be identical. This example, however, performs much better when using the typed array:
 
-![Comparison of typed arrays vs. plain arrays[^jsperf_typed_arrays]](images/typed_array_perf_comparison.png)
+![Comparison of typed arrays vs. plain arrays](images/typed_array_perf_comparison.png)
+
+The performance of typed arrays is almost double that of plan arrays[^jsperf_typed_arrays]! This happens for a few reasons:
 
 [^jsperf_typed_arrays]: http://jsperf.com/find-common-color
-
-The performance of typed arrays is almost double that of plan arrays! This happens for a few reasons:
 
 - With plain arrays, the JavaScript engine does not know in advance what type of data will be stored in the array and cannot optimize it until the code has run many times.
 - When the plain array is created, it contains `null` for each of the elements, rather than a numeric type.
