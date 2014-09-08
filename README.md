@@ -64,15 +64,14 @@ better quality products to their clients and employers.
         - Optimizing for the JIT
         - Web workers
         - Typed arrays
-    3. Performance of APIs
-    4. Asm.js
-    5. Frameworks and Performance
+    3. Asm.js
+    4. Frameworks and Performance
         - Aren’t frameworks necessary?
         - Aren’t frameworks unnecessary?
         - jQuery
         - Underscore
         - Alternatives
-    6. Client-side Templating
+    5. Client-side Templating
         - What it is
         - How it works
         - Is it better?

@@ -924,7 +924,7 @@ Notice the use of the `Uint32Array` typed array. It accepts a similar set of arg
 
 ![Comparison of typed arrays vs. plain arrays](images/typed_array_perf_comparison.png)
 
-The performance of typed arrays is almost double that of plan arrays[^jsperf_typed_arrays]! This happens for a few reasons:
+The performance of typed arrays is almost double that of plan arrays in Firefox and Chrome[^jsperf_typed_arrays]! This happens for a few reasons:
 
 [^jsperf_typed_arrays]: http://jsperf.com/find-common-color
 
@@ -935,11 +935,98 @@ The performance of typed arrays is almost double that of plan arrays[^jsperf_typ
 You should attempt to identify appropriate use cases for typed arrays throughout your applications in any place where numeric data is being heavily processed.
 
 
-## API Performance
-
-
-
 ## Asm.js
+
+Asm.js has recently taken the JavaScript community by storm as a means of extracting extra performance from plain, vanilla JavaScript. In some cases, this can be true: compilers can target asm.js instead of machine code to produce extremely efficient applications. Unfortunately, making use of these improvements for most developers will be challenging or impossible.
+
+
+### The use case
+
+Asm.js was developed by Mozilla to enable highly performant applications to be run on the web. In doing so, it also allows existing C++ applications to compile to JavaScript. This means that games like DOOM or software like CPython can be compiled to JavaScript and run in the browser with no installation necessary.
+
+What asm.js is *not* however, is a general purpose tool for every-day application development. Asm.js is a subset of JavaScript: in order to use it, you can only take advantage of a very small subset of the features that JavaScript has to offer:
+
+- Functions, but no closures
+- Numeric types only; no strings, arrays, objects, etc.
+- Static arrays of functions
+
+Additionally, Asm.js requires that most expressions use type hints. These type hints are binary and unary operators that signal the types of the data that they are operating on. For instance, consider the following function:
+
+```js
+function add(a, b) {
+    return a + b;
+}
+```
+
+In asm.js, the same function might look like this:
+
+```js
+function add(a, b) {
+    // Type hints for arguments:
+    a = a | 0;
+    b = b | 0;
+    // Type hint for return type:
+    return a + b | 0;
+}
+```
+
+The `| 0` signals to the compiler that the value that it operates on should be treated as an `int`. If you wanted to use this function with floating point values (`double`s, this example), you'd need to write something like the following:
+
+```js
+function add(a, b) {
+    // Type hints for arguments:
+    a = +a;
+    b = +b;
+    // Type hint for return type:
+    return +(a + b);
+}
+```
+
+In doing this, the compiler can know ahead of time the exact type of every value that will pass in and out of the `add()` function. The code that is produced is extremely fast. Benchmarks put asm.js-optimized code at roughly 1.25x the cost of "native". That is, asm.js code runs about 25% slower than code compiled directly to machine code. While this obviously isn't perfect, it is certainly sufficient for almost every resource-heavy task.
+
+
+### Costs of Asm.js
+
+Despite the incredible performance wins, there are costs to using asm.js. While the performance of asm.js applications in general may be high, asm.js code is not a silver bullet for performance.
+
+
+#### Size
+
+First and foremost, asm.js code is significantly larger than non-asm.js code. This happens for a variety of reasons:
+
+- Type annotations take up a significant amount of space
+- Many constructs in JavaScript like closures are not available in asm.js, meaning that code is necessary to manage state
+- Memory management code needs to be implemented by the asm.js script. That is, to allocate and deallocate memory, a `malloc` and `free` implementation need to be made available in the script.
+- Aside from the `Math` object, there is essentially no standard library for asm.js. All data structures, string support, and other constructs need to be implemented manually.
+- Tools that compile code to asm.js generally output very verbose code that is difficult to minify.
+- Minification is difficult because the type annotations must not be changed. This makes options like UglifyJS's `-c` flag useless.
+
+A popular tool for generating asm.js code is Emscripten[^emscripten]. Emscripten takes LLVM bitcode and converts it to JavaScript. The following is a Hello World application taken from the Emscripten test suite:
+
+[^emscripten]: https://github.com/kripken/emscripten
+
+```cpp
+#include<stdio.h>
+
+class Test {}; // This will fail in C mode
+
+int main() {
+  printf("hello, world!\n");
+  return 0;
+}
+```
+
+Compiling this script with Emscripten 1.22.0 generates a 248KB JavaScript file. Minifying this yields a 141KB file, and the result gzips to roughly 39KB. Though the final product is indeed much smaller than the original generated source, this is an outrageous amount of code needed solely to `console.log` the value `"hello, world!\n"`.
+
+Much of the generated code is designed to support web workers, memory allocation, and supporting the necessary components of `stdio.h`. Larger programs will not substantially increase the size of the generated JavaScript file unless they include more dependencies or increase the complexity significantly.
+
+This does, however, show the cost of using asm.js for trivial tasks. If you use tools to generated asm.js code, the size of the output may cost more to download, parse, and compile than the application will save from faster execution times.
+
+
+#### Communication Overhead
+
+
+
 
 ## Frameworks and Performance
 
