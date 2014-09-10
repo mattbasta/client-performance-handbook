@@ -1008,8 +1008,6 @@ A popular tool for generating asm.js code is Emscripten[^emscripten]. Emscripten
 ```cpp
 #include<stdio.h>
 
-class Test {}; // This will fail in C mode
-
 int main() {
   printf("hello, world!\n");
   return 0;
@@ -1020,12 +1018,97 @@ Compiling this script with Emscripten 1.22.0 generates a 248KB JavaScript file. 
 
 Much of the generated code is designed to support web workers, memory allocation, and supporting the necessary components of `stdio.h`. Larger programs will not substantially increase the size of the generated JavaScript file unless they include more dependencies or increase the complexity significantly.
 
-This does, however, show the cost of using asm.js for trivial tasks. If you use tools to generated asm.js code, the size of the output may cost more to download, parse, and compile than the application will save from faster execution times.
+This does, however, show the cost of using asm.js for trivial tasks. If you use tools to generate asm.js code, the size of the output may cost more to download, parse, and compile than the application will save from faster execution times.
 
 
 #### Communication Overhead
 
+As mentioned previously, asm.js code can only work with numeric data. That is, to implement other data structures you must do so using the simplest of primitives. To represent a string, for instance, you must break it down to an array of unsigned integer values (the equivalent of character sequences in C or C++). Moving this data in and out of asm.js can be very costly, though. Consider the following:
 
+```js
+// Returns whether `input` contains the character `X`.
+function containsX(input) {
+    return input.indexOf('X') !== -1;
+}
+
+console.log(containsX('fooXbar'));  // true
+```
+
+This is obviously a very simple function. A string is passed, and the function returns whether the string contains the uppercase letter "X".
+
+```js
+var asmModule = (function(module) {
+    // Create a heap
+    var heap = new ArrayBuffer(0x1000);
+    // Return access to the module and the heap
+    return {
+        methods: module(window, {}, heap),
+        heap: heap
+    };
+}(function mod(stdlib, foreign, heap) {
+    "use asm";
+
+    // Create an ArrayBufferView that will let us read the data
+    // back out of the heap.
+    var intheap = new stdlib.Uint8Array(heap);
+
+    // The charCode value of "X"
+    var Xval = 88;
+
+    // A function that returns 1 for strings that contain "X"
+    // and 0 for strings that do not. `index` is the position
+    // of the string in the heap.
+    function containsX(index) {
+        index = index | 0;
+        var i = 0;
+        var iter = 0;
+        iter = intheap[index | 0] | 0;
+        while ((iter | 0) > 0) {
+            if ((intheap[index + iter + 1 | 0] | 0) == (Xval | 0)) {
+                return 1;
+            }
+            iter = (iter - 1) | 0;
+        }
+        return 0;
+    }
+
+    // Return access to our containsX function
+    return {containsX: containsX};
+}));
+
+var uintarr = new Uint8Array(asmModule.heap);
+
+function saveStringToArr(arr, input, index) {
+    // Index 0 is the string's length
+    arr[index] = input.length;
+    // Assign the charCode values to their respective positions
+    // in the array buffer
+    for (var i = 0; i < input.length; i++) {
+        arr[index + i + 1] = input.charCodeAt(i);
+    }
+}
+
+// We're putting the string at index 0
+var index = 0;
+
+// Save the string to the array buffer
+saveStringToArr(uintarr, "hello X world", index);
+
+// Test whether the string contains an "X"
+console.log(!!asmModule.methods.containsX(index));
+```
+
+This example illustrates the point I'm trying to make using strings, but the example works the same for more or less complex data structures, like objects or booleans.
+
+At a low string length (roughly two dozen characters), we find that the asm.js version performs marginally better in Firefox.[^asm_overhead_perf] Longer strings (just under 4KB) perform outrageously worse.
+
+[^asm_overhead_perf]: http://jsperf.com/asm-js-comm-overhead-test
+
+![Comparison of asm.js vs vanilla JS](images/asm_overhead_comparison.png)
+
+What is actually happening here? The performance issue is not the result of asm.js being slow. Rather, it's the result of the `saveStringToArr()` function performing poorly. The physical process of moving data from a JavaScript string into an `ArrayBuffer` costs quite a lot of CPU cycles. You'll notice that even though Chrome's performance on the "fast" asm.js test is rather low, it still suffers from the overhead of copying the data for the "slow" asm.js test. Conversely, Chrome performs equally well with a long and short string while using the `indexOf` method.
+
+The lesson to be gleaned here is that there are many cases where asm.js may provide some performance benefits, but the approach required to take advantage of these benefits can negate them entirely. In practical terms, using asm.js for one-off data processing functions throughout a project will likely not perform nearly as well as expected. Instead, asm.js must be used in most cases from start to end for data processing.
 
 
 ## Frameworks and Performance
