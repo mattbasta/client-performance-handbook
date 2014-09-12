@@ -1111,6 +1111,17 @@ What is actually happening here? The performance issue is not the result of asm.
 The lesson to be gleaned here is that there are many cases where asm.js may provide some performance benefits, but the approach required to take advantage of these benefits can negate them entirely. In practical terms, using asm.js for one-off data processing functions throughout a project will likely not perform nearly as well as expected. Instead, asm.js must be used in most cases from start to end for data processing.
 
 
+### Browser Considerations
+
+One potential downside of using asm.js is that its benefit is most profound in Firefox only. Firefox uses a dedicated compiler called OdinMonkey to analyze and convert asm.js code directly to machine code (without needing to run it, as with a standard JIT compiler).
+
+Other browsers do not special-case asm.js. Chrome's V8 team, for example, chose not to implement the `"use asm";` pragma that asm.js code requires. Instead, V8 chose to optimize the JIT compiler to better understand and refine the types of patterns used in asm.js[^chrome_asm]. This approach benefits all JavaScript, not just asm.js.
+
+[^chrome_asm]: https://code.google.com/p/v8/issues/detail?id=2599
+
+Despite this, Firefox's asm.js implementation largely remains the most performant implementation at runtime (as can be seen by the benchmark in the previous section). CPU-heavy applications will almost certainly perform better in Firefox's JavaScript engine than in Chrome's (or any other browser's). If non-Firefox performance is quite bad, it may mean that your users will be forced to use Firefox instead of their browser of choice, which can be a bad user experience.
+
+
 ## Frameworks and Performance
 
 ## Client-Side Templating
