@@ -284,7 +284,7 @@ http {
         ssl_session_timeout  10m;
 
         # Some SSL configuration to only allow secure protocols and
-        # ciphers. If you require IE6 support, add "SSLv3" to this list.
+        # ciphers.
         ssl_protocols        TLSv1 TLSv1.1 TLSv1.2;
         ssl_ciphers ECDH+AESGCM:ECDH+AES256:ECDH+AES128:DH+3DES:!ADH:!AECDH:!MD5;
         ssl_prefer_server_ciphers  on;
