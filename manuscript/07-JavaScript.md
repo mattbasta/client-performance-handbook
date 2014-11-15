@@ -1075,7 +1075,15 @@ var asmModule = (function(module) {
     // Return access to our containsX function
     return {containsX: containsX};
 }));
+```
 
+At this point, we've created an object named `asmModule` that contains the boilerplate necessary to initialize an asm.js module. This isolates the asm.js code from normal JavaScript.
+
+You'll notice that the `containsX` function accepts an index parameter rather than a string, as its plain old-fashioned counterpart did. This is intentional: as mentioned previously, asm.js can't work with non-numeric data. That means that strings can't be passed directly to asm.js functions.
+
+To get around this limitation, we access the `ArrayBuffer` "heap" that's available at `asmModule.heap` and assign the string data into it. In this example, we'll simply write the string data into the `ArrayBuffer` starting at position zero, but a more useful asm.js module would need to expose memory management methods like `malloc` and `free` to reserve chunks of the heap without conflicting with the internals of the asm.js module itself.
+
+```
 var uintarr = new Uint8Array(asmModule.heap);
 
 function saveStringToArr(arr, input, index) {
@@ -1100,7 +1108,7 @@ console.log(!!asmModule.methods.containsX(index));
 
 This example illustrates the point I'm trying to make using strings, but the example works the same for more or less complex data structures, like objects or booleans.
 
-At a low string length (roughly two dozen characters), we find that the asm.js version performs marginally better in Firefox.[^asm_overhead_perf] Longer strings (just under 4KB) perform outrageously worse.
+At a low string length (roughly two dozen characters), we find that in Firefox, the asm.js version performs marginally better than the vanilla JavaScript version.[^asm_overhead_perf] Longer strings (just under 4KB) perform outrageously worse.
 
 [^asm_overhead_perf]: http://jsperf.com/asm-js-comm-overhead-test
 
@@ -1108,7 +1116,7 @@ At a low string length (roughly two dozen characters), we find that the asm.js v
 
 What is actually happening here? The performance issue is not the result of asm.js being slow. Rather, it's the result of the `saveStringToArr()` function performing poorly. The physical process of moving data from a JavaScript string into an `ArrayBuffer` costs quite a lot of CPU cycles. You'll notice that even though Chrome's performance on the "fast" asm.js test is rather low, it still suffers from the overhead of copying the data for the "slow" asm.js test. Conversely, Chrome performs equally well with a long and short string while using the `indexOf` method.
 
-The lesson to be gleaned here is that there are many cases where asm.js may provide some performance benefits, but the approach required to take advantage of these benefits can negate them entirely. In practical terms, using asm.js for one-off data processing functions throughout a project will likely not perform nearly as well as expected. Instead, asm.js must be used in most cases from start to end for data processing.
+The lesson to be gleaned here is that there are many cases where asm.js may provide some performance benefits, but the approach required to take advantage of these benefits can negate them entirely. In practical terms, using asm.js for one-off data processing functions throughout a project will likely not perform nearly as well as expected. Instead, asm.js must usually be used from start to end for data processing or other computationally-intensive tasks in order to see a substantial benefit.
 
 
 ### Browser Considerations
