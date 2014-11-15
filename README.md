@@ -37,7 +37,7 @@ better quality products to their clients and employers.
     2. TCP Connections
     3. SSL
     4. CDNs
-    5. SPDY
+    5. HTTP2 and SPDY
 5. Assets and Payload
     1. HTTP
     2. Gzip and Compression

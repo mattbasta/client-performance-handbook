@@ -18,7 +18,7 @@ Most of this inefficiency resides in the fact that HTTP was designed as a serial
 
 ### Minimizing Headers
 
-When a web application makes many requests to a server for many files, most of the information being sent is redundant. The client's `User-Agent` header, connection information, cache data (if available), and other information is identical between requests. SPDY minimizes the impact of this by allowing header compression, but the first request (or response) is still impacted by large amounts of header data. If this crosses the TCP window size, it may take multiple packets just to allow the server to begin processing the request or sending the actual response content.
+When a web application makes many requests to a server for many files, most of the information being sent is redundant. The client's `User-Agent` header, connection information, cache data (if available), and other information is identical between requests. HTTP2 minimizes the impact of this by allowing header compression, but the first request (or response) is still impacted by large amounts of header data. If this crosses the TCP window size, it may take multiple packets just to allow the server to begin processing the request or sending the actual response content.
 
 To alleviate this, take great care to minimize the number of custom headers sent back and forth between the client and the server.
 
@@ -265,7 +265,7 @@ Unfortunately, `Access-Control-Max-Age` is not supported in Firefox at the time 
 
 A fourth option is to use JSONP. This involves injecting a `<script>` tag into the page, which--when loaded--makes a function call to a callback method to pass results. This approach works well, though JSONP is not always available. Additionally, making JSONP requests to a third party introduces security issues.
 
-If a pre-flight request must take place, SPDY can be implemented on the remote host to help minimize the overhead of creating a separate connection for the pre-flight.
+If a pre-flight request must take place, HTTP2 can be implemented on the remote host to help minimize the overhead of creating a separate connection for the pre-flight.
 
 
 ## Gzip and Compression
@@ -437,7 +437,7 @@ At the time of writing, Chrome includes an implementation of `<picture>`, which 
 
 SVG is fairly well-supported across the board. Unlike raster graphics like PNG and JPEG, SVG images don't pixelate as they are scaled. On high-resolution displays, SVG images remain crisp and don't become fuzzy. Additionally, SVG files are usually much smaller than PNG or JPEG files, making them great candidates for interfaces.
 
-Another vector options is web fonts. Fonts are encoded as vectors, and can be loaded using CSS's `@font-face` block. Most modern browsers support the WOFF format, but TTF or ODT fallbacks should be provided. As an added bonus, multiple small images can be encoded into a single font file (one image per glyph), reducing the number of connections needed when not running on SPDY.
+Another vector options is web fonts. Fonts are encoded as vectors, and can be loaded using CSS's `@font-face` block. Most modern browsers support the WOFF format, but TTF or ODT fallbacks should be provided. As an added bonus, multiple small images can be encoded into a single font file (one image per glyph), reducing the number of connections needed when not running on HTTP2.
 
 Beware, however, when using fonts: most pre-made icon fonts (like Font Awesome) include hundreds of icons. These can bloat the font file if they are unused, resulting in significant amounts of wasted bandwidth. Use a tool to remove unused glyphs from the font file before uploading it.
 
@@ -732,7 +732,7 @@ Prerendering is supported in Chrome and Internet Explorer. At the time of writin
 
 Chrome currently includes experimental support for a feature known as subresources. Subresources are `<link>` tags similar to prefetch and prerender requests, though they represent resources that will be used more immediately.
 
-Subresources could be used, for example, to hint to the browser to request all of the CSS, JavaScript, and images at the very top of the page. A single SPDY connection could be used to send all of the requests simultaneously, regardless of the position of the asset in the document or how much of the document has loaded. These are an incredibly powerful tool for fetching resources at the appropriate time.
+Subresources could be used, for example, to hint to the browser to request all of the CSS, JavaScript, and images at the very top of the page. A single HTTP2 connection could be used to send all of the requests simultaneously, regardless of the position of the asset in the document or how much of the document has loaded. These are an incredibly powerful tool for fetching resources at the appropriate time.
 
 Consider a CSS file that is loaded using an `@import` directive from a another CSS file in a document. Normally, the imported CSS file would only be able to start loading once the CSS file it is linked from has started to load. Using subresources, the request could be made well in advance without affecting how or when the CSS file is actually used.
 
@@ -785,11 +785,11 @@ Cons:
 - If multiple JavaScript files are used, it may not be possible to use the `async` attribute on the script tags without implementing a system for ensuring the files are initialized in the proper order.
 
 
-#### SPDY
+#### HTTP2
 
-When using SPDY, the above points become invalid. Since a single connection is used and headers are compressed, all individual files can be requested with very little overhead. Each file can be cached independently, saving significant amounts of bandwidth (all is related to caching are absent).
+When using HTTP2 (or SPDY), the above points become invalid. Since a single connection is used and headers are compressed, all individual files can be requested with very little overhead. Each file can be cached independently, saving significant amounts of bandwidth (all is related to caching are absent).
 
-This may not be ideal, though, since older browsers (and Internet Explorer in most cases) cannot use SPDY. It may also not be possible for the application layer to know whether the client is connected via SPDY or not, making it impossible to decide whether to conditionally serve combined assets.
+This may not be ideal, though, since older browsers (and Internet Explorer in most cases) cannot use HTTP2. It may also not be possible for the application layer to know whether the client is connected via HTTP2 or not, making it impossible to decide whether to conditionally serve combined assets.
 
 
 ### Number of assets

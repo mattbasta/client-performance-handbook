@@ -53,7 +53,7 @@ static2.mysite.com
 static3.mysite.com
 ```
 
-At more than 100ms each, the volume of DNS lookups can quickly dominate a large part of your page's lifecycle. You can mitigate this issue by implementing SPDY on your server. Domain sharding is used to circumvent caps specified by the browser to limit the number of connections to any one host. SPDY combines an unlimited number of concurrent requests into a single connection, meaning users with modern browsers accessing sites that support SPDY will only perform a single DNS lookup. This solution obviously has all of the downsides of implementing SPDY, which are outlined in the section dedicated to SPDY.
+At more than 100ms each, the volume of DNS lookups can quickly dominate a large part of your page's lifecycle. You can mitigate this issue by implementing HTTP2 or SPDY on your server. While domain sharding is used to circumvent caps specified by the browser to limit the number of connections to any one host, these two protocols can be used to combine an unlimited number of concurrent requests into a single connection. This means that users with modern browsers accessing sites that support HTTP2 or SPDY will only perform a single DNS lookup.
 
 
 ## TCP Connections
@@ -71,15 +71,15 @@ Until recently, browsers limited the number of HTTP connections to any single ho
 
 The above is a screenshot from the Chrome developer tools showing a series of requests for images. I've drawn in red lines to show that the end of one request triggers the start of another. Also notice that no more than six requests are triggered concurrently at any given time.
 
-The first way to remedy this is to make sure that if you can, SPDY is implemented on the server. SPDY allows an unlimited number of concurrent connections, and the server can decide how it wants to respond to them depending on load.
+The first way to remedy this is to make sure that if you can, HTTP2 and/or SPDY are implemented on the server. Both allow an unlimited number of concurrent requests to be performed, and the server can decide how it wants to respond to them depending on load.
 
-The second solution to this is to simply decrease the number of requests. Even with SPDY, the more requests that are made, the longer it takes to load the page for the simple reason that there's more things to do. If multiple files can be combined with no impact on the user, that is a worthwhile change to make. Later chapters discuss in more detail how to effectively combine assets.
+The second solution to this is to simply decrease the number of requests. Even with unlimited concurrent requests, larger numbers of requests result in more work that the client must perform. Additionally, files do not compress together. This means that redundant data across files is not simply hand-waved away as you would expect with redundant data in a single file. If multiple files can be combined with no impact on the user, that is a worthwhile change to make. Later chapters discuss in more detail how to effectively combine assets.
 
-Lastly, you can use a technique known as domain sharding. Domain sharding (as described previously with regard to DNS lookups) involves creating several DNS records for the same host. For instance, `static1.example.com`, `static2.example.com`, etc. might all point at the same IP address. In the document, the URLs for each asset are changed to point at a different subdomain. In doing this, the browser recognizes each hostname as its own server and applies the six connection cap to each hostname. If you use `static1` through `static4`, you would expect to be able to six connections to each host concurrently, allowing up to 24 simultaneous connections.
+Lastly, you can use a technique known as domain sharding to avoid the connection limit for browsers that do not support HTTP2 or SPDY. Domain sharding (as described previously with regard to DNS lookups) involves creating several DNS records for one or more hosts containing your assets. For instance, `static1.example.com`, `static2.example.com`, etc. might all point at the same IP address which hosts a site's JavaScript, CSS, and images. In the page, the URLs for each asset reference each of these hosts in a round-robin manner. In doing this, the browser recognizes each hostname as an independent server and applies the connection cap to each hostname. If you use `static1` through `static4` for instance, you could expect to make up to 24 simultaneous connections.
 
-As mentioned previously, domain sharding comes at a cost: DNS lookups. Despite each hostname pointing at the same IP address, the browser does not know that until after it has performed a DNS lookup.
+As mentioned previously, domain sharding comes at a cost: DNS lookups. Despite each hostname pointing at the same IP address, the browser does not know that until after it has performed a DNS lookup. This can become quite costly, and in some cases cause significant performance degradation. You should only use domain sharding if HTTP2 and SPDY are not an option.
 
-Previously, a `Connection: Keep-Alive` header could be sent to any client that sent the header as part of the HTTP request headers, allowing the client to re-use connections. Virtually every browser in existence today supports HTTP 1.1, though, where `Keep-Alive` is the default behavior.
+Historically, a `Connection: Keep-Alive` header could be echoed to any client that sent the same header as part of a HTTP request. This allowed the client to re-use connections. HTTP 1.1 made this the default behavior for HTTP connections, however, and sending the header is unnecessary for all mainstream browsers.
 
 
 ### High latency
@@ -91,32 +91,32 @@ To do this, collect some data. Measure the amount of time it takes to establish 
 For users that are located internationally, long connection times may simply be a result of distance. Consider using a CDN to serve assets: a CDN can be globally distributed to decrease the physical distance that must be traversed and number of digital bottlenecks that a connection must overcome in order to reach the server.
 
 
-## SSL
+## HTTPS
 
-SSL is a misused term: the actual SSL protocol was deprecated many years ago and was replaced with TLS, or Transport Layer Security. Few internet users, however, have ever heard the term TLS, and certificates are still sold to site owners as "SSL certificates" in many cases.
+HTTPS is better known to most people as "SSL". SSL is a misused term: the actual SSL protocol was deprecated many years ago and was replaced with TLS, or Transport Layer Security. Few internet users, however, have ever heard the term TLS, and HTTPS certificates are still sold to site owners as "SSL certificates" in many cases. "HTTPS" is the friendly term used by browsers to describe HTTP connections over TLS, SSL, or any other secure connection.
 
-One of the biggest web performance myths in existence is that HTTPS is slow because all of the information transferred must be encrypted. This is false. The overhead of secure connections is so incredibly low that most site owners will never notice it.
+One of the biggest web performance myths in existence is that HTTPS is slow because of the performance cost of encryption. This is false. The overhead of secure connections is incredibly low and most site owners will never notice it.
 
 The primary bottleneck involving HTTPS is the number of round trips that are necessary to establish a connection. Two full round trips are necessary as part of a "handshake" to exchange cryptographic key information before the client can even begin to make a request.
 
-One half of the solution to the number of handshakes that need to be performed is to simply decrease the number of requests (discussed in the previous section). The fewer connections that need to be made, the fewer times you need to pay the penalty of the handshake.
+One half of the solution to this problem is to simply decrease the number of requests (discussed in the previous section). Fewer connections to the server means that the handshake needs to be made fewer times.
 
-Having a CDN can also help immensely. A CDN with a local point of presence (PoP) near to the user decreases the amount of time it takes to actually perform the handshake. Additionally, some CDNs or network service providers will offer HTTPS termination services that allow you to terminate the HTTPS connection to the user in a local PoP rather than in a data center far away. This means that you can take advantage of the speed gains that your assets would otherwise receive on your server.
+Having a CDN can also help immensely. A CDN with a point of presence (PoP) near to the user decreases the amount of time it takes to actually perform the handshake. Additionally, some CDNs or network service providers will offer HTTPS termination services that allow you to terminate the HTTPS connection to the user in a local PoP rather than in a data center far away. Terminating the connection closer to the user means TLS handshakes take less time to be performed.
 
-It is possible to create your own termination proxy using open source software like Nginx in combination with a geographic DNS service, though the effort and costs involved are often greater than the benefits.
+It is possible to create your own termination proxy using open source software like Nginx in combination with a geographic DNS service, though the effort and costs involved are often greater than the benefits. Constructing such a proxy is left as an exercise to the reader.
 
 There are some secondary changes that you can make to improve HTTPS performance:
 
 - **Use secure but fast ciphers.** The most secure ciphers that are employed are oftentimes overkill for most websites and are much slower than some of their good-enough-but-less-secure counterparts. The configurations provided in the sections on setting up HTTPS contain ideal cipher lists.
-- **Cache credentials.** If the credentials for a client are cached, quite a bit of the connection process can be skipped. This is done with the `SSLSessionCache` and `SSLSessionCacheTimeout` directives in Apache and `ssl_session_cache` and ssl_session_timeout` directives in Nginx.
-- **Enable stapling.** OCSP stapling is a technique that is used to send information about the certificate chain for a site along with the site's key info during the connection process. By "stapling" this data, the browser may be able to skip a few extra steps to check to see whether the site's certificate has been revoked. This may or may not provide much benefit, or may even decrease performance.[^stapling_benefit] You should test whether OCSP stapling improves page load times for your users.
+- **Cache credentials.** If the credentials for a client are cached, quite a bit of the connection process can be skipped. This is done with the `SSLSessionCache` and `SSLSessionCacheTimeout` directives in Apache and `ssl_session_cache` and `ssl_session_timeout` directives in Nginx.
+- **Enable stapling.** OCSP stapling is a technique that is used to send information about the certificate chain for a site along with the site's key info during the connection process. By "stapling" this data, the browser may be able to skip a few extra steps to check to see whether the site's certificate has been revoked. This may or may not provide much benefit, and can even decrease performance.[^stapling_benefit] You should test whether OCSP stapling improves page load times for your users.
 
 [^stapling_benefit]: OCSP stapling may not provide much benefit if the browser does not perform an OCSP request for the site. If an OCSP check would not have otherwise been performed, the overhead from stapling may overflow the TCP window and create additional packets.
 
 
 ### Setting up HTTPS on your site
 
-Despite the downsides to running HTTPS on your website, it's usually always better to have HTTPS than to not have it. SPDY, for instance, only works when HTTPS is enabled.
+Despite the downsides to running HTTPS on your website, it's usually always better to have HTTPS than to not have it. HTTP2, for instance, only works when HTTPS is enabled.
 
 The first step to setting up HTTPS is obtaining a certificate. Depending on what you're looking to accomplish by setting up HTTPS, you may require a different type of certificate.
 
@@ -343,7 +343,7 @@ DoS Protection
 : Many CDNs market DoS (denial of service) attack prevention. By sitting between users and web servers, the CDN can be better prepared to accept a flood of requests from an attacker, or to block the flow of traffic from compromised users.
 
 Full-Blown Features
-: It's usually the case that CDNs are quick to implement performance-improving features and cutting-edge technology for content delivery. This includes technology like SPDY, IPV6, and low-level connection tuning.
+: It's usually the case that CDNs are quick to implement performance-improving features and cutting-edge technology for content delivery. This includes technology like HTTP2, IPV6, and low-level connection tuning.
 
 
 ### How does a CDN work?
@@ -386,29 +386,33 @@ On paper, this idea is phenomenal. In practice, this is almost entirely useless 
 It's unlikely that P2P CDNs are going to become a viable technology for most websites to take advantage of for quite a long time. In testing out various P2P CDNs for myself, I discovered that most can't even make their own demos function properly due to a lack of users accessing their website.
 
 
-## SPDY
+## HTTP2 and SPDY
 
-SPDY is a very new and very powerful tool developed by Google for improving web performance. It functions as a substitute for HTTP at the protocol level: requests are sent in a way that's very similar to traditional HTTP, and applications running on the web server are generally not even aware that the requests they are receiving were made over SPDY. In fact, neither the Chrome nor the Firefox developer tools distinguish requests made by SPDY from requests made over normal HTTP.
+SPDY is a very new and quite powerful protocol developed by Google for improving web performance. It functions as a substitute for HTTP at the protocol level: requests are sent in a way that's very similar to traditional HTTP, and applications running on the web server are generally not even aware that the requests they are receiving were made over SPDY. In fact, neither the Chrome nor the Firefox developer tools distinguish requests made by SPDY from requests made over normal HTTP.
 
 In general, there are virtually no downsides to using SPDY over HTTP.
+
+HTTP2 is the latest version of the HTTP specification. HTTP2 is largely based on the work done as part of SPDY's development. In fact, the initial draft of HTTP2 was simply a direct copy of the SPDY specification. HTTP2 has since been codified into a full, stable specification. Further work on SPDY continues, using HTTP2 as a basis for SPDY4.
+
+For the purposes of this section, HTTP2 will mean both HTTP2 and SPDY, though versions of SPDY newer than SPDY4 may behave differently.
 
 
 ### How does it work?
 
-When a browser connects to a server and establishes a secure connection, the remote server uses a TLS extension known as *Next Protocol Negotiation* to signal to the client that it will use SPDY if the client is okay to use it. If the client can accept SPDY, the SPDY connection is established.
+When a browser connects to a server and establishes a secure connection, the remote server uses a TLS extension known as *Next Protocol Negotiation* to signal to the client that it will use HTTP2 if the client is okay to use it. If the client can accept HTTP2, the HTTP2 connection is established.
 
 Once the connection has been established, the client will make as many requests as it needs over the same connection. The server will then respond with each of the files multiplexed over the same connection. Each of the requests and responses compresses the headers using Gzip or DEFLATE. If the server can predict what the client is going to do next, it can preemptively send assets to the client before they have been requested.
 
 - Single connection means one SSL handshake
 - Compressed headers means far less information is sent over the wire (in both directions)
 - Low overhead for requests means minified files don't need to be concatenated: they can be requested individually, improving caching and decreasing waste from downloading unnecessary files
-- No need for domain sharding (in fact, domain sharding hurts SPDY)
-- SPDY connections stay open, preventing future requests from needing to open a new socket
+- No need for domain sharding (in fact, domain sharding hurts HTTP2)
+- HTTP2 connections stay open, preventing future requests from needing to open a new socket
 
-Results posted in Google's SPDY whitepaper[^spdy_whitepaper] show speedups of 25% to 60%, though in practice improvements of 5% to 15% can be expected[^spdy_improvement].
+Results posted in Google's SPDY whitepaper[^spdy_whitepaper] show performance improvements of 25% to 60%, though in practice improvements of between 5% to 15% can be expected[^spdy_improvement].
 
 [^spdy_whitepaper]: http://www.chromium.org/spdy/spdy-whitepaper
-[^spdy_improvement]: From *A comparison of SPDY and HTTP performance* by Microsoft Research, and my own experience
+[^spdy_improvement]: From *A comparison of SPDY and HTTP performance* by Microsoft Research
 
 
 ### Good god that's fast
@@ -418,38 +422,38 @@ You're not kidding.
 
 ### Which users benefit
 
-All users are going to benefit from SPDY, but different users will benefit in different ways.
+All users in modern browsers benefit from HTTP2, but different users will benefit in different ways.
 
 - **10th percentile users:** Users that already have very fast connections will see minor improvements in areas where large numbers of requests are being made. Improvements will also be seen when making subsequent requests, as a new connection and handshake don't need to be made.
-- **50th percentile users:** These users will see a substantial benefit from the decreased need to make many connections to request many assets. As soon as the SPDY connection opens, the browser can make unlimited requests, not just one.
+- **50th percentile users:** These users will see a substantial benefit from the decreased need to make many connections to request many assets. As soon as the HTTP2 connection opens, the browser can make unlimited requests, not just one.
 - **90th percentile users:** These users will see all of the benefits seen by the other users. Additionally, the 90th percentile will benefit from header compression. Headers are largely redundant between requests, and eliminating duplicate information shaves off a non-trivial number of TCP round trips.
 
 
 ### Downsides and Myths
 
 SPDY is actually slower than plain-old HTTP
-: False. There is virtually no real-world evidence suggesting that SPDY is ineffective. A number of benchmarks have appeared that show SPDY to be slower across the board, though this can be attributed to a number of flaws in the benchmarks:
+: False. There is virtually no real-world evidence suggesting that SPDY or HTTP2 is ineffective. A number of benchmarks have appeared that show SPDY to be slower across the board, though this can be attributed to a number of flaws in the benchmarks:
 
   - Testing in low-latency, high-bandwidth local connections rather than over the internet
   - Sharding SPDY connections across domains (as mentioned previously, domain sharding hurts SPDY performance)
   - Using a SPDY proxy rather than running a server that delivers content directly
   - Comparing benchmark data from a SPDY mirror of a website to the website itself rather than a HTTP(S) mirror of the website
 
-  It *is* possible for non-SPDY requests to load faster when executed in parallel than the same requests made over a SPDY connection, but only on very fast network connections with low latency. Even if such a situation were to occur, the difference between SPDY and non-SPDY load times would be trivial.
+  It *is* possible for non-SPDY requests to load faster in parallel than the same requests made over a SPDY connection, but only on very fast network connections with low latency. Even if such a situation were to occur, the difference between SPDY and non-SPDY load times would be trivial.
 
-SPDY doesn't work on sites that pull in third-party content
-: Partly false. SPDY doesn't work across domains unless the domains share the same IP address. Third party content doesn't (usually) live on the same address as first party content, meaning that SPDY connections are simply not used for third party content (unless of course the third party host uses SPDY).
+HTTP2 doesn't work on sites that pull in third-party content
+: Partly false. HTTP2 doesn't work across domains unless the domains share the same IP address. Third party content doesn't (usually) live on the same address as first party content, meaning that HTTP2 connections are simply not used for third party content (unless of course the third party host uses HTTP2).
 
-SPDY is hard to configure
-: This is indeed something of a downside. For many developers, even setting up HTTPS properly and making sure it stays properly configured and up-to-date can be a real challenge. Implementing SPDY alongside that configuration doesn't make the challenge any easier.
+HTTP2 is hard to configure
+: This is indeed something of a downside. For many developers, even setting up HTTPS properly and making sure it stays properly configured and up-to-date can be a real challenge. Implementing HTTP2 alongside that configuration doesn't make the challenge any easier.
 
-SPDY isn't supported in IE
-: This is essentially true. Only version 3 of SPDY is supported by Internet Explorer, and even then only when running on Windows 8. This is because only Windows 8 supports the TLS extension (NPN) needed to signal that the client can use SPDY.
+HTTP2 isn't supported in IE
+: This is somewhat true. Only version 3 of SPDY is supported by Internet Explorer 11, and even then only when running on Windows 8. This is because only Windows 8 supports the TLS extension (NPN) needed to signal that the client can use SPDY. At the time of writing, IE11 also supports HTTP2 when running on Windows 10 Technical Preview.
 
 
-### How to set it up
+### How to set up SPDY
 
-There are many ways to get SPDY up and running, but the most common way is to use Nginx. This short setup guide assumes that you already have SSL in place
+At the time of writing, HTTP2 is not well-supported enough to provide a proper setup guide, though SPDY is quite mature. There are many ways to run SPDY, but the most common way is to use Nginx. This short setup guide assumes that you already have SSL in place.
 
 First, make sure you have OpenSSL 1.0.1 or higher installed:
 
