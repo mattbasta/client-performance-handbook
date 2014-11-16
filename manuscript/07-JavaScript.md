@@ -1116,7 +1116,18 @@ At a low string length (roughly two dozen characters), we find that in Firefox, 
 
 What is actually happening here? The performance issue is not the result of asm.js being slow. Rather, it's the result of the `saveStringToArr()` function performing poorly. The physical process of moving data from a JavaScript string into an `ArrayBuffer` costs quite a lot of CPU cycles. You'll notice that even though Chrome's performance on the "fast" asm.js test is rather low, it still suffers from the overhead of copying the data for the "slow" asm.js test. Conversely, Chrome performs equally well with a long and short string while using the `indexOf` method.
 
-The lesson to be gleaned here is that there are many cases where asm.js may provide some performance benefits, but the approach required to take advantage of these benefits can negate them entirely. In practical terms, using asm.js for one-off data processing functions throughout a project will likely not perform nearly as well as expected. Instead, asm.js must usually be used from start to end for data processing or other computationally-intensive tasks in order to see a substantial benefit.
+Let's consider another use case: binary data processing. Imagine a function that looks like the following:
+
+```
+function compressPNGImage(arrayBuffer) {
+  // Implementation is left as an exercise to the reader
+  // ...
+}
+```
+
+Such a function might accept an `ArrayBuffer` containing the binary content of a PNG file (perhaps provided through a browser's File API) and modify the `ArrayBuffer` in-place. In this case, an asm.js implementation will almost certainly always out-perform a vanilla JavaScript version, as the ahead-of-time compilation that Firefox will perform will greatly reduce the overhead of the JIT compiler. The input, in this case, can be used directly by asm.js (where the `ArrayBuffer` is passed as the "heap"), meaning the problems experienced in the previous example simply don't exist.
+
+The lesson to be gleaned here is that there are many cases where asm.js may provide good performance benefits, but the approach required to take advantage of these benefits may in some cases negate them entirely. In practical terms, using asm.js for one-off data processing functions throughout a project will likely not perform nearly as well as expected. Instead, asm.js must usually be used from start to end for data processing or on binary data in order to fully realize the performance wins.
 
 
 ### Browser Considerations
