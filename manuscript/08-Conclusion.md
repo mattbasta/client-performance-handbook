@@ -101,6 +101,8 @@ If prerendering does not seem to be working properly, this page will provide an 
 
 #### Events
 
+The Events page is a complete log of network events that occur in the browser. Almost everything that occurs in the browser's network stack gets logged in this list. A search box at the top allows you to sort and filter the event log. Hovering the `(?)` to the left of the search box shows options for sorting.
+
 
 
 
