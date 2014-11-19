@@ -313,6 +313,55 @@ By alphabetizing declarations and ordering selectors, the Gzipped size of the sn
 Gzip significantly decreases in efficiency for files under 1KB. Many files at this size will fit into a single TCP packet anyway, or are even outweighed by their response headers. Compressing them can end up being a waste of CPU resources on the server. As with the example above, a savings of only four bytes may not be worth the trouble.
 
 
+### Compression and Whitespace Removal
+
+An interesting question that can be asked is how well Gzip compression works as a means of negating the costs of whitespace in HTML output, or whether stripping whitespace manually is beneficial. A number of articles on the subject have been written[^whitespace_analysis] with mixed conclusions.
+
+[^whitespace_analysis]: Don't bother using HTML white-space removal to speed up a web site: http://nadeausoftware.com/articles/2007/03/don_t_use_html_white_space_removal_speed_web_site
+
+One argument is that after compression, the benefits of removing whitespace (decreased size, mostly) are moot. In theory, Gzip compression should simply compress whitespace away entirely.
+
+Let's have a look:
+
+```bash
+curl https://github.com > /tmp/github.html
+cat /tmp/github.html | wc
+#     329    1064   16463
+```
+
+The homepage for Github weighs in at roughly 16kb of markup. Let's see how much of that is whitespace:
+
+```bash
+# `tr` deletes characters
+cat /tmp/github.html | tr -d "\n\r\t " | wc
+#       0       1   13683
+```
+
+`16kb - 13kb` tells us that the homepage contains about `3kb` worth of whitespace. That's about 18% of the output. An 18% savings could be fairly substantial, but of course not all whitespace can be safely removed (spaces between words, spaces between inline HTML elements, etc.). If we safely remove whitespace, we get a different result:
+
+```bash
+# The first `sed` command strips leading whitespace
+# The second `sed` command deletes blank lines
+cat /tmp/github.html | sed "s/^[ \t]*//" | sed "/^$/d" | wc
+#      268    1064   14757
+```
+
+A more complex example than the one used above could be crafted, but for the purposes of this example, the two `sed` commands remove all whitespace that can be safely removed.
+
+The result of this operation shows that the output is now approximately 14kb, showing that roughly only 2kb of whitespace can be removed. Let's now compare the gzipped versions of these two outputs:
+
+```bash
+cat /tmp/github.html | gzip | wc
+#      15     143    4636
+cat /tmp/github.html | sed "s/^[ \t]*//" | sed "/^$/d" | gzip | wc
+#      16     117    4440
+```
+
+After compressing the output, less than 200 bytes are saved! In measuring the packet sizes of the connection to `github.com`, removing 200 bytes would not decrease the number of TCP packets sent to the client. Consequently, there is absolutely no performance savings from the decrease in size, and a potential net loss in performance if the whitespace is stripped from the output at the time of the request.
+
+Another argument against whitespace removal is CPU cost. Whitespace removal using simple regular expressions is relatively cheap and can be optimized quite well. HTML elements like `<pre>` can make this significantly more complicated, though, and CSS rules like `white-space: pre` can make it impossible to perform this test without partially rendering the page. In these cases, whitespace trimming can be extremely CPU intensive and take more time to complete than any conceivable payload savings would yield.
+
+
 ### Alternative Compression
 
 While Gzip may be available as a powerful tool that works good in general, better compression can be achieved with purpose-built compression algorithms that are decompressed in JavaScript. For example, consider smaz[^smaz], an algorithm for compressing small strings. Such an algorithm can have a huge impact on files containing lots of small strings, like localization packages. If all of the strings only contain small amounts of repetition, Gzip will compress the file quite poorly, while an algorithm like smaz will provide very impressive compression (up to 50% in some cases). At least two JS ports of smaz currently exist.
