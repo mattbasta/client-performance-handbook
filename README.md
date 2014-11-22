@@ -65,18 +65,7 @@ better quality products to their clients and employers.
         - Web workers
         - Typed arrays
     3. Asm.js
-    4. Frameworks and Performance
-        - Aren’t frameworks necessary?
-        - Aren’t frameworks unnecessary?
-        - jQuery
-        - Underscore
-        - Alternatives
-    5. Client-side Templating
-        - What it is
-        - How it works
-        - Is it better?
-        - Costs
-7. Conclusion
+8. Conclusion
     1. Notable Tickets
     2. Mentioned Tools
     3. Glossary

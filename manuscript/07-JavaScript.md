@@ -1139,8 +1139,3 @@ Other browsers do not special-case asm.js. Chrome's V8 team, for example, chose 
 [^chrome_asm]: https://code.google.com/p/v8/issues/detail?id=2599
 
 Despite this, Firefox's asm.js implementation largely remains the most performant implementation at runtime (as can be seen by the benchmark in the previous section). CPU-heavy applications will almost certainly perform better in Firefox's JavaScript engine than in Chrome's (or any other browser's). If non-Firefox performance is quite bad, it may mean that your users will be forced to use Firefox instead of their browser of choice, which can be a bad user experience.
-
-
-## Frameworks and Performance
-
-## Client-Side Templating

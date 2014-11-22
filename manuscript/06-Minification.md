@@ -27,15 +27,74 @@ For most websites, whitespace removal is trivial. In HTML, two adjacent whitespa
 
 This isn't true for certain elements, though. The `<pre>` and `<textarea>` tags are sensitive to whitespace, meaning whitespace should not be removed from these elements. Additionally, elements can have the `white-space: pre` CSS property, which makes them behave the same way. Pages with many inline `<script>` tags may also run into issues if the JavaScript inside the tags omits semicolons or contains strings with whitespace that would otherwise be trimmed.
 
-For these pages that contain whitespace-sensitive elements, it is usually simpler to disable whitespace removal than to try to trim around the affected elements. Relatively few pages on a site tend to contain elements like this, so the performance regression should be relatively minor.
+For these pages that contain whitespace-sensitive elements, it is usually simpler to disable site-wide whitespace removal than to try to trim around the affected elements. Relatively few pages on a site tend to contain elements like this, so the performance regression should be relatively minor.
 
 In some cases, stripping whitespace is simply good code hygiene: some Java and PHP frameworks, for instance, will spuriously output tiny amounts of whitespace at the beginning and end of every response. This can quickly cause a mess and make viewing the source of a page a real chore.
 
-Whitespace removal is fairly simple when using tools: Apache has a mod_trim plugin that automates this process, though the mod_pagespeed plugin from Google will perform whitespace removal in addition to many other optimizations. Django has a `StripWhiteSpaceMiddleware` class that can be flipped on. Smarty templates include a `{strip}` block that will simply ignore whitespace to begin with in the templates. Plugins are available for nearly every platform, framework, and server software with varying extra features.
 
-Stripping whitespace is something of a micro-optimization, though. After Gzip, the difference between the original document and a whitespace-free document are minimal at best. Some measurements have put the size difference below 1KB on average. This happens because whitespace is often repeated in the same way throughout a file.
+#### Compression and Whitespace Removal
 
-Note that whitespace in client-side templates does not suffer from this downside. When compiled to JavaScript, whitespace can account for a significant amount of space thanks to template features that split strings up in unique ways. Removing whitespace from client-side templates is definitely recommended.
+An interesting question that can be asked is how well Gzip compression works as a means of negating the costs of whitespace in HTML output, or whether stripping whitespace manually is beneficial. One argument is that after compression, the benefits of removing whitespace (decreased size, mostly) are moot. In theory, Gzip compression should simply compress whitespace away entirely.
+
+Let's have a look:
+
+```bash
+curl https://github.com > /tmp/github.html
+cat /tmp/github.html | wc
+#     329    1064   16463
+```
+
+The homepage for Github weighs in at roughly 16kb of markup. Let's see how much of that is whitespace:
+
+```bash
+# `tr` deletes characters
+cat /tmp/github.html | tr -d "\n\r\t " | wc
+#       0       1   13683
+```
+
+`16kb - 13kb` tells us that the homepage contains about `3kb` worth of whitespace. That's about 18% of the output. An 18% savings could be fairly substantial, but of course not all whitespace can be safely removed (spaces between words, spaces between inline HTML elements, etc.). If we safely remove whitespace, we get a different result:
+
+```bash
+# The first `sed` command strips leading whitespace
+# The second `sed` command deletes blank lines
+cat /tmp/github.html | sed "s/^[ \t]*//" | sed "/^$/d" | wc
+#      268    1064   14757
+```
+
+A more complex example than the one used above could be crafted, but for the purposes of this example, the two `sed` commands remove all whitespace that can be safely removed.
+
+The result of this operation shows that the output is now approximately 14kb, showing that roughly only 2kb of whitespace can be removed. Let's now compare the gzipped versions of these two outputs:
+
+```bash
+cat /tmp/github.html | gzip | wc
+#      15     143    4636
+cat /tmp/github.html | sed "s/^[ \t]*//" | sed "/^$/d" | gzip | wc
+#      16     117    4440
+```
+
+After compressing the output, less than 200 bytes are saved! In measuring the packet sizes of the connection to `github.com`, removing 200 bytes would not decrease the number of TCP packets sent to the client. Consequently, there is absolutely no performance savings from the decrease in size, and a potential net loss in performance if the whitespace is stripped from the output at the time of the request.
+
+Another argument against whitespace removal is CPU cost. Whitespace removal using simple regular expressions is relatively cheap and can be optimized quite well. HTML elements like `<pre>` can make this significantly more complicated, though, and CSS rules like `white-space: pre` can make it impossible to perform this test without partially rendering the page. In these cases, whitespace trimming can be extremely CPU intensive and take more time to complete than any conceivable payload savings would yield.
+
+Certainly, these conclusions are not true 100% of the time. Stripping whitespace at compilation time (when your web application is compiled to a binary, like with golang, or when your template syntax is compiled to your runtime language, like with Smarty, Jinja2, or Handlebars) is extremely efficient and can provide substantial benefits. Whitespace that is removed at compile time costs nothing at runtime, meaning there is no downside to using it. Additionally, the downsides of whitespace being inappropriately stripped from elements styled like `<pre>` tags is negated because stripping must be explicitly triggered.
+
+Consider the following Smarty template:
+
+```smarty
+{strip}
+    <ul>
+        <li>This has a lot of whitespace!</li>
+        <li>Lots of indentation.</li>
+        <li>Line breaks everywhere.</li>
+    </ul>
+{/strip}
+```
+
+When rendered for the first time, Smarty's template compiler will simply ignore any duplicate whitespace characters:
+
+```html
+<ul><li>This has a lot of whitespace!</li><li>Lots of indentation.</li><li>Line breaks everywhere.</li></ul>
+```
 
 
 ### Keeping Markup Minimal
