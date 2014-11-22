@@ -115,6 +115,7 @@ The Events page is a complete log of network events that occur in the browser. A
 - CSS sprite tool: Spritificator - http://potch.me/projects/spritificator/
 - CSS minification tool: clean-css - https://github.com/GoalSmashers/clean-css
 - CSS minification tool: mincss - https://mincss.readthedocs.org/
+- HTML whitespace removal: HTMLTidy - http://tidy.sourceforge.net/
 - JavaScript minifier: JSMin - http://www.crockford.com/javascript/jsmin.html
 - JavaScript minifier: Closure Compiler - https://developers.google.com/closure/compiler/
 - JavaScript minifier: UglifyJS2 - https://github.com/mishoo/UglifyJS2

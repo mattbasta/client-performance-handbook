@@ -29,7 +29,11 @@ This isn't true for certain elements, though. The `<pre>` and `<textarea>` tags 
 
 For these pages that contain whitespace-sensitive elements, it is usually simpler to disable site-wide whitespace removal than to try to trim around the affected elements. Relatively few pages on a site tend to contain elements like this, so the performance regression should be relatively minor.
 
-In some cases, stripping whitespace is simply good code hygiene: some Java and PHP frameworks, for instance, will spuriously output tiny amounts of whitespace at the beginning and end of every response. This can quickly cause a mess and make viewing the source of a page a real chore.
+Most templating languages allow provide syntax for stripping whitespace. This is often quite useful and allows you to manually avoid whitespace-sensitive elements. For static markup files, tools like HTMLTidy[^htmltidy] are available. HTMLTidy--though a bit dated--provides a simple way to "minify" markup files.
+
+[^htmltidy]: http://tidy.sourceforge.net/
+
+In some cases, stripping whitespace is simply good code hygiene for a project: some Java and PHP frameworks, for instance, will spuriously output tiny amounts of whitespace at the beginning and end of every response. This can quickly cause a mess and make viewing the source of a page a real chore.
 
 
 #### Compression and Whitespace Removal
