@@ -65,7 +65,8 @@ better quality products to their clients and employers.
         - Web workers
         - Typed arrays
     3. Asm.js
-8. Conclusion
+8. Recommendations
+9. Conclusion
     1. Notable Tickets
     2. Mentioned Tools
     3. Glossary

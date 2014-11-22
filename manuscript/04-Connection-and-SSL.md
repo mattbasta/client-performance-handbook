@@ -451,69 +451,6 @@ HTTP2 isn't supported in IE
 : This is somewhat true. Only version 3 of SPDY is supported by Internet Explorer 11, and even then only when running on Windows 8. This is because only Windows 8 supports the TLS extension (NPN) needed to signal that the client can use SPDY. At the time of writing, IE11 also supports HTTP2 when running on Windows 10 Technical Preview.
 
 
-### How to set up SPDY
-
-At the time of writing, HTTP2 is not well-supported enough to provide a proper setup guide, though SPDY is quite mature. There are many ways to run SPDY, but the most common way is to use Nginx. This short setup guide assumes that you already have SSL in place.
-
-First, make sure you have OpenSSL 1.0.1 or higher installed:
-
-```bash
-apt-get update
-apt-get install build-essential libssl-dev libpcre3 libpcre3-dev
-```
-
-Next, download and install Nginx. At the time of writing, the latest stable version of Nginx is 1.6.0. You may wish to visit http://nginx.org to find the most current stable version.
-
-W> #### Warning!
-W>
-W> If you have Nginx already installed on your server, following these instructions will remove it and may not preserve your configuration. This is because (at the time of writing) no popular software repositories have versions of Nginx configured to run SPDY. If you follow these instructions, be sure to back up your `nginx.conf` and any other custom configuration files you might have.
-
-
-```bash
-cd /tmp
-
-# Download and unpack nginx
-wget http://nginx.org/download/nginx-1.6.0.tar.gz
-tar xvf nginx-1.6.0.tar.gz
-
-cd nginx-1.6.0
-# Configure nginx to use SPDY
-./configure --with-http_spdy_module --with-http_ssl_module
-# Note that you may need to pass additional config parameters
-# if you require additional functionality.
-
-# Remove existing nginx installations
-dpkg -l | grep nginx
-apt-get remove nginx-full nginx-common
-
-make
-make install
-```
-
-At this point, Nginx should be installed but not configured to your site. If you had a previous version of Nginx installed, restore your old configuration files. Make sure SSL is set up correctly using the setup guide in previous sections. Once you've completed that, setting up SPDY is simple. Just update your configuration to replace this:
-
-```nginx
-listen          443 ssl;
-server_name     example.com;
-```
-
-with the following:
-
-```nginx
-listen          443 ssl spdy;  # Add SPDY
-server_name     example.com;
-spdy_headers_comp   5;  # Turn on SPDY header compression
-```
-
-Finally, restart Nginx with
-
-```bash
-/usr/local/nginx/sbin/nginx -s reload
-```
-
-That's it!
-
-
 ### QUIC
 
 QUIC is another project by Google to eventually become the successor to SPDY. It is currently in a highly experimental state. Unlike SPDY, QUIC uses UDP rather than TCP, enabling content to be received in a truly asynchronous manner and eliminating blockages caused by a single slow packet. QUIC also seeks to decrease the number of round trips made to and from the server, and eliminate most--if not all--of the time required to establish a connection.

@@ -347,7 +347,7 @@ PNG
 : The PNG ("Portable Network Graphics") format was developed to circumvent the patent issues surrounding GIF. Unlike GIF, PNGs support true-color imaging, full alpha transparency, and gamma correction. PNGs can be compressed to eliminate some of those features. PNG does not support animation.
 
 BMP
-: One of the earliest formats, BMP ("Bitmap") encodes the color of each pixel individually. This results in very large file sizes, though images are encoded losslessly. BMP does not support an alpha channel. Despite its widespread support, the use of BMP files on the web is highly discouraged.
+: One of the earliest formats, BMP ("Bitmap") encodes the color of each pixel individually. This results in very large file sizes, though images are encoded losslessly. BMP does not support an alpha channel. Despite its widespread support, the use of BMP files on the web is highly discouraged due to its extremely inefficient file format.
 
 SVG
 : Unlike other formats in this list, SVG ("Scalable Vector Graphics") stores image data in vector representation. Line art, regular shapes, and other smooth graphics can be represented by SVG with very small file sizes. Image data is encoded as shapes in an XML format. SVG images can be zoomed and scaled with no loss in quality.
@@ -365,7 +365,7 @@ APNG
 : PNG does not natively support animations (as GIF does), so APNG ("Animated Portable Network Graphics") was developed to fill this need. APNG is only supported in Firefox, though a Chrome extension is available.
 
 WebP
-: Currently--at the time of writing--only supported in Chrome[^firefox_webp], WebP hosts all features of PNG and GIF while providing very good compression of photographic images (like JPEG) with very little perceivable quality loss. Originally criticized for lacking animation support among other features, the latest versions of WebP have addressed all noted drawbacks.
+: At the time of writing, this format is only supported in Chrome and Opera[^firefox_webp]. WebP includes all features of PNG and GIF while providing exceptional compression of photographic images (like JPEG) with very little perceivable quality loss. Originally criticized for lacking animation support and other features, the latest versions of WebP has addressed all noted drawbacks.
 
 [^jpeg_xr_analysis]: http://people.mozilla.org/~josh/lossy_compressed_image_study_october_2013/
 
@@ -459,7 +459,7 @@ If you use OS X, an open source tool called ImageOptim can be used to automate t
 
 ![ImageOptim compressing images from this very book](images/image_optim.png)
 
-You can download ImageOptim for free from http://imageoptim.com/
+You can download ImageOptim for free from its homepage: http://imageoptim.com/
 
 
 ### Image encoding and quality

@@ -104,24 +104,30 @@ If prerendering does not seem to be working properly, this page will provide an 
 The Events page is a complete log of network events that occur in the browser. Almost everything that occurs in the browser's network stack gets logged in this list. A search box at the top allows you to sort and filter the event log. Hovering the `(?)` to the left of the search box shows options for sorting.
 
 
-
-
 ### Usage
 
 
 ## Mentioned Tools
 
+- Build system: Grunt - http://gruntjs.com/
+- Build system: Gulp - http://gulpjs.com/
+- Build system: Make - http://www.gnu.org/software/make/
 - CSS sprite tool: Spritegen - http://spritegen.website-performance.org/
 - CSS sprite tool: Spritificator - http://potch.me/projects/spritificator/
 - CSS minification tool: clean-css - https://github.com/GoalSmashers/clean-css
 - CSS minification tool: mincss - https://mincss.readthedocs.org/
 - HTML whitespace removal: HTMLTidy - http://tidy.sourceforge.net/
+- Image compression: ImageOptim - http://imageoptim.com/
+- Image compression (GIF): gifsicle - http://www.lcdf.org/gifsicle/
+- Image compression (JPEG): jpegoptim - https://github.com/tjko/jpegoptim
+- Image compression (PNG): pngcrush - http://pmt.sourceforge.net/pngcrush/
+- Image compression (PNG): pngout - http://advsys.net/ken/util/pngout.htm
+- JavaScript code generator: escodegen - https://github.com/Constellation/escodegen
 - JavaScript minifier: JSMin - http://www.crockford.com/javascript/jsmin.html
 - JavaScript minifier: Closure Compiler - https://developers.google.com/closure/compiler/
 - JavaScript minifier: UglifyJS2 - https://github.com/mishoo/UglifyJS2
 - JavaScript parser: esprima - https://github.com/ariya/esprima
 - JavaScript parser: acorn - https://github.com/marijnh/acorn
-- JavaScript code generator: escodegen - https://github.com/Constellation/escodegen
 
 
 ## Glossary
@@ -146,7 +152,7 @@ Event
 JIT Compilation
 : JIT compilers, or Just-In-Time compilers, are a cross between interpreters and static compilers. Code running in a JIT-enabled interpreter will run slowly as the interpreter finds out how the code works. Then, the JIT compiler will replace the slow code with fast, optimized code.
 
-Run To Completion
+Run to Completion
 : The process of triggering a JavaScript function, then waiting for all subsequent synchronous processing to complete.
 
 
