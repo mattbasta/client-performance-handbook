@@ -138,4 +138,4 @@ C
 
 Obviously, the units of each variable are subjective. Measuring difficulty, for example, might be better done in man hours for one team and sprints for another. Expected wins might be measured in dollars, engagement, or milliseconds. The dimensional analysis required to make this approach useful may not be simple and will vary greatly between organizations.
 
-A good project manager should use a similar approach to determine what areas of performance deserve the most attention. It is very hard to say no to a change that provides a seemingly substantial benefit, but prioritizing the most valuable changes over less valuable changes will ultimately provide the most effective means of addressing a broad range of performance challenges.
+A good project or performance product manager should use a similar approach to determine what areas of performance deserve the most attention. It is very hard to say no to a change that provides a seemingly substantial benefit, but prioritizing the most valuable changes over less valuable changes will ultimately provide the most effective means of addressing a broad range of performance challenges.

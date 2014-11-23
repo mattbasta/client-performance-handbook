@@ -700,6 +700,8 @@ Optionally, an HTTP header can be specified (or its `<meta>` equivalent):
 Link: </images/will_be_used_later.jpg>; rel=prefetch
 ```
 
+Lastly, web servers running HTTP2 or SPDY can use their respective protocols' "push" functionality to preemptively send content to the browser, though usage of this and configuration is largely implementation-specific at the moment.
+
 These assets are loaded with a lower priority than normal assets, and will only be loaded during "browser idle time". This is generally after the current page (or the outermost document, in the case of frames) has completed loading. Using prefetching is useful in many scenarios:
 
 - On a login page to load assets for a logged-in dashboard: in this case, the client will already have cached the assets required to load the logged-in version of the site while the user is entering their credentials
@@ -713,7 +715,7 @@ These assets are loaded with a lower priority than normal assets, and will only 
 Another technique used in some browsers is prerendering. This uses a similar `<link>` tag to prefetching:
 
 ```html
-<link rel="prerender" href="http://example.com/login" />
+<link rel="prerender" href="http://example.com/login">
 ```
 
 Unlike prefetching, however, prerendering instructs the browser to essentially begin navigating to the page in a background browsing context. This incurs the resource overhead of loading the prerendered page in the background. Prerendering should only be used for very specific cases:
