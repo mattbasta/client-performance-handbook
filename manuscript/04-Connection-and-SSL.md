@@ -370,22 +370,6 @@ Another common pitfall is a CDN over-selling its service. When you use a CDN, yo
 Cost can be another pitfall with a CDN. Before choosing a CDN, model your expected costs based on your own data. Consider how much it will cost to be a customer with historical data, and also project figures accounting for future growth. Also be sure to compare this with the cost of bandwidth on your current host (if any) to account for potential savings. On some platforms, like Linode or Microsoft Azure, large amounts of bandwidth can be far more expensive than using a CDN to transfer the same content.
 
 
-### The myth of the P2P CDN
-
-A technology that took the internet by storm in recent years has been the (alleged) peer-to-peer CDN. The concept uses WebRTC: a very new web technology that allows browsers to communicate with each other directly. Content is (allegedly) transmitted from the original host or a traditional CDN to one or more clients, and those clients then distribute the content to other clients that visit the page.
-
-On paper, this idea is phenomenal. In practice, this is almost entirely useless for serving anything other than very large files, like videos or music.
-
-- You need to have multiple concurrent users visiting the same site with the same set of assets.
-- You need to deliver a rather large script to each user to allow the clients to be able to establish the P2P connection and communicate effectively. By the time such a script was sent, your page could have been mostly loaded.
-- Connecting the users to each other isn't instantaneous (or guaranteed to work 100% of the time), and that doesn't account for the time required for peers to advertise which pieces of the content they have or can provide.
-- An attacker could pretend to be another client visiting your site and simply send garbage to legitimate visitors. Even if the clients perform checksums on the data and throw out the garbage, an attacker could potentially lay waste to the performance of a site, or bring it down entirely.
-- Users often have slow upload speeds.
-- Users on mobile connections suffer significantly: downloads become fragmented over multiple connections which has a significant penalty, and mobile users that are tasked--perhaps erroneously--with uploading waste significant bandwidth.
-
-It's unlikely that P2P CDNs are going to become a viable technology for most websites to take advantage of for quite a long time. In testing out various P2P CDNs for myself, I discovered that most can't even make their own demos function properly due to a lack of users accessing their website.
-
-
 ## HTTP2 and SPDY
 
 SPDY is a very new and quite powerful protocol developed by Google for improving web performance. It functions as a substitute for HTTP at the protocol level: requests are sent in a way that's very similar to traditional HTTP, and applications running on the web server are generally not even aware that the requests they are receiving were made over SPDY. In fact, neither the Chrome nor the Firefox developer tools distinguish requests made by SPDY from requests made over normal HTTP.
