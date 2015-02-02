@@ -51,5 +51,5 @@ credits. Please make sure I remember to add you, and feel free to file an issue
 or send a message if I do not.
 
 Contributors are not given rights to the content of the book and will not be
-paid for their work in any way. All contributions are [much appreciated]
+paid for their work in any way. All contributions are much appreciated
 donations.

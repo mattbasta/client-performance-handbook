@@ -1,7 +1,6 @@
-# Client-Side Performance Almanac
+# Client-Side Performance Handbook
 
-A web developer's resource for all things performance-related on the web, with
-stats, stories, and proverbs.
+A web developer's resource for all things performance-related on the web in one handy guide.
 
 by [Matt Basta](http://mattbasta.com)
 
@@ -13,7 +12,7 @@ nearly impossible to consider each one in a serial way. In addition,
 performance myths and misinformation often lead well-intentioned engineers to
 make poor choices.
 
-The Client-Side Performance Almanac is a guide to help web developers deliver
+The Client-Side Performance Handbook is a guide to help web developers deliver
 better quality products to their clients and employers.
 
 
@@ -71,7 +70,6 @@ better quality products to their clients and employers.
     2. Mentioned Tools
     3. Glossary
     4. Thanks, credits
-    5. Proverbs
 
 
 ## Contributing
