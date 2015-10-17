@@ -1,6 +1,8 @@
 # Summary
 
 * [Introduction](README.md)
+* [Introduction](01-introduction/introduction.md)
+   * Introduction to Web Performance
 * [Identifying Performance Issues](02-identifying-performance-issues/identifyingperformance_issues_md.md)
    * [Introduction](02-identifying-performance-issues/introduction.md)
    * [The Navigation Timing API](02-identifying-performance-issues/the_navigation_timing_api.md)
@@ -11,6 +13,4 @@
    * [Tech Debt](02-identifying-performance-issues/tech_debt.md)
        * [Refactoring](02-identifying-performance-issues/refactoring.md)
        * [Premature Optimization](02-identifying-performance-issues/premature_optimization.md)
-* [Introduction](01-introduction/introduction.md)
-   * Introduction to Web Performance
 
