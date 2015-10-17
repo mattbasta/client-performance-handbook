@@ -4,7 +4,7 @@
 * [Introduction](01-introduction/introduction.md)
    * [Performance is About Compromises](01-introduction/performance_is_about_compromises.md)
    * [The Value of Performance](01-introduction/the_value_of_performance.md)
-   * Categorizing Users
+   * [Categorizing Users](01-introduction/categorizing_users.md)
 * [Identifying Performance Issues](02-identifying-performance-issues/identifyingperformance_issues_md.md)
    * [Introduction](02-identifying-performance-issues/introduction.md)
    * [The Navigation Timing API](02-identifying-performance-issues/the_navigation_timing_api.md)
