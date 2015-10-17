@@ -1,9 +1,0 @@
-01-Introduction-to-Web-Performance.md
-02-Identifying-Performance-Issues.md
-03-Overview-of-a-Pages-Lifecycle.md
-04-Connection-and-SSL.md
-05-Assets-and-Payload.md
-06-Minification.md
-07-JavaScript.md
-08-Recommendations.md
-09-Conclusion.md
