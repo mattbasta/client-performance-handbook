@@ -1,7 +1,6 @@
 # Summary
 
 * [Introduction](README.md)
-* [Introduction](01-introduction/introduction-to-web-performance.md)
 * [Identifying Performance Issues](02-identifying-performance-issues/identifyingperformance_issues_md.md)
    * [Introduction](02-identifying-performance-issues/introduction.md)
    * [The Navigation Timing API](02-identifying-performance-issues/the_navigation_timing_api.md)
