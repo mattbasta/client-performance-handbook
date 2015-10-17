@@ -9,6 +9,7 @@
    * [Make More Graphs](02-identifying-performance-issues/make_more_graphs.md)
    * [Simplify!](02-identifying-performance-issues/simplify.md)
    * [Tech Debt](02-identifying-performance-issues/tech_debt.md)
+       * Refactoring
 * [Introduction](01-introduction/introduction-to-web-performance.md)
 * [Introduction](01-introduction/introduction.md)
    * Introduction to Web Performance
