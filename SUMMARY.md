@@ -1,6 +1,7 @@
 # Summary
 
-* [Identifying Performance Issues](01-introduction/identifying_performance_issues.md)
+* [Introduction](README.md)
+* [Identifying Performance Issues](02-identifying-performance-issues/identifyingperformance_issues_md.md)
 * [Introduction](01-introduction/introduction-to-web-performance.md)
 * [Introduction](01-introduction/introduction.md)
    * Introduction to Web Performance
