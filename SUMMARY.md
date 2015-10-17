@@ -10,7 +10,7 @@
    * [Simplify!](02-identifying-performance-issues/simplify.md)
    * [Tech Debt](02-identifying-performance-issues/tech_debt.md)
        * [Refactoring](02-identifying-performance-issues/refactoring.md)
-       * Premature Optimization
+       * [Premature Optimization](02-identifying-performance-issues/premature_optimization.md)
 * [Introduction](01-introduction/introduction-to-web-performance.md)
 * [Introduction](01-introduction/introduction.md)
    * Introduction to Web Performance
