@@ -8,6 +8,7 @@
    * [Storing Timestamps at Important Page Events](02-identifying-performance-issues/storing_timestamps_at_important_page_events.md)
    * [Make More Graphs](02-identifying-performance-issues/make_more_graphs.md)
    * [Simplify!](02-identifying-performance-issues/simplify.md)
+   * Tech Debt
 * [Introduction](01-introduction/introduction-to-web-performance.md)
 * [Introduction](01-introduction/introduction.md)
    * Introduction to Web Performance
