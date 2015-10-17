@@ -1,6 +1,6 @@
 # Summary
 
-* [Introduction](README.md)
+* [README](README.md)
 * [Introduction](01-introduction/introduction.md)
    * [Performance is About Compromises](01-introduction/performance_is_about_compromises.md)
 * [Identifying Performance Issues](02-identifying-performance-issues/identifyingperformance_issues_md.md)
