@@ -1,6 +1,5 @@
 # Storing Timestamps at Important Page Events
 
-
 By "events," I don't mean DOM events. Instead, I mean events that are considered important in the normal page load process that aren't already reported elsewhere.
 
 For example, in *Even Faster Web Sites*, Steve Souders recommends performing an early header flush that sends the `<head>` tag and the beginning of the page's body. This allows the browser to begin downloading assets listed at the start of the document while the server performs the rest of the processing for the page in parallel. In this scenario (and scenarios where more than one flush is performed), it's extremely helpful to know when the various flushes are taking place and how long it takes for the client to perform the necessary actions involved.
@@ -36,13 +35,11 @@ flush();
 
 // Perform some operations that are going to take
 // a while.
-require('database.php');
-DB::init();
+App\DB::init();
 
-$user = DB::getUser();
+$user = App\DB::getUser();
 
-require('templates.php');
-Templates::render('homepage.tmpl', [
+App\Templates::render('homepage.tmpl', [
     'user' => $user,
 ]);
 
@@ -56,7 +53,7 @@ Timing.events.bodyFlush = Date.now();
 // Flush again for the body
 flush();
 
-Templates::render('footer.tmpl');
+App\Templates::render('footer.tmpl');
 
 ?>
 </body>
@@ -65,3 +62,4 @@ Templates::render('footer.tmpl');
 
 Having this information is helpful because it allows you to identify when parts of the page are loading relative to your JavaScript, even if those pieces don't load in concert with the times listed in the navigation timing API.
 
+If you're using a CSP (Content Security Policy) with your page, using inline script tags may be difficult or impossible. Instead, you can use the server time (in the PHP example above, the appropriate function is `microtime()`) and output the timestamps in data attributes on DOM elements. Your scripts can then extract them from the DOM with `document.querySelector()` or your favorite JavaScript selector library.
