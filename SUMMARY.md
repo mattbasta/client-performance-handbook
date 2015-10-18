@@ -15,5 +15,5 @@
    * [Tech Debt](02-identifying-performance-issues/tech_debt.md)
        * [Refactoring](02-identifying-performance-issues/refactoring.md)
        * [Premature Optimization](02-identifying-performance-issues/premature_optimization.md)
-* Overview of a Page's Lifecycle
+* [Overview of a Page's Lifecycle](03-overview_of_a_pages_lifecycle/overview_of_a_pages_lifecycle.md)
 
