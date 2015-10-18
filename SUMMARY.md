@@ -19,4 +19,5 @@
    * Page Lifecycle and Performance
 * Connection and HTTPS
 * Assets and Payload
+* JavaScript
 
