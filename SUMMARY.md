@@ -20,6 +20,7 @@
 * Connection and HTTPS
    * DNS Lookups
    * Server Connections
+   * HTTPS
 * Assets and Payload
    * Minification
 * JavaScript
