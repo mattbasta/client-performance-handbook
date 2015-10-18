@@ -19,6 +19,7 @@
    * [Page Lifecycle and Performance](03-overview_of_a_pages_lifecycle/page_lifecycle_and_performance.md)
 * Connection and HTTPS
    * DNS Lookups
+   * Server Connections
 * Assets and Payload
    * Minification
 * JavaScript
