@@ -23,6 +23,7 @@
    * HTTPS
    * CDNs
    * HTTP/2
+   * Redirects
 * Assets and Payload
    * Minification
 * JavaScript
