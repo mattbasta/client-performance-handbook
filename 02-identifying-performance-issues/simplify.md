@@ -51,4 +51,6 @@ The basics are the most important things you can put in place to prevent bad cod
 
 Regular explorations of code helps to keep code fresh. Neglected code tends to bit-rot as it loses mindshare. Invite engineers to regularly look through old or neglected code to see whether there's improvements that can be made, even if those ideas end up on a backlog.
 
+Make time for cleaning up tech debt. Slow or inefficient code often gets little attention, especially if it already works. Making sure resources are available for cleanup ensures bad code doesn't stay around for any longer than it needs to.
+
 Tests can be made more valuable as a performance tool by instrumenting each test. If test times increase substantially, it's easy to know what commit caused the regression. Setting test timeouts can also help to prevent code from being merged to version control.
