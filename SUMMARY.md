@@ -21,6 +21,7 @@
    * DNS Lookups
    * Server Connections
    * HTTPS
+   * CDNs
 * Assets and Payload
    * Minification
 * JavaScript
