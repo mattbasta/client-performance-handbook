@@ -22,6 +22,7 @@
    * Server Connections
    * HTTPS
    * CDNs
+   * HTTP/2
 * Assets and Payload
    * Minification
 * JavaScript
