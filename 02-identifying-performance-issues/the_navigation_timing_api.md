@@ -59,6 +59,24 @@ The following members are available in the `window.performance.timing` object:
         Note that no `requestEnd` exists: this is intentional, as computing this time can be expensive and it doesn't necessarily correspond with a time that the server receives the request.<br><br>
         If the page is cached, this is the timestamp that the cache is queried.
     </dd>
+    <dt>responseStart</dt>
+    <dd>The timestamp that the server receives the first byte of the response. If the page is cached, this is the timestamp that the cache responds with content.</dd>
+    <dt>responseEnd</dt>
+    <dd>The timestamp that the server receives the last byte of the response. If the page is cached, this is the timestamp that the cache finishes sending content.</dd>
+    <dt>domLoading</dt>
+    <dd>The timestamp at which the browser sets <code>document.readyState</code> to <code>"loading"</code>. This is the time that the browser begins constructing the DOM.</dd>
+    <dt>domInteractive</dt>
+    <dd>The timestamp at which the browser sets <code>document.readyState</code> to <code>"interactive"</code>. This is the time that the browser has finished parsing all of the markup on the page but hasn't finished loading all of the assets.</dd>
+    <dt>domContentLoadedEventStart</dt>
+    <dd>The timestamp immediately before the browser begins firing the <code>DOMContentLoaded</code> event.</dd>
+    <dt>domContentLoadedEventEnd</dt>
+    <dd>The timestamp immediately after the browser finishes firing the <code>DOMContentLoaded</code> event.</dd>
+    <dt>domComplete</dt>
+    <dd>The timestamp at which the browser sets <code>document.readyState</code> to <code>"complete"</code>. At this point, all resources required to load the page have finished processing.</dd>
+    <dt>loadEventStart</dt>
+    <dd>The timestamp immediately before the browser begins firing the <code>load</code> event on the <code>window</code> object.</dd>
+    <dt>loadEventEnd</dt>
+    <dd>The timestamp immediately after the browser finishes firing the <code>load</code> event on the <code>window</code> object.</dd>
 </dl>
 
 Google Analytics will collect some basic information for you, including the total load time, DNS lookup time, time taken to create a connection, time between request and the beginning of the server's response, time until `fetchStart`, `domInteractive`, and `domContentLoadedEventStart`. [^1] These different timings are exposed under Behavior > Site Speed > Page Timings. On that page, you can select the various metrics from the dropdown under DOM Timings and Technical.
