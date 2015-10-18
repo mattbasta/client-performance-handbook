@@ -20,4 +20,5 @@
 * Connection and HTTPS
 * Assets and Payload
 * JavaScript
+* Recommendations
 
