@@ -19,6 +19,7 @@
    * Page Lifecycle and Performance
 * Connection and HTTPS
 * Assets and Payload
+   * Minification
 * JavaScript
 * Recommendations
 
