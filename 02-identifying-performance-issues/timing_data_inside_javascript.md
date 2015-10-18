@@ -1,6 +1,5 @@
 # Timing Data Inside JavaScript
 
-
 One of the critical components to page load is JavaScript execution and initialization. When developing, it's easy to use your browser's developer tools to profile code and identify operations that introduce delays. For example, you might notice something like the following:
 
 ![An expensive style and layout recalculation in the Chrome Developer Tools Timeline](images/timeline_recalculation.png)
@@ -27,34 +26,33 @@ To add timing markers, the above would be updated to look something like the fol
 
 ```js
 var fs = require('fs');
-
 var filesToMinify = glob('assets/');
 
-var timingMarker = (
+const timingMarker = (
     ';' +
     'Timing = window.Timing || {};' +
     'Timing.files = Timing.files || {};' +
     'Timing.markers = Timing.markers || {};'
 );
 
-fs.writeFile(
+fs.writeFileSync(
     'output.js',
     timingMarker +
-    'Timing.files["output.js"] = Date.now();' +
-    'Timing.markers["output.js"] = [];' +
-    filesToMinify.map(function(filePath) {
-        // Create a marker to be inserted into the
-        // compiled file before the included script
-        var marker = 'Timing.markers["output.js"].push({' +
-            // Save the name of the included file
-            'name: ' + JSON.stringify(filePath) + ',' +
-            // Save the time that the file started executing
-            'start: Date.now()});';
-
-        var source = fs.readFileSync(filePath).toString();
-        // Return the marker plus the file's source
-        return marker + source;
-    }).join('\n')
+        'Timing.files["output.js"] = Date.now();' +
+        'Timing.markers["output.js"] = [];' +
+        filesToMinify.map(function(filePath) {
+            // Create a marker to be inserted into the
+            // compiled file before the included script
+            var marker = 'Timing.markers["output.js"].push({' +
+                // Save the name of the included file
+                'name: ' + JSON.stringify(filePath) + ',' +
+                // Save the time that the file started executing
+                'start: Date.now()});';
+    
+            var source = fs.readFileSync(filePath).toString();
+            // Return the marker plus the file's source
+            return marker + source;
+        }).join('\n')
 );
 
 ```
