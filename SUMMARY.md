@@ -29,6 +29,7 @@
        * Markup Minification
        * CSS Minification
        * JavaScript Minification
+   * HTTP and the Constraints We Face
 * JavaScript
    * The Event Loop
    * Browser Events
