@@ -30,6 +30,7 @@
        * Markup Minification
        * CSS Minification
        * JavaScript Minification
+   * Gzip and Compression
 * JavaScript
    * The Event Loop
    * Browser Events
