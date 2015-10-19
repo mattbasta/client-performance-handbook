@@ -26,11 +26,11 @@
    * Redirects
 * Assets and Payload
    * HTTP and the Constraints We Face
+   * Gzip and Compression
    * Minification
        * Markup Minification
        * CSS Minification
        * JavaScript Minification
-   * Gzip and Compression
    * Images on the Web
    * Preloading
    * Inlining and Bundling Assets
