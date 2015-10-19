@@ -47,7 +47,7 @@
    * Minify Assets
    * Compress Images
 * [Resources](08-resources/resources.md)
-   * Chrome's Net Internals Tool
+   * [Chrome's Net Internals Tool](08-resources/chromes_net_internals_tool.md)
    * Notable Tickets
    * Glossary
    * Thanks
