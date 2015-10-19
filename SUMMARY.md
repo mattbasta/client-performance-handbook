@@ -31,4 +31,5 @@
 * Resources
    * Chrome's Net Internals Tool
    * Glossary
+   * Thanks
 
