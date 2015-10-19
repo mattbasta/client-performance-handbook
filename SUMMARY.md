@@ -28,5 +28,5 @@
    * Minification
 * JavaScript
 * Recommendations
-* Conclusion
+* Resources
 
