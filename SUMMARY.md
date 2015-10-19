@@ -29,6 +29,7 @@
 * JavaScript
    * The Event Loop
    * Browser Events
+   * Defer, Async, Both, Neither
 * Recommendations
    * Turn on HTTP/2
    * Minify Assets
