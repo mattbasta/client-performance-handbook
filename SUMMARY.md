@@ -30,6 +30,7 @@
    * The Event Loop
    * Browser Events
    * Defer, Async, Both, Neither
+   * Head or Body: Where the hell do I put my code?
 * Recommendations
    * Turn on HTTP/2
    * Minify Assets
