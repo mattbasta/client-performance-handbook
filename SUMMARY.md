@@ -42,7 +42,7 @@
    * Memory Management
    * CPU-Bound Code
    * Asm.js and You
-* Recommendations
+* [Recommendations](07-recommendations/recommendations.md)
    * Turn on HTTP/2
    * Minify Assets
    * Compress Images
