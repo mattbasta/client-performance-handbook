@@ -25,11 +25,11 @@
    * HTTP/2
    * Redirects
 * Assets and Payload
+   * HTTP and the Constraints We Face
    * Minification
        * Markup Minification
        * CSS Minification
        * JavaScript Minification
-   * HTTP and the Constraints We Face
 * JavaScript
    * The Event Loop
    * Browser Events
