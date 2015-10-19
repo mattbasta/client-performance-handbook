@@ -28,6 +28,7 @@
    * Minification
 * JavaScript
 * Recommendations
+   * Turn on HTTP/2
 * Resources
    * Chrome's Net Internals Tool
    * Notable Tickets
