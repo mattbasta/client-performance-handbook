@@ -31,6 +31,7 @@
    * Browser Events
    * Defer, Async, Both, Neither
    * Head or Body: Where the hell do I put my code?
+   * Memory Management
 * Recommendations
    * Turn on HTTP/2
    * Minify Assets
