@@ -27,6 +27,7 @@
 * Assets and Payload
    * Minification
 * JavaScript
+   * The Event Loop
 * Recommendations
    * Turn on HTTP/2
    * Minify Assets
