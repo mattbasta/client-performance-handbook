@@ -27,6 +27,7 @@
 * Assets and Payload
    * Minification
        * Markup Minification
+       * CSS Minification
 * JavaScript
    * The Event Loop
    * Browser Events
