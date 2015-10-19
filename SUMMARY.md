@@ -51,5 +51,5 @@
    * [Notable Tickets](08-resources/notable_tickets.md)
    * [Mentioned Tools](08-resources/mentioned_tools.md)
    * [Glossary](08-resources/glossary.md)
-   * Thanks
+   * [Thanks](08-resources/thanks.md)
 
