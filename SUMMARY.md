@@ -28,6 +28,7 @@
    * Minification
        * Markup Minification
        * CSS Minification
+       * JavaScript Minification
 * JavaScript
    * The Event Loop
    * Browser Events
