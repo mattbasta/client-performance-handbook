@@ -50,6 +50,6 @@
    * [Chrome's Net Internals Tool](08-resources/chromes_net_internals_tool.md)
    * [Notable Tickets](08-resources/notable_tickets.md)
    * [Mentioned Tools](08-resources/mentioned_tools.md)
-   * Glossary
+   * [Glossary](08-resources/glossary.md)
    * Thanks
 
