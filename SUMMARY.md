@@ -30,6 +30,7 @@
 * Recommendations
    * Turn on HTTP/2
    * Minify Assets
+   * Compress Images
 * Resources
    * Chrome's Net Internals Tool
    * Notable Tickets
