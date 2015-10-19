@@ -32,6 +32,7 @@
    * Defer, Async, Both, Neither
    * Head or Body: Where the hell do I put my code?
    * Memory Management
+   * CPU-Bound Code
 * Recommendations
    * Turn on HTTP/2
    * Minify Assets
