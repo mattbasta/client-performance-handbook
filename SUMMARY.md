@@ -28,6 +28,7 @@
    * Minification
 * JavaScript
    * The Event Loop
+   * Browser Events
 * Recommendations
    * Turn on HTTP/2
    * Minify Assets
