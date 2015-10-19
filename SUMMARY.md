@@ -31,6 +31,7 @@
        * CSS Minification
        * JavaScript Minification
    * Gzip and Compression
+   * Images on the Web
 * JavaScript
    * The Event Loop
    * Browser Events
