@@ -51,4 +51,5 @@
    * [Notable Tickets](08-resources/notable_tickets.md)
    * Glossary
    * Thanks
+   * Mentioned Tools
 
