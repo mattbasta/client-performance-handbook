@@ -30,7 +30,7 @@
 * Recommendations
 * Resources
    * Chrome's Net Internals Tool
+   * Notable Tickets
    * Glossary
    * Thanks
-   * Notable Tickets
 
