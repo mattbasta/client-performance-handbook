@@ -46,7 +46,7 @@
    * Turn on HTTP/2
    * Minify Assets
    * Compress Images
-* Resources
+* [Resources](08-resources/resources.md)
    * Chrome's Net Internals Tool
    * Notable Tickets
    * Glossary
