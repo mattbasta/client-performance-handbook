@@ -43,7 +43,7 @@
    * CPU-Bound Code
    * Asm.js and You
 * [Recommendations](07-recommendations/recommendations.md)
-   * Turn on HTTP/2
+   * [Turn on HTTP/2](07-recommendations/turn_on_http2.md)
    * Minify Assets
    * Compress Images
 * [Resources](08-resources/resources.md)
