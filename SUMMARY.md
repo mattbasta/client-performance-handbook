@@ -33,6 +33,7 @@
    * Gzip and Compression
    * Images on the Web
    * Preloading
+   * Inlining and Bundling Assets
 * JavaScript
    * The Event Loop
    * Browser Events
