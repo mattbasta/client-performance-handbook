@@ -26,6 +26,7 @@
    * Redirects
 * Assets and Payload
    * Minification
+       * Markup Minification
 * JavaScript
    * The Event Loop
    * Browser Events
