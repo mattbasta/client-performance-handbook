@@ -33,6 +33,7 @@
    * Head or Body: Where the hell do I put my code?
    * Memory Management
    * CPU-Bound Code
+   * Asm.js and You
 * Recommendations
    * Turn on HTTP/2
    * Minify Assets
