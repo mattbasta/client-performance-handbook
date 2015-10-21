@@ -16,17 +16,15 @@
 
 ## JavaScript
 
-Closure
-: A closure is a first-class function that references variables from another function after the second function has finished executing. These references are made with lexical scope.
-
-Event
-: An object representing something that happened in the browser and the triggering of JavaScript code that has been put in place to accept it.
-
-JIT Compilation
-: JIT compilers, or Just-In-Time compilers, are a cross between interpreters and static compilers. Code running in a JIT-enabled interpreter will run slowly as the interpreter finds out how the code works. Then, the JIT compiler will replace the slow code with fast, optimized code.
-
-Lexical Scope
-: Lexical scoping is a feature of JavaScript that allows a function to access the variables of the function that it is running within. If one function is inside another function, the inner function can access and manipulate the outer function's variables.
-
-Run to Completion
-: The process of triggering a JavaScript function, then waiting for all subsequent synchronous processing to complete.
+<dl>
+    <dt>Closure</dt>
+    <dd>A closure is a first-class function that references variables from another function after the second function has finished executing. These references are made with lexical scope.</dd>
+    <dt>Event</dt>
+    <dd>An object representing something that happened in the browser and the triggering of JavaScript code that has been put in place to accept it.</dd>
+    <dt>JIT Compilation</dt>
+    <dd>JIT compilers, or Just-In-Time compilers, are a cross between interpreters and static compilers. Code running in a JIT-enabled interpreter will run slowly as the interpreter finds out how the code works. Then, the JIT compiler will replace the slow code with fast, optimized code.</dd>
+    <dt>Lexical Scope</dt>
+    <dd>Lexical scoping is a feature of JavaScript that allows a function to access the variables of the function that it is running within. If one function is inside another function, the inner function can access and manipulate the outer function's variables.</dd>
+    <dt>Run to Completion</dt>
+    <dd>The process of triggering a JavaScript function, then waiting for all subsequent synchronous processing to complete.</dd>
+</dl>
