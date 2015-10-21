@@ -44,7 +44,7 @@
    * Asm.js and You
 * [Recommendations](07-recommendations/recommendations.md)
    * [Turn on HTTP/2](07-recommendations/turn_on_http2.md)
-   * Minify Assets
+   * [Minify Assets](07-recommendations/minify_assets.md)
    * Compress Images
 * [Resources](08-resources/resources.md)
    * [Chrome's Net Internals Tool](08-resources/chromes_net_internals_tool.md)
