@@ -35,7 +35,7 @@
    * Preloading
    * Inlining and Bundling Assets
 * JavaScript
-   * The Event Loop
+   * [The Event Loop](the_event_loop.md)
    * Browser Events
    * Defer, Async, Both, Neither
    * Head or Body: Where the hell do I put my code?
