@@ -36,7 +36,7 @@
    * Inlining and Bundling Assets
 * [JavaScript](06-javascript/javascript.md)
    * [The Event Loop](06-javascript/the_event_loop.md)
-   * Browser Events
+   * [Browser Events](06-javascript/browser_events.md)
    * Defer, Async, Both, Neither
    * Head or Body: Where the hell do I put my code?
    * Memory Management
