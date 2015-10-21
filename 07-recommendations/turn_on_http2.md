@@ -5,94 +5,72 @@ One of the simplest wins you can achieve without modifying your web application 
 Note that implementing HTTP/2 support at each level of your stack is unnecessary. That is, if you have Nginx sitting in front of Apache, turning HTTP/2 on for the connection between Nginx and Apache is probably unnecessary. HTTP/2 will only provide a measurable difference if it's implemented between your users and the first layer of your server stack.
 
 
-## Apache
+## Apache (httpd)
 
-Google's `mod_spdy` plugin was donated to the Apache Foundation in 2012, meaning it is now a part of the Apache HTTPD core. To check whether it is already available, simply look in either of these two directories:
+Enabling HTTP/2 in Apache's httpd is as simple as setting up the `mod_h2` (or `mod_http2`) plugin. This is available with Apache 2.4.17 and up. To check whether it is already available, simply look in either of these two directories:
 
 ```
 /etc/apache2/mods-available
 /etc/httpd/conf.d
 ```
 
-If `mod_spdy` is not available, you can install it rather easily with `dpkg`. First, download the appropriate `mod_spdy` binary from Google and follow the instructions for installing it:
+https://httpd.apache.org/docs/2.4/en/mod/mod_http2.html
 
-https://developers.google.com/speed/spdy/mod_spdy/
-
-At this point, you should see the `mod_spdy` configuration in the directories listed above.
-
-To enable SPDY, open the configuration file. You'll see a conditional that looks like the following:
+First, make sure that one of your configuration files loads the `http2_module` plugin:
 
 ```
-<IfModule spdy_module>
-
-    ...
-
+LoadModule http2_module modules/mod_http2.so
+<IfModule http2_module>
+    LogLevel http2:info
 </IfModule>
 ```
 
-Within this conditional, add the following directive:
+You're now ready to add the protocol to your `httpd.conf` file[^1]:
 
 ```
-SpdyEnabled on
+Protocols h2 http/1.1
 ```
 
-If the same directive is set to "off" somewhere else in the file, remove it. Finally, restart Apache.
+[^1]: Configuring HTTP/2 to work without HTTPS enabled is left as an exercise to the reader.
+
+Now, open your configuration file and find the virtual host that you want to enable HTTP/2 for. In that section, simply add the `H2Direct on` directive:
+
+```
+<VirtualHost *:80>
+    H2Direct on
+</VirtualHost>
+```
+
+More information is available at the developer's website:
+
+https://icing.github.io/mod_h2/howto.html
 
 
 ## Nginx
 
-First, make sure you have OpenSSL 1.0.1 or higher installed:
+As of Nginx 1.9.5, HTTP/2 support is included by default. It's very easy to enable the protocol. First, make sure all of your users are using HTTPS (with HSTS, redirects, etc.).
 
-```bash
-apt-get update
-apt-get install build-essential libssl-dev libpcre3 libpcre3-dev
+Next, simply update your conf files to look something like this:
+
+```
+server {
+    listen 443 ssl http2 default_server;
+
+    ssl_certificate    server.crt;
+    ssl_certificate_key server.key;
+    ...
+}
 ```
 
-Next, download and install Nginx. At the time of writing, the latest stable version of Nginx is 1.6.0. You may wish to visit http://nginx.org to find the most current stable version.
-
-W> #### Warning!
-W>
-W> If you have Nginx already installed on your server, following these instructions will remove it and may not preserve your configuration. This is because---at the time of writing---no popular software repositories have versions of Nginx compiled to run SPDY. If you follow these instructions, be sure to back up your `nginx.conf` and any other custom configuration files you might have.
+Notice `http2` under the `listen` directive. Now, just restart your Nginx server with `nginx -s reload`.
 
 
-```bash
-cd /tmp
+## Apache Traffic Server
 
-# Download and unpack nginx
-wget http://nginx.org/download/nginx-1.6.0.tar.gz
-tar xvf nginx-1.6.0.tar.gz
+Apache Traffic Server (ATS) is a less-frequently used front-end server, but it's often the outermost layer in some stacks.
 
-cd nginx-1.6.0
-# Configure nginx to use SPDY
-./configure --with-http_spdy_module --with-http_ssl_module
-# Note that you may need to pass additional config parameters
-# if you require additional functionality.
+HTTP/2 is available in ATS 5.3.2 or above. First, configure your server to use HTTPS. After that, simply add the following config entry:
 
-# Remove existing nginx installations
-dpkg -l | grep nginx
-apt-get remove nginx-full nginx-common
+    CONFIG proxy.config.http2.enabled INT 1
 
-make
-make install
-```
-
-At this point, Nginx should be installed but not configured to your site. If you had a previous version of Nginx installed, restore your old configuration files. Make sure SSL is set up correctly using the setup guide in previous sections. Once you've completed that, setting up SPDY is simple. Just update your configuration to replace this:
-
-```nginx
-listen          443 ssl;
-server_name     example.com;
-```
-
-with the following:
-
-```nginx
-listen          443 ssl spdy;  # Add SPDY
-server_name     example.com;
-spdy_headers_comp   5;  # Turn on SPDY header compression
-```
-
-Finally, restart Nginx with
-
-```bash
-/usr/local/nginx/sbin/nginx -s reload
-```
+That's it!
