@@ -34,8 +34,8 @@
    * Images on the Web
    * Preloading
    * Inlining and Bundling Assets
-* [JavaScript](06-javascript.md)
-   * [The Event Loop](the_event_loop.md)
+* [JavaScript](06-javascript/javascript.md)
+   * [The Event Loop](06-javascript/the_event_loop.md)
    * Browser Events
    * Defer, Async, Both, Neither
    * Head or Body: Where the hell do I put my code?
