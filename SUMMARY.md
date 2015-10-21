@@ -34,7 +34,7 @@
    * Images on the Web
    * Preloading
    * Inlining and Bundling Assets
-* JavaScript
+* [JavaScript](06-javascript.md)
    * [The Event Loop](the_event_loop.md)
    * Browser Events
    * Defer, Async, Both, Neither
