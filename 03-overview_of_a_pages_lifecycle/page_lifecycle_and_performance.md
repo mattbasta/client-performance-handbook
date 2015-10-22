@@ -2,7 +2,7 @@
 
 It's rarely the case that a website is inherently slow. Unless a synchronous operation blocks for a fixed amount of time (i.e.: a `while` loop that iterates until a certain number of milliseconds have passed), it's possible for any computer to render any given page in a very small amount of time, given infinite resources (network throughput, CPU, GPU, etc.).
 
-Computers with infinite resources do not exist, though, and the constraints of the hardware--and in some cases, software--of the visitors to any particular site are the limiting factors in a page's load time.
+Computers with infinite resources do not exist, though. The constraints of the of the visitors' devices to any particular site are usually the limiting factors in a page's load time.
 
 Consider the following waterfall diagram, produced by the Chrome Developer Tools (for a site which shall remain nameless):
 
