@@ -20,7 +20,7 @@
    * [Page Lifecycle and Performance](03-overview_of_a_pages_lifecycle/page_lifecycle_and_performance.md)
 * [Connection and HTTPS](04-connection_and_https/connection_and_https.md)
    * [DNS Lookups](04-connection_and_https/dns_lookups.md)
-   * Server Connections
+   * [Server Connections](04-connection_and_https/server_connections.md)
    * HTTPS
    * CDNs
    * HTTP/2
