@@ -19,7 +19,7 @@
    * [Phases of Page Load](03-overview_of_a_pages_lifecycle/phases_of_page_load.md)
    * [Page Lifecycle and Performance](03-overview_of_a_pages_lifecycle/page_lifecycle_and_performance.md)
 * [Connection and HTTPS](04-connection_and_https/connection_and_https.md)
-   * DNS Lookups
+   * [DNS Lookups](04-connection_and_https/dns_lookups.md)
    * Server Connections
    * HTTPS
    * CDNs
