@@ -38,7 +38,7 @@
    * [The Event Loop](06-javascript/the_event_loop.md)
    * [Browser Events](06-javascript/browser_events.md)
    * [Defer, Async, Both, Neither](06-javascript/defer,_async,_both,_neither.md)
-   * Head or Body: Where the hell do I put my code?
+   * [Head or Body: Where the hell do I put my code?](06-javascript/head_or_body_where_the_hell_do_i_put_my_code.md)
    * Memory Management
    * CPU-Bound Code
    * Asm.js and You
