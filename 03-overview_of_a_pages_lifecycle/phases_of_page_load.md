@@ -2,14 +2,30 @@
 
 ## DNS Lookups
 
-The first step in navigation to any page is the DNS lookup. Translating a domain name into an IP address is necessary, as without it, the client has no way of knowing what server to connect to. Fortunately, DNS lookups are cached and users will only experience the penalty of performing the lookup very infrequently. When DNS lookups neglected, however, they can cause a drastic negative impact on page performance.
+The first step in navigation to any page is the DNS lookup. Translating a domain name into an IP address is necessary, as without it, the client has no way of knowing what server to connect to. Fortunately, DNS lookups are cached and users will only experience the penalty of performing the lookup infrequently. When DNS lookups are neglected, however, they can have a drastic negative impact on page performance.
+
+When developing, you should consider DNS lookups to take half of a second to complete. Every time you instruct the browser to connect to a new hostname (whether by redirection, loading an asset, performing an XHR, etc.), assume that the connection will take an extra half second. In the next chapter, techniques will be discussed to perform DNS queries in advance, helping to mitigate this problem.
 
 
 ## TCP Connection
 
-Once a client knows what the address of the remote server is, the next step is to actually make the connection. Creating the actual TCP connection is somewhat of a cop-out on my part, since DNS lookups involve a TCP connection. Unlike a DNS lookup (which is almost always made to the user's ISP), the connection to the remote web server involves communication with an unknown third party. Rather than connecting to a server a few dozen miles away, the connection to the web server may reach to the other side of the globe.
+Once a client knows what the address of the remote server is, the next step is to actually make the connection.
+
+Describing the creation of the actual TCP connection is somewhat of a cop-out on my part, since DNS lookups involve a TCP connection. Unlike a DNS lookup, which is almost always made to the user's ISP, the connection to the remote web server involves communication with an unknown third party.
+
+There is little you can do to improve the performance of the TCP connection itself. Rather, you can decrease the number of connections required by decreasing the number of assets or hostnames you connect to, or by turning on support for HTTP/2.
+
+Another aspect of TCP connections is the inherent latency involved. The TCP protocol requires acknowledgment (an "ACK") of each packets sent over the network. Each packet requires an ACK before the next packet will be sent. This means that each packet requires at least a full round trip to the remote server.
+
+Reducing this latency is often not possible, but sites can be optimized to avoid it in a number of ways:
+
+- by using a CDN, which places the remote server physically closer to the user)
+- moving data out of critical parts of the network request (e.g., removing cookies) to allow the page to begin loading sooner
+- reducing the overall number of packets by decreasing the amount of data sent to the client
+
 
 ## HTTPS Handshake
+
 Every site should use HTTPS where possible. HTTPS comes at a cost, though: the handshake process used to exchange cryptographic keys at the beginning of the connection adds a number of extra roundtrips between the server and client.
 
 ## Request
