@@ -17,6 +17,7 @@
        * [Premature Optimization](02-identifying-performance-issues/premature_optimization.md)
 * [Overview of a Page's Lifecycle](03-overview_of_a_pages_lifecycle/overview_of_a_pages_lifecycle.md)
    * [Page Lifecycle and Performance](03-overview_of_a_pages_lifecycle/page_lifecycle_and_performance.md)
+   * Phases of Page Load
 * Connection and HTTPS
    * DNS Lookups
    * Server Connections
