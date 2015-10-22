@@ -446,6 +446,8 @@ QUIC is currently implemented in Chrome and Opera and can be enabled by visiting
 
 Redirects are common in most modern web applications. Here's a flow from a popular enterprise software application:
 
+| Request | Response |
+| -- | -- |
 | GET `http://popularsoftware.biz` | `302 Found` redirect to `https://popularsoftware.biz` |
 | GET `https://popularsoftware.biz` | `302 Found` redirect to `https://www.popularsoftware.biz` |
 | GET `https://www.popularsoftware.biz` | `302 Found` redirect to `https://www.popularsoftware.biz/login` |
