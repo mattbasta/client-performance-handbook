@@ -6,7 +6,7 @@ One of the biggest web performance myths in existence is that HTTPS is slow beca
 
 The primary bottleneck involving HTTPS is the number of round trips that are necessary to establish a connection. Two full round trips are necessary as part of a "handshake" to exchange cryptographic key information before the client can even begin to make a request.
 
-One half of the solution to this problem is to simply decrease the number of requests (discussed in the previous section). Fewer connections to the server means that the handshake needs to be made fewer times.
+One half of the solution is to decrease the number of requests (discussed in the previous section). Fewer connections mean the browser and the server will handshake fewer times.
 
 Having a CDN can also help immensely. A CDN with a point of presence (PoP) near to the user decreases the amount of time it takes to actually perform the handshake. Additionally, some CDNs or network service providers will offer HTTPS termination services that allow you to terminate the HTTPS connection to the user in a local PoP rather than in a data center far away. Terminating the connection closer to the user means TLS handshakes take less time to be performed.
 
