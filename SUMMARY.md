@@ -24,7 +24,7 @@
    * HTTPS
    * CDNs
    * HTTP/2
-   * Redirects
+   * [Redirects](04-connection_and_https/redirects.md)
 * Assets and Payload
    * HTTP and the Constraints We Face
    * Gzip and Compression
