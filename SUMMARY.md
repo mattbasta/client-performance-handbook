@@ -35,6 +35,7 @@
    * Images on the Web
    * Preloading
    * Inlining and Bundling Assets
+   * Postloading
 * [JavaScript](06-javascript/javascript.md)
    * [The Event Loop](06-javascript/the_event_loop.md)
    * [Browser Events](06-javascript/browser_events.md)
