@@ -16,7 +16,7 @@
        * [Refactoring](02-identifying-performance-issues/refactoring.md)
        * [Premature Optimization](02-identifying-performance-issues/premature_optimization.md)
 * [Overview of a Page's Lifecycle](03-overview_of_a_pages_lifecycle/overview_of_a_pages_lifecycle.md)
-   * Phases of Page Load
+   * [Phases of Page Load](03-overview_of_a_pages_lifecycle/phases_of_page_load.md)
    * [Page Lifecycle and Performance](03-overview_of_a_pages_lifecycle/page_lifecycle_and_performance.md)
 * Connection and HTTPS
    * DNS Lookups
