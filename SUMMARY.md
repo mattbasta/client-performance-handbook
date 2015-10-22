@@ -33,10 +33,10 @@
        * CSS Minification
        * JavaScript Minification
    * Images on the Web
+   * Web Fonts
    * Preloading
    * Inlining and Bundling Assets
    * Postloading
-   * Web Fonts
 * [JavaScript](06-javascript/javascript.md)
    * [The Event Loop](06-javascript/the_event_loop.md)
    * [Browser Events](06-javascript/browser_events.md)
