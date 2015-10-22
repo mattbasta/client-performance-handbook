@@ -49,6 +49,7 @@
    * [Turn on HTTP/2](07-recommendations/turn_on_http2.md)
    * [Minify Assets](07-recommendations/minify_assets.md)
    * [Compress Images](07-recommendations/compress_images.md)
+   * Optimize Web Fonts
 * [Resources](08-resources/resources.md)
    * [Chrome's Net Internals Tool](08-resources/chromes_net_internals_tool.md)
    * [Notable Tickets](08-resources/notable_tickets.md)
