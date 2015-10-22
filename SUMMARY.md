@@ -22,6 +22,7 @@
    * [DNS Lookups](04-connection_and_https/dns_lookups.md)
    * [Server Connections](04-connection_and_https/server_connections.md)
    * [HTTPS](04-connection_and_https/https.md)
+       * Setting up HTTPS
    * CDNs
    * HTTP/2
    * [Redirects](04-connection_and_https/redirects.md)
