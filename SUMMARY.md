@@ -28,6 +28,7 @@
    * [Redirects](04-connection_and_https/redirects.md)
 * [Assets and Payload](05-assets_and_payload/assets_and_payload.md)
    * [HTTP and the Constraints We Face](05-assets_and_payload/http_and_the_constraints_we_face.md)
+       * Caching Correctly
    * Gzip and Compression
    * Minification
        * Markup Minification
