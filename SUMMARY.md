@@ -38,6 +38,7 @@
    * Images on the Web
        * Responsive Images
        * Spriting
+       * Encoding
    * Web Fonts
    * Preloading
    * Inlining and Bundling Assets
