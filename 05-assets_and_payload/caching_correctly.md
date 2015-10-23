@@ -28,9 +28,9 @@ All HTTP dates are formatted per RFC 1123.
 
 ## I want my content to never be cached.
 
-If you want you content to never be stored by the browser, simply send `Cache-Control: no-cache`. This disables caching in all browsers[^ie6_nocache].
+If you want you content to never be stored by the browser, simply send `Cache-Control: no-cache`. This disables caching in all browsers[^1].
 
-[^ie6_nocache]: IE6 will sometimes ignore this and cache anyway. If you care about IE6, use `Cache-Control: no-cache, no-store`.
+[^1]: IE6 will sometimes ignore this and cache anyway. If you care about IE6, use `Cache-Control: no-cache, no-store`.
 
 
 ## I want my content to be cached, but for the client to check back.
