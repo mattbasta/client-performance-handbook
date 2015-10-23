@@ -4,7 +4,7 @@ By "events," I don't mean DOM events. Instead, I mean events that are considered
 
 For example, in *Even Faster Web Sites*, Steve Souders recommends performing an early header flush that sends the `<head>` tag and the beginning of the page's body. This allows the browser to begin downloading assets listed at the start of the document while the server performs the rest of the processing for the page in parallel. In this scenario (and scenarios where more than one flush is performed), it's extremely helpful to know when the various flushes are taking place and how long it takes for the client to perform the necessary actions involved.
 
-The following example shows how you might log this information. It uses PHP, though this should be possible in any language.
+The following example shows how you might log this information. It uses PHP, though this should be possible in any language or with any server stack.
 
 ```php
 <!DOCTYPE html>
