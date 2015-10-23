@@ -37,6 +37,7 @@
        * JavaScript Minification
    * Images on the Web
        * Responsive Images
+       * Spriting
    * Web Fonts
    * Preloading
    * Inlining and Bundling Assets
