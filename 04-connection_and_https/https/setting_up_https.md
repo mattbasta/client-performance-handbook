@@ -28,10 +28,9 @@ There are also a number of types of validation for certificates:
     <dd>These certificates are free and can be created by anyone, however because the certificate is not issued by an authority, users accessing sites with self-signed certificates will receive a very scary warning. You don't want one of these for your site.</dd>
 </dl>
 
+If you purchased your certificate from your web host, it usually will automatically be enabled for you. If not, most shared hosts (i.e., hosts where the infrastructure is managed for you) will have a control panel of some sort to enable the certificate.
 
-If you're using shared hosting or some other sort of managed host (i.e.: you don't manage your own server or the software running on it), the company that hosts your website should automatically start using the certificate if you purchased it from them, or should have some mechanism for adding the certificate to your site via a control panel.
-
-If you manage your own host, you're probably using Nginx or Apache to serve your website. After you've purchased and downloaded your certificate, the first thing you're going to want to do is place your certificate and key files (I'll call them `example.com.pem` and `example.com.key` respectively) in a known location on your server. This is generally the `/etc/ssl` directory. If you received a `.cert` file instead of a `.pem` file, simply change the extension to `.pem`.
+If you manage your own host, you probably use Nginx or Apache. After you've downloaded your new certificate, place your certificate and key files (`example.com.pem` and `example.com.key` respectively) in a known location on your server. This is generally the `/etc/ssl` directory. If you received a `.cert` file instead of a `.pem` file, simply change the extension to `.pem`.
 
 ```bash
 # Make the directories if they do not exist.
@@ -45,7 +44,7 @@ mv example.com.key /etc/ssl/private
 
 ## Apache
 
-If you're using Apache, first make sure that mod_ssl is installed. You can do that by running the following:
+If you're using Apache, first make sure that `mod_ssl` is installed. You can do that by running the following:
 
 ```bash
 # Install the mod_ssl extension
@@ -92,10 +91,6 @@ Listen 443  # HTTPS runs on port 443
     # Cache client credentials to improve performance
     SSLSessionCache shm:/usr/local/apache/logs/ssl_gcache_data(512000)
     SSLSessionCacheTimeout 600
-
-    # Tell the client to always use HTTPS
-    Header add Strict-Transport-Security "max-age=15768000"
-
 
     # Put your original Apache VirtualHost configuration here.
 
@@ -204,9 +199,9 @@ nginx -s reload
 /usr/local/nginx/sbin/nginx -s reload
 ```
 
-Note that Nginx also supports verifying the OCSP responses against a local copy of the issuer, root, and intermediate certificates. This is beneficial to enable, but can be tricky to set up. See the Nginx documentation for more information[^nginx_ocsp_verify].
+Note that Nginx also supports verifying the OCSP responses against a local copy of the issuer, root, and intermediate certificates. This is beneficial to enable, but can be tricky to set up. See the Nginx documentation for more information[^1].
 
-[^nginx_ocsp_verify]: http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_stapling_verify
+[^1]: http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_stapling_verify
 
 ## IIS
 
