@@ -26,7 +26,7 @@
    * [CDNs](04-connection_and_https/cdns.md)
    * [HTTP/2](04-connection_and_https/http2.md)
    * [Redirects](04-connection_and_https/redirects.md)
-* Assets and Payload
+* [Assets and Payload](05-assets_and_payload/assets_and_payload.md)
    * HTTP and the Constraints We Face
    * Gzip and Compression
    * Minification
