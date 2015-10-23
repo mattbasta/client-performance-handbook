@@ -1,46 +1,5 @@
 # Connection and SSL
 
-## CDNs
-
-A CDN, or Content Delivery Networks, can do a lot to help speed up a website. Most CDNs offer a plethora of services:
-
-Local Points of Presence (PoPs)
-: Servers that are geographically close to users in a particular region. These servers allow users to connect with much lower latency than if they had been connecting over a much larger distance. Strategic positioning of PoPs allows a CDN to minimize the number of network "hops" a client needs to make to interact with the server.
-
-SSL Termination
-: By terminating SSL (or performing the SSL handshake) closer to the user, connections can be established much more quickly, allowing the client to make requests faster than they otherwise could.
-
-DoS Protection
-: Many CDNs market DoS (denial of service) attack prevention. By sitting between users and web servers, the CDN can be better prepared to accept a flood of requests from an attacker, or to block the flow of traffic from compromised users.
-
-Full-Blown Features
-: It's usually the case that CDNs are quick to implement performance-improving features and cutting-edge technology for content delivery. This includes technology like HTTP2, IPV6, and low-level connection tuning.
-
-
-### How does a CDN work?
-
-Setting up a CDN is usually very simple to do. Virtually all CDNs operate as proxies that mirror the content from another site. For instance, you might set up `cdn1.example.com` to point at a CDN mirroring `www.example.com`. When `https://cdn1.example.com/asset/include.js` is requested, the CDN would fetch `https://www.example.com/asset/include.js` and cache it. All users requesting that URL from that point on would fetch the cached version of `include.js`.
-
->A Note that changing content once it has been cached by a CDN is not always possible. To modify the content, you must access it with a different name.
->A
->A For example, you might reference `https://cdn1.example.com/asset/include.js?20140101` to refer to a version of the file that was updated on January 1, 2014. Every time the file changes, you would update the query string to refer to a URL for the updated version. Using hashes instead of dates or times is also common.
-
-Most CDNs accomplish this mirroring via DNS. Some CDNs, such as CloudFlare, will ask you to change the nameservers for your domain to point at their own nameservers. In doing this, they are able to automatically set the addresses for each of your hostnames to the addresses of their own PoP servers. Other CDNs, like EdgeCast, will give you hostnames to add as CNAME records in your own DNS manager.
-
-Another type of CDN, like Amazon CloudFront, allows you to upload files to some sort of storage. You are then provided with a hostname that you can point users at directly, or point a CNAME record at. Depending on your use case, this may be more or less convenient.
-
-
-### Pitfalls
-
-One of the most perplexing issues than many people encounter when evaluating a CDN is that they see *slower* responses than accessing their content directly. This is usually the case when only a small number of users are accessing a site with a CDN, especially if the users are distributed around the world.
-
-The cause is that the CDN simply hasn't seen the files that the user is requesting yet. If you request a file from a CDN and the CDN doesn't have a copy of the file, it needs to pause the request, visit your server, wait for a response, then forward it on to the user. Until all of the servers in all of the applicable data centers at your CDN have seen all of your files, you'll notice some poor response times.
-
-Another common pitfall is a CDN over-selling its service. When you use a CDN, your content is hosted on the same servers that host content for thousands of the CDN's other customers. If one of the CDN's other customers is experiencing a DoS attack, the speed of your website could be negatively impacted. Be sure to thoroughly research all of your options before you commit to any CDN.
-
-Cost can be another pitfall with a CDN. Before choosing a CDN, model your expected costs based on your own data. Consider how much it will cost to be a customer with historical data, and also project figures accounting for future growth. Also be sure to compare this with the cost of bandwidth on your current host (if any) to account for potential savings. On some platforms, like Linode or Microsoft Azure, large amounts of bandwidth can be far more expensive than using a CDN to transfer the same content.
-
-
 ## HTTP2 and SPDY
 
 SPDY is a very new and quite powerful protocol developed by Google for improving web performance. It functions as a substitute for HTTP at the protocol level: requests are sent in a way that's very similar to traditional HTTP, and applications running on the web server are generally not even aware that the requests they are receiving were made over SPDY. In fact, neither the Chrome nor the Firefox developer tools distinguish requests made by SPDY from requests made over normal HTTP.
