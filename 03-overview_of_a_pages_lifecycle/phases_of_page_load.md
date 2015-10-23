@@ -26,31 +26,50 @@ Reducing this latency is often not possible, but sites can be optimized to avoid
 
 ## HTTPS Handshake
 
-Every site should use HTTPS where possible. HTTPS comes at a cost, though: the handshake process used to exchange cryptographic keys at the beginning of the connection adds a number of extra roundtrips between the server and client.
+Every site should use HTTPS where possible. HTTPS comes at a cost, though: the handshake process used to exchange cryptographic keys at the beginning of the connection adds a number of extra roundtrips.
+
+The HTTPS handshake is unavoidable in order to use HTTPS. Reducing the number of connections between the client and the server is the only way to mitigate the cost of this step[^1]. Using HTTP/2 (discussed in the next chapter) can vastly reduce the number of connections.
+
+[^1]: Of course, you could disable HTTPS in order to eliminate the HTTPS handshake. This is strongly discouraged, though, as the benefits of HTTPS far outweigh the handful of milliseconds that can be saved.
+
 
 ## Request
 
 Once the connection has been established (and secured, if over HTTPS), the client can make a request to the server. Depending on a number of factors, the information included in this request can be quite slow.
 
+The performance properties of the request vary with the use case. In general, the "best" requests are those that include the least amount of information. Requests can grow unweildy as the number of headers grows, or as the length of the URL increases.
+
+Cookies are another factor that can have a negative impact on the performance of the request. Small requests can fit in a single TCP packet, requiring a single roundtrip. Large amounts of request headers or very large cookies can cause this to overflow into a second packet, or more.
+
+
 ## Redirect
 
-If the server receives a request and determines that the client should instead be requesting a different resource (or has completed its processing and is sending the client to another resource), it responds to the client with a redirect. A redirect is a combination of a `3XX` status code and a `Location` HTTP header.
+If the server determines that the client should instead be requesting a different resource, it responds to the client with a redirect. A redirect is a combination of a `3XX` status code and a `Location` HTTP header.
+
+Redirects should be minimized. In the next chapter, the costs of redirects are described in great detail, along with common ways of minimizing or eliminating redirects in your site.
+
 
 ## Response
 
 After the server receives the client's request, it can begin processing and formulating a response. The first part of this response is the HTTP response headers, followed immediately by the content the user requested.
 
-## Assets and Payload
+Because responses can be streamed, there is no straightforward advice for improving the performance of a site's response. Minimizing the time the server takes to respond to the client and reducing the size of the server's output are easy ways of achieving this, but that advice is not very actionable. The "Assets and Payload" chapter goes into great detail on this topic.
 
-Once the client has begun receiving the server's response, it will attempt to being parsing it. In the process, the client will make additional requests to the server as the response indicates more assets are required to build the page. This can include core components of the page, such as CSS, JavaScript, and images, and it can also include other content like fonts, multimedia and plugins, other pages and framed content, and more.
 
-## Render and Composite
+## Assets
 
-As the client builds the page that the user requested using the assets that it fetched, it begins calculating the layout of the page that was requested, rendering and compositing the elements in the layout, and painting those elements to the screen. The processes involved in this step are known as the "critical path."
+Once the client has begun receiving the server's response, it will attempt to being parsing it. In the process, the client will make additional requests to the server as the response indicates more assets are required to build the page. This can include core components of the page such as CSS, JavaScript, and images. It can also include other content like fonts, multimedia and plugins, other pages and framed content, and more.
+
+
+## Rendering and Compositing
+
+As the client builds the page using the assets that it fetched, it calculates the layout and renders and composites the elements of the page. The processes involved in this step are known as the "critical path." Reducing the amount of work that happens during this step is crucial to improving the responsiveness of the browser. Achieving this is only possible through fine-tuning the CSS and JavaScript on the page.
+
 
 ## Execution
 
 As the client downloads JavaScript, it must be executed (though the point at which the scripts execute may vary depending on how they were included in the page). Execution describes the initial "run-to-completion" for the scripts on the page.
+
 
 ## Initialization
 
