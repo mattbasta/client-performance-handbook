@@ -519,11 +519,11 @@ Cons:
 - If multiple JavaScript files are used, it may not be possible to use the `async` attribute on the script tags without implementing a system for ensuring the files are initialized in the proper order.
 
 
-#### HTTP2
+#### HTTP/2
 
-When using HTTP2 (or SPDY), the above points become invalid. Since a single connection is used and headers are compressed, all individual files can be requested with very little overhead. Each file can be cached independently, saving significant amounts of bandwidth (all is related to caching are absent).
+When using HTTP/2 (or SPDY), the above points become invalid. Since a single connection is used and headers are compressed, all individual files can be requested with very little overhead. Each file can be cached independently, saving significant amounts of bandwidth (all is related to caching are absent).
 
-This may not be ideal, though, since older browsers (and Internet Explorer in most cases) cannot use HTTP2. It may also not be possible for the application layer to know whether the client is connected via HTTP2 or not, making it impossible to decide whether to conditionally serve combined assets.
+This may not be ideal, though, since older browsers (and Internet Explorer in most cases) cannot use HTTP/2. It may also not be possible for the application layer to know whether the client is connected via HTTP/2 or not, making it impossible to decide whether to conditionally serve combined assets.
 
 
 ### Number of assets
