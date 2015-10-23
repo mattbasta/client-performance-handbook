@@ -79,10 +79,9 @@ The following members are available in the `window.performance.timing` object:
     <dd>The timestamp immediately after the browser finishes firing the <code>load</code> event on the <code>window</code> object.</dd>
 </dl>
 
-Google Analytics will collect some basic information for you, including the total load time, DNS lookup time, time taken to create a connection, time between request and the beginning of the server's response, time until `fetchStart`, `domInteractive`, and `domContentLoadedEventStart`. [^1] These different timings are exposed under Behavior > Site Speed > Page Timings. On that page, you can select the various metrics from the dropdown under DOM Timings and Technical.
-
-[^1]: This is based on an inspection of http://www.google-analytics.com/ga.js
+Google Analytics will collect some basic information for you, including the total load time, DNS lookup time, time taken to create a connection, time between request and the beginning of the server's response, time until `fetchStart`, `domInteractive`, and `domContentLoadedEventStart`[^1]. These different timings are exposed under Behavior > Site Speed > Page Timings. On that page, you can select the various metrics from the dropdown under DOM Timings and Technical.
 
 Google Analytics only collects eight precomputed values, though, and each of the individual values of the navigation timing object are not collected or exposed. It's trivial to collect this information yourself, though there are libraries (such as Boomerang[^2]) that will collect this information for you. Ideally, you would post this information via `XMLHttpRequest` or `navigator.sendBeacon` and aggregate it in a solution like Hive or Splunk (any data analytics solution that you're comfortable with will do).
 
+[^1]: This is based on an inspection of `http://www.google-analytics.com/ga.js` at the time of writing
 [^2]: https://github.com/yahoo/boomerang
