@@ -35,7 +35,7 @@
        * Markup Minification
        * CSS Minification
        * JavaScript Minification
-   * Images on the Web
+   * [Images on the Web](05-assets_and_payload/images_on_the_web.md)
        * Encoding
        * Responsive Images
        * Spriting
