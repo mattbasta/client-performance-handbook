@@ -23,7 +23,7 @@
    * [Server Connections](04-connection_and_https/server_connections.md)
    * [HTTPS](04-connection_and_https/https.md)
        * [Setting up HTTPS](04-connection_and_https/https/setting_up_https.md)
-   * CDNs
+   * [CDNs](04-connection_and_https/cdns.md)
    * HTTP/2
    * [Redirects](04-connection_and_https/redirects.md)
 * Assets and Payload
