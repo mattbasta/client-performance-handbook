@@ -36,9 +36,9 @@
        * CSS Minification
        * JavaScript Minification
    * Images on the Web
+       * Encoding
        * Responsive Images
        * Spriting
-       * Encoding
    * Web Fonts
    * Preloading
    * Inlining and Bundling Assets
