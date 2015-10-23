@@ -29,6 +29,7 @@
 * [Assets and Payload](05-assets_and_payload/assets_and_payload.md)
    * [HTTP and the Constraints We Face](05-assets_and_payload/http_and_the_constraints_we_face.md)
        * Caching Correctly
+       * CORS
    * Gzip and Compression
    * Minification
        * Markup Minification
