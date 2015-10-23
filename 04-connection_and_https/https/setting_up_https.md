@@ -1,42 +1,37 @@
 # Setting up HTTPS
 
-
 Despite the downsides to running HTTPS on your website, it's usually always better to have HTTPS than to not have it. HTTP2, for instance, only works when HTTPS is enabled.
 
 The first step to setting up HTTPS is obtaining a certificate. Depending on what you're looking to accomplish by setting up HTTPS, you may require a different type of certificate.
 
 Here are some of the most common types:
 
-Single Domain Certificate
-: This type of certificate is good for a single hostname only.
-
-Multi-Domain Certificate
-: These certificates--also known as Subject Alternative Name certificates--cover up to 100 domain names. For instance, one of these certificates may cover `example.com`, `anotherexample.com`, etc. These certificates tend to be quite expensive.
-
-Wildcard Certificate
-: A wildcard certificate covers a domain (like `example.com`) and all of the subdomains (like `www.example.com` and `mail.example.com`). A wildcard certificate is valid for an unlimited number of subdomains. These certificates can be quite expensive and usually require the purchaser to agree to certain terms.
-
+<dl>
+    <dt>Single Domain Certificate</dt>
+    <dd>This type of certificate is good for a single hostname only.</dd>
+    <dt>Multi-Domain Certificate</dt>
+    <dd>These certificates--also known as Subject Alternative Name certificates--cover up to 100 domain names. For instance, one of these certificates may cover <code>example.com</code>, <code>anotherexample.com</code>, etc. These certificates tend to be quite expensive.</dd>
+    <dt>Wildcard Certificate</dt>
+    <dd>A wildcard certificate covers a domain (like <code>example.com</code>) and all of the subdomains (like <code>www.example.com</code> and <code>mail.example.com</code>). A wildcard certificate is valid for an unlimited number of subdomains. These certificates can be quite expensive and usually require the purchaser to agree to certain terms.</dd>
+</dl>
 
 There are also a number of types of validation for certificates:
 
-Domain Validated Certificate
-: A domain validated certificate is a certificate that is issued for a single domain which is validated by the certificate issuer. These are easy to obtain and are usually inexpensive, and the process of obtaining one is usually done automatically.
-
-Organization Validated Certificates
-: These certificates display information about the certificate holder in modern browsers. Websites that are looking to provide HTTPS for identity rather than just encryption should consider this type of certificate. This process requires a more thorough validation process than the Domain Validated Certificates that involves a human verification step. Acquiring one of these certificates can take a few days.
-
-Extended Validation Certificate
-: This type of certificate is much more expensive and involves a very thorough validation process by the issuer, usually involving phone calls to the owner of the domain, requesting the domain owner add DNS records, adding an HTML tag to the site on the domain, perform certain kinds of background checks, or other verification techniques. Purchasers may be required that they have the rights to use the domain name that the certificate is being issued for. "EV" certificates turn the browser address bar green or show a green chiclet in modern browsers.
-
-Self-Signed Certificates
-: These certificates are free and can be created by anyone, however because the certificate is not issued by an authority, users accessing sites with self-signed certificates will receive a very scary warning. You don't want one of these for your site.
+<dl>
+    <dt>Domain Validated Certificate</dt>
+    <dd>A domain validated certificate is a certificate that is issued for a single domain which is validated by the certificate issuer. These are easy to obtain and are usually inexpensive, and the process of obtaining one is usually done automatically.</dt>
+    <dt>Organization Validated Certificates</dt>
+    <dd>These certificates display information about the certificate holder in modern browsers. Websites that are looking to provide HTTPS for identity rather than just encryption should consider this type of certificate. This process requires a more thorough validation process than the Domain Validated Certificates that involves a human verification step. Acquiring one of these certificates can take a few days.</dd>
+    <dt>Extended Validation Certificate</dt>
+    <dd>This type of certificate is much more expensive and involves a very thorough validation process by the issuer, usually involving phone calls to the owner of the domain, requesting the domain owner add DNS records, adding an HTML tag to the site on the domain, perform certain kinds of background checks, or other verification techniques. Purchasers may be required that they have the rights to use the domain name that the certificate is being issued for. "EV" certificates turn the browser address bar green or show a green chiclet in modern browsers.</dd>
+    <dt>Self-Signed Certificates</dt>
+    <dd>These certificates are free and can be created by anyone, however because the certificate is not issued by an authority, users accessing sites with self-signed certificates will receive a very scary warning. You don't want one of these for your site.</dd>
+</dl>
 
 
 If you're using shared hosting or some other sort of managed host (i.e.: you don't manage your own server or the software running on it), the company that hosts your website should automatically start using the certificate if you purchased it from them, or should have some mechanism for adding the certificate to your site via a control panel.
 
 If you manage your own host, you're probably using Nginx or Apache to serve your website. After you've purchased and downloaded your certificate, the first thing you're going to want to do is place your certificate and key files (I'll call them `example.com.pem` and `example.com.key` respectively) in a known location on your server. This is generally the `/etc/ssl` directory. If you received a `.cert` file instead of a `.pem` file, simply change the extension to `.pem`.
-
-I> If you're using IIS, refer to the documentation on the IIS website (http://www.iis.net/learn/manage/configuring-security/how-to-set-up-ssl-on-iis) for instructions.
 
 ```bash
 # Make the directories if they do not exist.
@@ -212,3 +207,9 @@ nginx -s reload
 Note that Nginx also supports verifying the OCSP responses against a local copy of the issuer, root, and intermediate certificates. This is beneficial to enable, but can be tricky to set up. See the Nginx documentation for more information[^nginx_ocsp_verify].
 
 [^nginx_ocsp_verify]: http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_stapling_verify
+
+## IIS
+
+If you're using IIS, refer to the documentation on the IIS website for instructions.
+
+http://www.iis.net/learn/manage/configuring-security/how-to-set-up-ssl-on-iis
