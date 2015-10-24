@@ -4,7 +4,7 @@ Compressing your images can provide an astounding amount of performance benefit.
 
 Most image editing software uses encoding algorithms that are sub-par. Inefficiencies in the algorithms mean that bytes are needlessly wasted as image data is written in a more verbose way than necessary. This is not to say that the images will decrease in quality when re-encoded: the images should be losslessly re-written to a smaller file representation.
 
-First, ensure you're using the right image format for each of your images. A guide for doing this is available in the Images section of the Assets and Payload chapter.
+First, ensure you're using the right image encoding for each of your images. A guide for doing this is available in the Images section of the Assets and Payload chapter.
 
 
 ## OS X
