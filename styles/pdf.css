@@ -1,1 +1,11 @@
 /* CSS for pdf */
+
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,700,400italic);
+
+.book.font-family-1 {
+    font-family: Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+.book .book-body .page-wrapper .page-inner section.normal {
+    line-height: 1.75;
+}
