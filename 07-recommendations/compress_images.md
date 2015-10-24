@@ -9,9 +9,9 @@ First, ensure you're using the right image encoding for each of your images. A g
 
 ## OS X
 
-If you're using OS X as your operating system, I highly recommend using ImageOptim:
+If you're using OS X as your operating system, I highly recommend using [ImageOptim](http://imageoptim.com/). This tool supports most major image formats and does a great job of minimizing your assets' sizes.
 
-http://imageoptim.com/
+![A screenshot of ImageOptim](images/image_optim.png)
 
 After installing, simply drag and drop your images into ImageOptim. They will automatically be losslessly compressed and saved for you. Most popular image types are supported.
 
