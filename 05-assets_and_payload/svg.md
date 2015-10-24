@@ -57,3 +57,43 @@ It is also worth noting that SVG has only been supported by Internet Explorer si
 Only browsers that support the `clip-path`[^1] CSS declaration (and the CSS `@supports` block) will use the SVG version of the image. At the time of writing, this is Firefox and Chrome, but future versions of Microsoft Edge will almost surely support this. Unfortunately, Safari does not--perhaps ironically--support `@supports`, meaning desktop Safari and iOS users will not receive SVG images, either.
 
 [^1]: `clip-path` is supported by all browsers that have basic SVG support.
+
+
+## Spriting SVGs
+
+SVG has a feature that allows spriting by using a hash at the end of the SVG's URL to select an element from within the image. This allows the combination of the benefits of SVG with the benefits of spriting. For instance:
+
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <style>
+    :target ~ .sprite { display: none; }
+    .sprite:target { display: inline; }
+    </style>
+  </defs>
+  <path class="sprite" id="border"
+    d="M30,1h40l29,29v40l-29,29h-40l-29-29v-40z" stroke="#000" fill="none" />
+  <path class="sprite" id="fill"
+    d="M31,3h38l28,28v38l-28,28h-38l-28-28v-38z" fill="#a23" />
+  <text class="sprite" id="text"
+    x="50" y="68" font-size="48" fill="#FFF" text-anchor="middle">410</text>
+</svg>
+
+```
+
+![The rendered version of the above SVG](images/svg_sample.png)
+
+The `<style>` tag at the top of the markup was added, along with the `class=""` and `id=""` attributes. By referencing the SVG in a document with a hash, you can render only certain parts of the image:
+
+```html
+<object type="image/svg+xml" data="test.svg#border" height="400" width="400">
+</object>
+```
+
+![The result of the above HTML](images/svg_sample_border.png)
+
+In doing this, you can combine multiple SVG images into one single SVG image and reference the individual components as they're needed. A trivial script could be built that parses multiple SVG files, combines their nodes into `<g>` elements, applies the appropriate attributes and CSS, and outputs the necessary markup, though such a script is left as an exercise to the reader.
+
+Note that WebKit and Blink-based browsers do not allow you to use this technique using CSS properties (like `background-image` or `border-image`: `backgorund-image: url(test.svg#border);`)[^chrome_svg_stacks]. You can use an `<object>` tag like in the example above, though.
+
+[^chrome_svg_stacks]: See http://crbug.com/128055 for more information.
