@@ -34,7 +34,7 @@
    * [Minification](05-assets_and_payload/minification.md)
        * [Markup Minification](05-assets_and_payload/markup_minification.md)
        * [CSS Minification](05-assets_and_payload/css_minification.md)
-       * JavaScript Minification
+       * [JavaScript Minification](05-assets_and_payload/javascript_minification.md)
    * [Images on the Web](05-assets_and_payload/images_on_the_web.md)
        * [Encoding](05-assets_and_payload/encoding.md)
        * [Responsive Images](05-assets_and_payload/responsive_images.md)
