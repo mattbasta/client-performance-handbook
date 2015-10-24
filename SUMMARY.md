@@ -39,6 +39,7 @@
        * [Encoding](05-assets_and_payload/encoding.md)
        * Responsive Images
        * Spriting
+       * SVG
    * Web Fonts
    * Preloading
    * Inlining and Bundling Assets
