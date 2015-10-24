@@ -39,7 +39,7 @@
        * [Encoding](05-assets_and_payload/encoding.md)
        * [Responsive Images](05-assets_and_payload/responsive_images.md)
        * Spriting
-       * SVG
+       * [SVG](05-assets_and_payload/svg.md)
    * Web Fonts
    * Preloading
    * Inlining and Bundling Assets
