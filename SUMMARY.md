@@ -33,7 +33,7 @@
    * [Gzip and Compression](05-assets_and_payload/gzip_and_compression.md)
    * [Minification](05-assets_and_payload/minification.md)
        * [Markup Minification](05-assets_and_payload/markup_minification.md)
-       * CSS Minification
+       * [CSS Minification](05-assets_and_payload/css_minification.md)
        * JavaScript Minification
    * [Images on the Web](05-assets_and_payload/images_on_the_web.md)
        * [Encoding](05-assets_and_payload/encoding.md)
