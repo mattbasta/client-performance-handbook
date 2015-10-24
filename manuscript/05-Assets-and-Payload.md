@@ -27,61 +27,6 @@ You can download ImageOptim for free from its homepage: http://imageoptim.com/
 
 
 
-### Spriting
-
-Spriting is a common practice that involves combining multiple small images into a single larger image. The image is then clipped and positioned using CSS to show only the individual components in the areas that they're needed.
-
-On many websites, there are many tiny icons, graphics, and other visual components that simply require
-
-It's often the case that sprites are PNG files, since PNGs are generally quite small and benefit from being combined into larger files. Some pages that contain small photographs or textured elements that benefit from JPEG compression can in fact use sprites, though quality will be decreased. This can be mitigated by ensuring that each image within a JPEG sprite has a height and width that is a multiple of 8 pixels. This prevents the images from bleeding into one another.
-
-Sprites should always be created from the highest quality source files. Never use previously-encoded images as the source for sprites, as the spriting process will re-encode the image (like taking a photocopy of a photocopy).
-
-There are many spriting tools available, though a couple are available directly in your browser. The first is Spritegen, which contains many features: http://spritegen.website-performance.org/. Spritegen allows you to specify encoding settings, dimensions, and provide formatting for the resulting CSS.
-
-Another great, dead-simple tool is Spritificator by Matt Claypotch: http://potch.me/projects/spritificator/. Spritificator simply combines images into a sprite and provides the CSS necessary to access the images from your page. For most use cases, this is usually all that's needed.
-
-
-#### Spriting and SVG
-
-SVG has a feature that allows spriting by using a hash at the end of the SVG's URL to select an element from within the image. This allows the combination of the benefits of SVG with the benefits of spriting. For instance:
-
-```xml
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <defs>
-    <style>
-    :target ~ .sprite { display: none; }
-    .sprite:target { display: inline; }
-    </style>
-  </defs>
-  <path class="sprite" id="border"
-    d="M30,1h40l29,29v40l-29,29h-40l-29-29v-40z" stroke="#000" fill="none" />
-  <path class="sprite" id="fill"
-    d="M31,3h38l28,28v38l-28,28h-38l-28-28v-38z" fill="#a23" />
-  <text class="sprite" id="text"
-    x="50" y="68" font-size="48" fill="#FFF" text-anchor="middle">410</text>
-</svg>
-
-```
-
-![The rendered version of the above SVG](images/svg_sample.png)
-
-The `<style>` tag at the top of the markup was added, along with the `class=""` and `id=""` attributes. By referencing the SVG in a document with a hash, you can render only certain parts of the image:
-
-```html
-<object type="image/svg+xml" data="test.svg#border" height="400" width="400">
-</object>
-```
-
-![The result of the above HTML](images/svg_sample_border.png)
-
-In doing this, you can combine multiple SVG images into one single SVG image and reference the individual components as they're needed. A trivial script could be built that parses multiple SVG files, combines their nodes into `<g>` elements, applies the appropriate attributes and CSS, and outputs the necessary markup, though such a script is left as an exercise to the reader.
-
-Note that WebKit and Blink-based browsers do not allow you to use this technique using CSS properties (like `background-image` or `border-image`: `backgorund-image: url(test.svg#border);`)[^chrome_svg_stacks]. You can use an `<object>` tag like in the example above, though.
-
-[^chrome_svg_stacks]: See http://crbug.com/128055 for more information.
-
-
 ### Post-loading Images
 
 In many cases, images on a page are not necessary to make the page interactive to the user. In these cases, blocking page load may be harmful: loading indicators may be displayed to the user, JavaScript may be blocked, or other assets may be delayed while the images download (possibly due to the number of concurrent HTTP connections).
