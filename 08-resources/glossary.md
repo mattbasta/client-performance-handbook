@@ -1,5 +1,18 @@
 # Glossary
 
+<dl>
+    <dt>Compression</dt>
+    <dd>The process of using an algorithm to reduce the size of a piece of data. Compression works by reducing redundant content within the data, or data that does not significantly affect quality.</dd>
+    <dt>Encoding</dt>
+    <dd>An encoding is a way of storing a piece of content. Image data, for example, is encoded into a format like JPEG, PNG, or GIF when stored in a file. The encoding may include features like compression, alpha transparency (for image), or metadata storage.</dd>
+    <dt>Lossless</dt>
+    <dd>A type of compression algorithm that does not reduce the quality of the data being compressed. A piece of data will remain unchanged if it is losslessly compressed and uncompressed.</dd>
+    <dt>Lossy</dt>
+    <dd>A type of compression algorithm that does not preserve the original data exactly. For example, a lossy image compression algorithm may remove certain fine details from the image.</dd>
+    <dt>Minification</dt>
+    <dd>The process of automatically rewriting code into a form that is smaller. This term may also be used to describe certain compiler-like optimizations to improve performance or remove unused code.</dd>
+</dl>
+
 
 ## Images
 
