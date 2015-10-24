@@ -31,7 +31,7 @@
        * [Caching Correctly](05-assets_and_payload/caching_correctly.md)
        * [CORS](05-assets_and_payload/cors.md)
    * [Gzip and Compression](05-assets_and_payload/gzip_and_compression.md)
-   * Minification
+   * [Minification](05-assets_and_payload/minification.md)
        * Markup Minification
        * CSS Minification
        * JavaScript Minification
