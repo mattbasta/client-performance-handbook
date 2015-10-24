@@ -5,13 +5,11 @@ Like DNS, the actual TCP connections involved in each request are an often-overl
 
 ## Too many connections
 
-Until recently, browsers limited the number of HTTP connections to any single host to 2. Most modern browsers have increased that limit to at least 6[^ie_connection_limit]. This number is usually sufficient for relatively small pages with only a small number of assets, but it can be disastrous for content-heavy pages that make dozens of requests.
-
-[^ie_connection_limit]: Internet Explorer 10 and up and Opera 10 have a limit of eight concurrent connections rather than six.
+Until recently, browsers limited the number of HTTP connections to any single host to 2. Most modern browsers have increased that limit to at least 6[^1]. This number is fine for small pages with a small number of assets, but it can be disastrous for content-heavy pages that make dozens of requests.
 
 ![TCP connections made to a single host](images/tcp_limit_waterfall.png)
 
-The above is a screenshot from the Chrome developer tools showing a series of requests for images. I've drawn in red lines to show that the end of one request triggers the start of another. Also notice that no more than six requests are triggered concurrently at any given time.
+The image above is a screenshot from the Chrome developer tools showing a series of requests for images. I've drawn in red lines to show that the end of one request triggers the start of another. Also notice that no more than six requests are triggered concurrently at any given time. That is, you can draw a vertical line at any point on the chart and cross at most six active connections[^2].
 
 The first way to remedy this is to make sure that if you can, HTTP2 and/or SPDY are implemented on the server. Both allow an unlimited number of concurrent requests to be performed, and the server can decide how it wants to respond to them depending on load.
 
@@ -23,11 +21,14 @@ As mentioned previously, domain sharding comes at a cost: DNS lookups. Despite e
 
 Historically, a `Connection: Keep-Alive` header could be echoed to any client that sent the same header as part of a HTTP request. This allowed the client to re-use connections. HTTP 1.1 made this the default behavior for HTTP connections, however, and sending the header is unnecessary for all mainstream browsers.
 
+[^1]: Internet Explorer 10 and up and Opera 10 have a limit of eight concurrent connections rather than six.
+[^2]: The rounded edges of the graph may make it look like seven active connections are taking place near the start and end of each request, but that is entirely aesthetic.
+
 
 ## High latency
 
-For users on high-latency connections, creating many TCP connections may be impractical. Other users may have artificially restrictive limits on TCP connections (such as users communicating through an HTTP proxy). In this case, the best solution is to simply decrease the amount of time it takes to establish a connection.
+For users on high-latency connections, creating many TCP connections may be impractical. Other users may have artificially restrictive limits on TCP connections (such as users communicating through an HTTP proxy). In this case, the best solution is to decrease the amount of time it takes to establish a connection.
 
-To do this, collect some data. Measure the amount of time it takes to establish a connection to the web server from a point very near to the server (i.e.: from another server in the same data center). If that number is high, you should investigate the stack that you're using on the server. If you don't have a load balancer, or are using a single-threaded server, simply installing a reverse proxy like Nginx may solve much of the problem.
+To do this, collect some data. Measure the amount of time it takes to establish a connection to the web server from a point very near to the server (i.e.: from another server in the same data center). If that number is high, you should investigate the stack that you're using on the server. If you don't have a load balancer, or are using a single-threaded server, installing a reverse proxy like Nginx may solve much of the problem.
 
-For users that are located internationally, long connection times may simply be a result of distance. Consider using a CDN to serve assets: a CDN can be globally distributed to decrease the physical distance that must be traversed and number of digital bottlenecks that a connection must overcome in order to reach the server.
+For users that are located internationally, long connection times are likely a result of distance. A CDN (discussed in a later section) allows you to serve content from a server that is physically closer to the user (a "point of presence", or "PoP"). This can lead to lower overall latency.
