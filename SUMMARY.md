@@ -40,6 +40,7 @@
        * [Responsive Images](05-assets_and_payload/responsive_images.md)
        * [Spriting](05-assets_and_payload/spriting.md)
        * [SVG](05-assets_and_payload/svg.md)
+       * Unnecessary Images
    * Web Fonts
    * [Preloading](05-assets_and_payload/preloading.md)
    * [Inlining and Bundling Assets](05-assets_and_payload/inlining_and_bundling_assets.md)
