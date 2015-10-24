@@ -48,4 +48,9 @@ window.addEventListener('load', function() {
 
 Note that any sizing or positioning on your `<img>` tag should be updated to apply to the corresponding `.postload-image` element.
 
-Adding support for pre-defined height and width of the images is left as an exercise to the reader.
+
+## Drawbacks
+
+Abusing postloading can lead to bad user experiences. Postloading too much content can make the page sluggish. Postloading scripts or CSS can make some features take longer than a user might expect to become ready to use. If you postload a large third-party library, for instance, code that uses that library might display a loading indicator until the postload code finishes.
+
+When postloading (or un-postloading, for that matter), be sure to test the user's experience on a variety of browsers, devices, and connections.
