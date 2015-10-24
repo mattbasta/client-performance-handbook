@@ -44,7 +44,7 @@
    * Web Fonts
    * [Preloading](05-assets_and_payload/preloading.md)
    * [Inlining and Bundling Assets](05-assets_and_payload/inlining_and_bundling_assets.md)
-   * Postloading
+   * [Postloading](05-assets_and_payload/postloading.md)
 * [JavaScript](06-javascript/javascript.md)
    * [The Event Loop](06-javascript/the_event_loop.md)
    * [Browser Events](06-javascript/browser_events.md)
