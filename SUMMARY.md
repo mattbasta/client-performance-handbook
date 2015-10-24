@@ -36,7 +36,7 @@
        * CSS Minification
        * JavaScript Minification
    * [Images on the Web](05-assets_and_payload/images_on_the_web.md)
-       * Encoding
+       * [Encoding](05-assets_and_payload/encoding.md)
        * Responsive Images
        * Spriting
    * Web Fonts
