@@ -54,6 +54,6 @@ It is also worth noting that SVG has only been supported by Internet Explorer si
 }
 ```
 
-Only browsers that support the `clip-path`[^1] CSS declaration (and the CSS `@supports` block) will use the SVG version of the image. At the time of writing, this is Firefox and Chrome, but IE12 will almost surely support this. Unfortunately, Safari does not--perhaps ironically--support `@supports`, meaning desktop Safari and iOS users will not receive SVG images, either.
+Only browsers that support the `clip-path`[^1] CSS declaration (and the CSS `@supports` block) will use the SVG version of the image. At the time of writing, this is Firefox and Chrome, but future versions of Microsoft Edge will almost surely support this. Unfortunately, Safari does not--perhaps ironically--support `@supports`, meaning desktop Safari and iOS users will not receive SVG images, either.
 
 [^1]: `clip-path` is supported by all browsers that have basic SVG support.
