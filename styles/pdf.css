@@ -1,6 +1,7 @@
 /* CSS for pdf */
 
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,700,400italic);
+@import url(https://fonts.googleapis.com/css?family=Ubuntu:400,500,300,700);
 
 .book.font-family-1 {
     font-family: Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -8,4 +9,21 @@
 
 .book .book-body .page-wrapper .page-inner section.normal {
     line-height: 1.75;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: Ubuntu, sans-serif !important;
+    font-weight: 500;
+}
+
+.book .book-body .page-wrapper .page-inner section.normal h2 {
+    border-bottom: 0;
+}
+.book .book-body .page-wrapper .page-inner section.normal h3,
+.book .book-body .page-wrapper .page-inner section.normal h4 {
+    font-weight: 500;
+    margin: 1.5em 0 1em;
+}
+.book .book-body .page-wrapper .page-inner section.normal h3 {
+    font-size: 1.4em;
 }
