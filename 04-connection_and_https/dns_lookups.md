@@ -1,6 +1,5 @@
 # DNS Lookups
 
-
 Most engineers don't consider DNS lookups when they are optimizing their page's load time for a few reasons:
 
 1. During development, you probably aren't connecting to a remote server.
@@ -18,11 +17,11 @@ DNS lookups should be considered slow by default, and they play a very large rol
 
 ![Distribution of DNS response times (pulling up and left is better)](images/dns_namebench_responses.png)
 
-This benchmark was run from my apartment in Mountain View, California over wifi. My ISP is Comcast, and the results support that: the two lines furthest to the left are Comcast's DNS server (75.75.75.75) and my wireless router (which uses Comcast's DNS)[^google_dns_throttle]. Curiously, Comcast's alternate DNS server (75.75.75.76) is among the slowest, taking a minimum of 40ms for its fastest response.
-
-[^google_dns_throttle]: It should be noted that the results for Google's DNS servers shift sharply to the right, indicating that their servers may have throttled connections from my IP address during the test, resulting in unusually high lookup times.
+This benchmark was run from my apartment in Mountain View, California over wifi. My ISP is Comcast, and the results support that: the two lines furthest to the left are Comcast's DNS server (75.75.75.75) and my wireless router (which uses Comcast's DNS)[^1]. Curiously, Comcast's alternate DNS server (75.75.75.76) is among the slowest, taking a minimum of 40ms for its fastest response.
 
 My internet connection is average, or perhaps slightly above average compared to the rest of the continental US. Based on this benchmark, however, you can see that DNS lookups took--regardless of the DNS server--a minimum of about 15ms for the absolute fastest responses. The 80th percentile (one out of every five), though, took longer than 60ms. At the 90th percentile, lookup times nearly triple to well over 150ms.
+
+[^1]: The results for Google's DNS servers shift sharply to the right, indicating they may have throttled connections during the test.
 
 
 ## Remedying slow DNS lookups
