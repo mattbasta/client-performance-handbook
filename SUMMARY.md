@@ -42,7 +42,7 @@
        * [SVG](05-assets_and_payload/svg.md)
    * Web Fonts
    * [Preloading](05-assets_and_payload/preloading.md)
-   * Inlining and Bundling Assets
+   * [Inlining and Bundling Assets](05-assets_and_payload/inlining_and_bundling_assets.md)
    * Postloading
 * [JavaScript](06-javascript/javascript.md)
    * [The Event Loop](06-javascript/the_event_loop.md)
