@@ -1,6 +1,8 @@
 # Compress Images
 
-Compressing your images can provide an astounding amount of performance benefit. For most websites, relatively small images outweigh even very large JavaScript files.
+Compressing your images can provide an astounding amount of performance benefit. Images with fairly small dimensions can even outweigh even some large JavaScript files. In addition, most image editing applications include a significant amount of metadata in the images that get produced. This includes information about the software, legal information, comments, description, title, etc. In the context of the web, none of this information is useful to a browser and wastes takes up valuable bytes.
+
+Most image editing software uses encoding algorithms that are sub-par. Inefficiencies in the algorithms mean that bytes are needlessly wasted as image data is written in a more verbose way than necessary. This is not to say that the images will decrease in quality when re-encoded: the images should be losslessly re-written to a smaller file representation.
 
 First, ensure you're using the right image format for each of your images. A guide for doing this is available in the Images section of the Assets and Payload chapter.
 
