@@ -14,7 +14,7 @@ transform="translate(6.000000, 12.000000) rotate(-270.000000)
 translate(-6.000000, -12.000000)"></path>
 ```
 
-Though this is a simple shape, it can't be described using nice, round numbers. Shaving decimal places from the numbers in an SVG can help to decrease its size significantly:
+Though this is a simple shape, it can't be described using nice, round numbers. Shaving decimal places from the numbers in an SVG can help to decrease its size:
 
 ```xml
 <path d="M5.948,13.497 L-2.598,6.471 C-3.386,5.834 -4.652,5.843 -5.426,6.492
@@ -94,6 +94,6 @@ The `<style>` tag at the top of the markup was added, along with the `class=""` 
 
 In doing this, you can combine multiple SVG images into one single SVG image and reference the individual components as they're needed. A trivial script could be built that parses multiple SVG files, combines their nodes into `<g>` elements, applies the appropriate attributes and CSS, and outputs the necessary markup, though such a script is left as an exercise to the reader.
 
-Note that WebKit and Blink-based browsers do not allow you to use this technique using CSS properties (like `background-image` or `border-image`: `backgorund-image: url(test.svg#border);`)[^chrome_svg_stacks]. You can use an `<object>` tag like in the example above, though.
+Note that WebKit and Blink-based browsers do not allow you to use this technique using CSS properties (like `background-image` or `border-image`: `backgorund-image: url(test.svg#border);`)[^2]. You can use an `<object>` tag like in the example above, though.
 
-[^chrome_svg_stacks]: See http://crbug.com/128055 for more information.
+[^2]: See http://crbug.com/128055 for more information.
