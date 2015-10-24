@@ -1,5 +1,18 @@
 # Glossary
 
+
+## Images
+
+<dl>
+    <dt>Alpha Channel</dt>
+    <dd>The alpha channel in an image is the color channel (see below) that represents the transparency of each pixel in the image. A pixel with an alpha channel value of zero is transparent. A pixel with an alpha channel value of 255 (or 100%) is opaque.</dd>
+    <dt>Alpha Transparency</dt>
+    <dd>The ability for a color or image to be slightly or fully transparent. An image with alpha transparency will blend with its background. The amount of transparency is defined by an image's alpha channel.</dd>
+    <dt>Color Channel</dt>
+    <dd>A color channel is a color value for each pixel in an image. When an image is encoded with RGB, it has a red, green, and blue color channel. Each channel has a single number for each pixel that represents the intensity of that color at the particular pixel. For instance, a "white" pixel would have its red, green, and blue color channels each set to 255 (or 100%). A firetruck red pixel would have its red channel set to 255, while the blue and green channels would be set to zero.</dd>
+</dl>
+
+
 ## CSS
 
 <dl>
