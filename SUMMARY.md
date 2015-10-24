@@ -38,7 +38,7 @@
    * [Images on the Web](05-assets_and_payload/images_on_the_web.md)
        * [Encoding](05-assets_and_payload/encoding.md)
        * [Responsive Images](05-assets_and_payload/responsive_images.md)
-       * Spriting
+       * [Spriting](05-assets_and_payload/spriting.md)
        * [SVG](05-assets_and_payload/svg.md)
    * Web Fonts
    * Preloading
