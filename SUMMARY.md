@@ -41,7 +41,7 @@
        * [Spriting](05-assets_and_payload/spriting.md)
        * [SVG](05-assets_and_payload/svg.md)
    * Web Fonts
-   * Preloading
+   * [Preloading](05-assets_and_payload/preloading.md)
    * Inlining and Bundling Assets
    * Postloading
 * [JavaScript](06-javascript/javascript.md)
