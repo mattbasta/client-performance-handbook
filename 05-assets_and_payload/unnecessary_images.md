@@ -1,0 +1,2 @@
+# Unnecessary Images
+
