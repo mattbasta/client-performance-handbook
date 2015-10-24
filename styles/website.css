@@ -5,3 +5,7 @@
 .book.font-family-1 {
     font-family: Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
 }
+
+.book .book-body .page-wrapper .page-inner section.normal {
+    line-height: 1.75;
+}
