@@ -41,7 +41,7 @@
        * [Spriting](05-assets_and_payload/spriting.md)
        * [SVG](05-assets_and_payload/svg.md)
        * [Unnecessary Images](05-assets_and_payload/unnecessary_images.md)
-   * Web Fonts
+   * [Web Fonts](05-assets_and_payload/web_fonts.md)
    * [Preloading](05-assets_and_payload/preloading.md)
    * [Inlining and Bundling Assets](05-assets_and_payload/inlining_and_bundling_assets.md)
    * [Postloading](05-assets_and_payload/postloading.md)
