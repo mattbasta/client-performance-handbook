@@ -8,7 +8,7 @@ Just as a `<link>` tag can be used to perform DNS lookups in advance, another ki
 
 Optionally, an HTTP header can be specified (or its `<meta>` equivalent):
 
-```raw
+```
 Link: </images/will_be_used_later.jpg>; rel=prefetch
 ```
 
@@ -42,18 +42,20 @@ Prerendering is supported in Chrome and Internet Explorer. At the time of writin
 [^1]: See http://bugzil.la/730101
 
 
-### Subresources
+### Preloading
 
-Chrome currently includes experimental support for a feature known as subresources. Subresources are `<link>` tags similar to prefetch and prerender requests, though they represent resources that will be used more immediately.
+The W3C has been working to formalize a specification for all of this. It is known as "preloading" rather than "prefetching". Ultimately, preloading works in a similar way to prefetching works. A `<link>` tag can be used, though it accepts an extra attribute: `as`.
 
-Subresources could be used, for example, to hint to the browser to request all of the CSS, JavaScript, and images at the very top of the page. A single HTTP/2 connection could be used to send all of the requests simultaneously, regardless of the position of the asset in the document or how much of the document has loaded. These are an incredibly powerful tool for fetching resources at the appropriate time.
+```html
+<link rel="preload" href="/my/image.png" as="image">
+```
 
-Consider a CSS file that is loaded using an `@import` directive from a another CSS file in a document. Normally, the imported CSS file would only be able to start loading once the CSS file it is linked from has started to load. Using subresources, the request could be made well in advance without affecting how or when the CSS file is actually used.
+When the browser sees the `<link>` tag, it will begin downloading the image with the priority that an image would be given had an `<img>` tag existed. Using `as="font"` would create a network request with the priority of a web font.
 
-Similarly, subresources could be used for scripts that use the `defer` and `async` tags, or are scattered between the `<head>` and `<body>`. Scripts referenced as subresources are not run until their corresponding `<script>` tag would otherwise have executed.
+The values that you can use for the `as=""` attribute are the same values used by the `fetch()` API. Common values include `font`, `script`, `style`, `audio`, and `video`.
 
-Unlike prefetches, subresources should be downloaded immediately with a high priority.
+A similar HTTP header can also be used:
 
-At the time of writing, a bug exists in the Chromium network stack that prevents subresource requests from being used if they haven't completed by the time the asset is used in the document[^chrome_subresources]. Until this issue is resolved, it is not advisable to use subresources. However, they remain a powerful tool and site owners should plan to be able to use them in future versions of Chrome and Opera.
-
-[^chrome_subresources]: See http://crbug.com/312327
+```
+Link: </my/image.png>; rel=preload; as=image
+```
