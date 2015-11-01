@@ -18,7 +18,8 @@ This is a simple technique for requesting images after a page has loaded. Replac
 <img src="/images/my-great-image.jpg" alt="My great image">
 
 <!-- After -->
-<div class="postload-image" data-src="/images/my-great-image.jpg"
+<div class="postload-image"
+     data-src="/images/my-great-image.jpg"
      title="My great image">
   <noscript>
     <img src="/images/my-great-image.jpg" alt="My great image">
