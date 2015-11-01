@@ -64,6 +64,7 @@ In Apache httpd, you can use this configuration:
 AddType  application/font-woff2  .woff2
 ```
 
+[^1]: https://everythingfonts.com/ttf-to-woff2
 
 ### Remove legacy browser support
 
@@ -90,11 +91,39 @@ Note that web fonts require CORS to be set up to load fonts cross-origin. If you
 
 ## Loading web fonts early
 
-### Preload headers
+As mentioned above, a serious problem with web fonts is the time it takes for them to load. Slow-loading fonts can cause text not to render on the page.
+
+The easiest way to begin loading fonts early is to use an inline style. This allows the font files to begin downloading as soon as the server responds with the page rather than waiting until the first CSS file has finished loading.
+
+
+### Preload links
+
+If you cannot use inline styles (e.g., you have a content security policy that disallows them), you can use a `<link>` tag to begin loading the files early.
+
+```html
+<link rel="preload" href="/path/to/my/font.woff2" as="font">
+<link rel="preload" href="/path/to/my/font.woff" as="font">
+```
+
+Place these links immediately before your any CSS on your page. This will instruct the browser to begin downloading the files as soon as possible.
+
+Alternatively, you can do the same thing with HTTP headers. Configure your server to respond with the following HTTP headers:
+
+```
+Link: </path/to/my/font.woff2>; rel=reload; as=font
+Link: </path/to/my/font.woff>; rel=reload; as=font
+```
+
+Note that if you are loading fonts cross-origin, you'll need to add the `crossorigin` attribute to your `<link>` tags, and the `; crossorigin` suffix to the HTTP headers.
+
 
 ### HTTP/2 Server Push
 
-### Font Loading API
+If you're using a server that is compatible with HTTP/2, you can instruct it to preemptively serve the font files to the user using the "server push" feature. At the time of writing, this feature is not well-supported by most open source server options, so implementing server push for font files is left as an exercise to the reader.
 
 
-[^1]: https://everythingfonts.com/ttf-to-woff2
+### Service Workers
+
+At the time of writing, service workers are not well-supported by any modern browser. However, they theoretically offer a good way of loading fonts in the browser. The service worker could be configured to preemptively download the font file or fetch it from the browser cache if needed.
+
+If your application is already using service workers, you should consider how they could be leveraged to load fonts more efficiently.
