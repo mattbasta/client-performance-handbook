@@ -55,8 +55,12 @@ In other circumstances, a different approach may be taken. For large 3D games co
 [^4]: https://github.com/google/snappy
 
 
-## SDCH
+### SDCH
 
-Chrome recently added SDCH to its `Accept-Encoding` list. SDCH--short for Shared Dictionary Compression over HTTP--is a mechanism for compression across multiple files. This is accomplished using a "shared dictionary"--sort of like a big listing of all commonly repeated strings of text across all files. Instead of each file containing a mapping of repeated strings like in Gzip, the central dictionary is used.
+"SDCH" is a technology that Chrome began to support as a valid value in `Accept-Encoding`. SDCH--short for *Shared Dictionary Compression for HTTP*--is a mechanism for compression across multiple files. This is done using a "shared dictionary": a listing of every string that's shard across all of the files to transfer. Instead of each file containing a mapping of repeated strings like in Gzip, the server and client use the central dictionary instead.
 
-SDCH is currently only supported in Chrome, though Firefox support may be forthcoming once some kinks are worked out. Very few websites actually use SDCH compression, unfortunately, and it appears Google has put the project on ice, perhaps because of lack of browser buy-in.
+Unlike Gzip or other algorithms, SDCH is best-suited for tasks that involve dynamic content. For instance, a shared dictionary could be created that contains the parts of a each page on a site that never change. When a user makes a request, the server only needs to send the unique pieces of the page and an ordered list of each element from the shard dictionary to stitch together.
+
+SDCH is only supported in Chrome, though Firefox support may be forthcoming[^5]. Very few websites implement SDCH compression unfortunately, and it appears Google has put the project on ice.
+
+[^5]: https://bugzilla.mozilla.org/show_bug.cgi?id=641069
