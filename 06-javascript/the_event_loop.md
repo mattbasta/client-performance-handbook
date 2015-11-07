@@ -14,7 +14,7 @@ setTimeout(function() {
     console.log('one second has passed');
 }, 1000);
 
-while(Date.now() - now < 2000) {
+while (Date.now() - now < 2000) {
     // no-op
 }
 
