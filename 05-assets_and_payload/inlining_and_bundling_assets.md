@@ -1,14 +1,11 @@
 # Inlining and Bundling Assets
 
-One of the most common questions that comes up with regard to assets is whether sites should have a single, large asset (like a master `include.js` file) or to split the assets into multiple smaller JS files.
-
-
-## Pros and Cons
+One of the most common questions that comes up with regard to assets is whether sites should have a single, large asset (like a master `include.js` file) or split the assets into smaller pieces.
 
 There are a number of pros and cons for each approach:
 
 
-### Single Large Asset
+## Single Large Asset
 
 Pros:
 
@@ -24,7 +21,7 @@ Cons:
 - For JavaScript files, the whole file must be loaded in order for its contents to start executing (versus executing smaller chunks of JavaScript as they arrive).
 
 
-### Multiple Assets
+## Multiple Assets
 
 Pros:
 
@@ -40,25 +37,16 @@ Cons:
 
 ### HTTP/2
 
-When using HTTP/2 (or SPDY), the above points become invalid. Since a single connection is used and headers are compressed, all individual files can be requested with very little overhead. Each file can be cached independently, saving significant amounts of bandwidth (all is related to caching are absent).
+When using HTTP/2 (or SPDY), some of the above points become invalid. Since a single connection is used and headers are compressed, all individual files can be requested with little overhead. Each file can be cached independently, saving significant amounts of bandwidth (all is related to caching are absent).
 
-This may not be ideal, though, since older browsers (and Internet Explorer in most cases) cannot use HTTP/2. It may also not be possible for the application layer to know whether the client is connected via HTTP/2 or not, making it impossible to decide whether to conditionally serve combined assets.
+This may not be ideal, though, since older browsers (and Internet Explorer in most cases) cannot use HTTP/2. The application layer may also not know whether the client connected via HTTP/2 or not, making it difficult to decide whether to serve combined assets.
+
+It is also worth noting that despite HTTP/2 eliminating the TCP and HTTPS overhead of establishing a new connection for each asset, requests for each asset do still need to be made. Requesting dozens, hundreds, or thousands of individual assets will add up regardless of whether HTTP/2 is used or not.
 
 
 ## Number of assets
 
-The number of assets used is crucial. The following table is a general guide for determining how many of each asset should be used for a single page.
-
-| Amount (gzipped)     | Ideal # assets |
-|----------------------|----------------|
-| 0-500KB              | 1              |
-| 500-1024KB           | 2              |
-| 1MB-3MB              | 3              |
-| 3MB+                 | 4              |
-
-For example, if there is 600KB of JavaScript on a single page, two JavaScript files should be used.
-
-Across a site, however, it may be smarter to combine assets differently to promote cache reuse. For example, consider the following list of assets:
+Across a site, it may be smart to combine assets differently to promote cache reuse. For example, consider the following list of assets:
 
 | Page      | Depends On    |
 |-----------|---------------|
@@ -94,11 +82,15 @@ used in the following way:
 
 In this case, the login page shares the same JS as the dashboard, even though most of the second bundle is unused. This doesn't matter, though, since virtually all users visiting the login page will eventually visit the dashboard (and their cache will be warm).
 
-Figuring out how to perfectly distribute files and how many bundles of files to create isn't always an exact science. Getting the split "close enough" will go a long way. After a certain amount of effort, the diminishing returns will yield little (if any) benefit.
+Figuring out how to perfectly distribute files and how many bundles of files to create isn't an exact science. Getting the split "close enough" will go a long way. After a certain amount of effort, the diminishing returns will yield little (if any) benefit.
 
 
 ## Combining Assets
 
-One final technique that can potentially improve performance is to combine multiple disparate assets together. SVGs can be included as inline markup in HTML. For small images that take less time to load than for their connections to be made, it may be worthwhile to convert them to data URIs and include them as part of the site's CSS.
+One final technique that can potentially improve performance is combining multiple disparate assets together. For example:
 
-In extreme cases (such as when dealing with users on very poor network connections), it may even be worthwhile to inline assets into the HTML. This may involve including CSS in `<style>` tags, JavaScript in `<script>` tags, etc. This is not generally advisable due to security, potential performance pitfalls (blocking the site's critical path), and other minor reasons, but for very high-latency, low-bandwidth connections it may be necessary.
+- SVGs can be included as inline markup in HTML.
+- Very small images can be converted to data URIs and included in CSS or in markup.
+- Small CSS files can be inlined into a `<style>` tag.
+
+In extreme cases (such as when dealing with users on poor network connections) it may be worthwhile to inline assets into the HTML. This may involve including CSS in `<style>` tags, JavaScript in `<script>` tags, etc. This is not recommended due to security, potential performance pitfalls (blocking the site's critical path), and a host of other reasons. However, for sites that target mainly high-latency, low-bandwidth connections, it may be necessary.
