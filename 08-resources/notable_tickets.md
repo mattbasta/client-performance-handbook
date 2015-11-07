@@ -4,6 +4,7 @@ Throughout this book, I've made note of many tickets in bug trackers for differe
 
 ## Firefox
 
+- **Bug 641069:** Implement SDCH http://bugzil.la/641069
 - **Bug 688580:** Deferred scripts run at the wrong time http://bugzil.la/688580
 - **Bug 730101:** Implement prerendering support http://bugzil.la/730101
 - **Bug 856375:** Implement WebP support http://bugzil.la/856375
