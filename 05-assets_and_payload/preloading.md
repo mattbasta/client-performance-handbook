@@ -44,17 +44,17 @@ Prerendering is supported in Chrome and Internet Explorer. At the time of writin
 
 ### Preloading
 
-The W3C has been working to formalize a specification for all of this. It is known as "preloading" rather than "prefetching". Ultimately, preloading works in a similar way to prefetching works. A `<link>` tag can be used, though it accepts an extra attribute: `as`.
+The W3C has formalized a specification for this. It is called "preloading" rather than "prefetching". Ultimately, preloading works in a very similar way to prefetching. A `<link>` tag just as it is for `<link rel="prefetch>`, though it accepts an extra attribute: `as`.
 
 ```html
 <link rel="preload" href="/my/image.png" as="image">
 ```
 
-When the browser sees the `<link>` tag, it will begin downloading the image with the priority that an image would be given had an `<img>` tag existed. Using `as="font"` would create a network request with the priority of a web font.
+When the browser sees a `<link rel="preload">` tag, it will begin downloading the image. The priority of the request would be the same as if the image was loaded with an `<img>` tag. Using `as="font"` would make a request with the priority of a web font.
 
 The values that you can use for the `as=""` attribute are the same values used by the `fetch()` API. Common values include `font`, `script`, `style`, `audio`, and `video`.
 
-A similar HTTP header can also be used:
+In addition to a `<link>` tag, you can also use a `Link` HTTP header:
 
 ```
 Link: </my/image.png>; rel=preload; as=image
