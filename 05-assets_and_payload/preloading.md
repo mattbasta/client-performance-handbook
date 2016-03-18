@@ -80,3 +80,13 @@ In addition to a `<link>` tag, you can also use a `Link` HTTP header:
 ```
 Link: </my/image.png>; rel=preload; as=image
 ```
+
+### Which should I choose?
+
+Between prefetching, prerendering, preconnecting, and preloading, it can be difficult to decide which technique to use. Here are some tips for when to choose these options.
+
+1. Choose prerendering if you expect your user to navigate to a particular page, like a "step two". The user must already have access to the page (i.e., their login state should not need to change).
+2. Choose preloading if you want the user's browser to start downloading a specific file as soon as possible.
+3. Choose prefetching if you want the user's browser to start downloading a specific file when the browser is idle.
+4. Choose preconnecting if the user might not have access to the target URL just yet, or if you don't want the user to start using bandwidth on the file.
+
