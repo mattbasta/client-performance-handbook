@@ -42,6 +42,27 @@ Prerendering is supported in Chrome and Internet Explorer. At the time of writin
 [^1]: See http://bugzil.la/730101
 
 
+### Preconnecting
+
+There are cases where prerendering may not be possible. For example, if you have a login form that will redirect to a separate hostname (e.g., from `www.example.com` to `app.example.com`), a `prerender` tag will lead to an error. You may still wish to do some of the work of signing the user in beforehand, however. In this case, you can use `preconnect`.
+
+```html
+<link rel="preconnect" href="https://app.example.com" crossorigin>
+```
+
+When preconnecting, the browser will resolve the URL in the `href=""` attribute. It will then perform the following actions:
+
+- Perform a DNS lookup of the hostname in `href=""`
+- Create a new connection to the hostname at `href=""`
+- Establish a new TLS session, if it is needed
+
+If the request is to a different hostname than the one the user is currently on, the `crossorigin` attribute needs to be present.
+
+The W3C says that this, "allows the user agent to mask the high latency costs of establishing a connection." [^2]
+
+[^2]: https://www.w3.org/TR/resource-hints/#preconnect
+
+
 ### Preloading
 
 The W3C has formalized a specification for this. It is called "preloading" rather than "prefetching". Ultimately, preloading works in a very similar way to prefetching. A `<link>` tag just as it is for `<link rel="prefetch>`, though it accepts an extra attribute: `as`.
