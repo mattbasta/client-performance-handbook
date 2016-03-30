@@ -84,7 +84,7 @@ You should use `defer` under the following circumstances:
 
 The `async` attribute is similar to the `defer` attribute, but the scripts may be executed at wildly different times. Unlike `defer`, scripts loaded with `async` are not executed in the order that they appear on the page. Instead, they are executed immediately after they are downloaded.
 
-- Scripts with `async` will not wait until the DOM has finished parsing. Consequently, these scripts 
+- Scripts with `async` will not wait until the DOM has finished parsing. Consequently, these scripts may run before `DOMContentLoaded` and `load`.
 - Scripts with `async` will run out-of-order.
 - `DOMContentLoaded` will not wait for `async` scripts to download or execute, though the `load` event will.
 
