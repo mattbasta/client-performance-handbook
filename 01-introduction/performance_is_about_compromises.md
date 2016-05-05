@@ -8,4 +8,4 @@ Most changes related to performance have similar compromises: parallelizing asse
 
 Building performant applications is not hard, but making them performance while also providing the best possible user experience is incredibly difficult to accomplish. You want to deliver lots of features for your users, but you don't want to increase the payload of your assets. You want to support users that aren't on the absolute latest versions of their respective browsers, but you don't want to ignore new and powerful technologies provided by the latest browsers.
 
-The key to successfully improving web performance is understanding the constraints of the problems that need to be solved and ensuring that the downsides of the changes that you choose to make are acceptable trade-offs.
+The key to successfully improving web performance is understanding the constraints of the problems that need to be solved and ensuring that the downsides of the changes that you choose to make have acceptable trade-offs.
