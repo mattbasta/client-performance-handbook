@@ -8,7 +8,7 @@ Here are some of the most common types:
 
 <dl>
     <dt>Single Domain Certificate</dt>
-    <dd>This type of certificate is good for a single hostname only.</dd>
+    <dd>This type of certificate is good for a single hostname only. You can get one for free using^<a href='https://github.com/letsencrypt/letsencrypt'>Let's Encrypt</a>, which is a trusted CA.</dd>
     <dt>Multi-Domain Certificate</dt>
     <dd>These certificates--also known as Subject Alternative Name certificates--cover up to 100 domain names. For instance, one of these certificates may cover <code>example.com</code>, <code>anotherexample.com</code>, etc. These certificates tend to be quite expensive.</dd>
     <dt>Wildcard Certificate</dt>
@@ -92,6 +92,9 @@ Listen 443  # HTTPS runs on port 443
     SSLSessionCache shm:/usr/local/apache/logs/ssl_gcache_data(512000)
     SSLSessionCacheTimeout 600
 
+    # Ensure HTTP Strict Transport Security
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubdomains; preload"
+
     # Put your original Apache VirtualHost configuration here.
 
 </VirtualHost>
@@ -167,12 +170,17 @@ http {
 
         # Tell the browser that we always want the user to connect via
         # HTTPS to this site.
-        add_header Strict-Transport-Security "max-age=31536000";
+        add_header Strict-Transport-Security "max-age=31536000; includeSubdomains; preload";
 
         # Enable OCSP stapling
         ssl_stapling on;
         resolver 8.8.8.8 8.8.4.4 valid=300s;  # DNS servers to reference
         resolver_timeout 5s;
+
+        # Diffie-Hellman for forward secrecy
+        # It can be generated using `openssl dhparam -out dhparam.pem 4096`
+        # in the appropriate folder
+        ssl_dhparam /etc/ssl/certs/dhparam.pem;
 
         # At this point, include your previous Nginx configuration,
         # such as `location` directives.
