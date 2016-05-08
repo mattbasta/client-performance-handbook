@@ -6,4 +6,4 @@ In particular, I'd like to thank Chris Van (@cvanw) for his incessant focus on p
 
 ## Other Credits
 
-- **Balthazar Gronon**: Many thanks for your cleanup work and additional information and resources around HTTPS.
+- **Balthazar Gronon (@apercu)**: Many thanks for your cleanup work and additional information and resources around HTTPS.
