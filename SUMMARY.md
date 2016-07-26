@@ -62,8 +62,8 @@
 * [Resources](08-resources/resources.md)
    * [Chrome's Net Internals Tool](08-resources/chromes_net_internals_tool.md)
    * [Notable Tickets](08-resources/notable_tickets.md)
+   * Omissions
    * [Mentioned Tools](08-resources/mentioned_tools.md)
    * [Glossary](08-resources/glossary.md)
    * [Thanks](08-resources/thanks.md)
-   * Omissions
 
